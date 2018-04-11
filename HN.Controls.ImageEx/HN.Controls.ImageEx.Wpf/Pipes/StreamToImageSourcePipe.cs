@@ -18,18 +18,18 @@ namespace HN.Pipes
                 {
                     try
                     {
-                        var bb = new BitmapImage();
-                        bb.BeginInit();
-                        bb.StreamSource = stream;
-                        bb.EndInit();
-                        bb.Freeze();
-                        tcs.SetResult(bb);
+                        var bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.StreamSource = stream;
+                        bitmap.EndInit();
+                        bitmap.Freeze();
+                        tcs.SetResult(bitmap);
                     }
                     catch (Exception ex)
                     {
                         tcs.SetException(ex);
                     }
-                }, CancellationToken.None);
+                }, cancellationToken);
                 context.Result = await tcs.Task;
             }
             else

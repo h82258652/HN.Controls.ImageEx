@@ -38,7 +38,7 @@ namespace HN.Controls
         private const string NormalStateName = "Normal";
         private const string OpenedStateName = "Opened";
 
-        private static readonly Dictionary<Type, Func<object>> PipeServices = new Dictionary<Type, Func<object>>();
+        private static IImmutableList<Type> _pipes;
         private Image _image;
         private CancellationTokenSource _lastLoadCts;
 
@@ -64,7 +64,7 @@ namespace HN.Controls
 
         public event EventHandler ImageOpened;
 
-        public static IImmutableList<Type> Pipes { get; private set; }
+        public static IEnumerable<Type> Pipes => _pipes;
 
         public DataTemplate FailedTemplate
         {
@@ -110,12 +110,7 @@ namespace HN.Controls
 
         public static void AddService<T, TInterface>(Func<T> serviceFactory) where T : TInterface
         {
-            if (serviceFactory == null)
-            {
-                throw new ArgumentNullException(nameof(serviceFactory));
-            }
-
-            PipeServices[typeof(TInterface)] = () => serviceFactory();
+            PipeBuilder.AddService<T, TInterface>(serviceFactory);
         }
 
         public static void SetPipes(IEnumerable<Type> pipes)
@@ -134,7 +129,7 @@ namespace HN.Controls
                 }
                 pipeList.Add(pipeType);
             }
-            Pipes = pipeList.ToImmutableList();
+            _pipes = pipeList.ToImmutableList();
         }
 
         public override async void OnApplyTemplate()
@@ -142,7 +137,7 @@ namespace HN.Controls
             base.OnApplyTemplate();
 
             _image = (Image)GetTemplateChild(ImageTemplateName);
-            await SetSource(Source);
+            await SetSourceAsync(Source);
         }
 
         private static async void OnSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -150,10 +145,10 @@ namespace HN.Controls
             var obj = (ImageEx)d;
             var value = e.NewValue;
 
-            await obj.SetSource(value);
+            await obj.SetSourceAsync(value);
         }
 
-        private async Task SetSource(object source)
+        private async Task SetSourceAsync(object source)
         {
             if (_image == null)
             {
@@ -165,38 +160,37 @@ namespace HN.Controls
             {
                 _image.Source = null;
                 VisualStateManager.GoToState(this, NormalStateName, true);
+                return;
             }
-            else
+
+            _lastLoadCts = new CancellationTokenSource();
+            try
             {
-                _lastLoadCts = new CancellationTokenSource();
-                try
+                VisualStateManager.GoToState(this, LoadingStateName, true);
+
+                var context = new LoadingContext<ImageSource>()
                 {
-                    VisualStateManager.GoToState(this, LoadingStateName, true);
+                    OriginSource = source,
+                    Current = source
+                };
 
-                    var context = new LoadingContext<ImageSource>()
-                    {
-                        OriginSource = source,
-                        Current = source
-                    };
+                var pipeDelegate = PipeBuilder.Build<ImageSource>(Pipes);
+                await pipeDelegate.Invoke(context, _lastLoadCts.Token);
 
-                    var pipeDelegate = PipeBuilder.Build<ImageSource>(Pipes, PipeServices);
-                    await pipeDelegate.Invoke(context, _lastLoadCts.Token);
-
-                    if (!_lastLoadCts.IsCancellationRequested)
-                    {
-                        _image.Source = context.Result;
-                        VisualStateManager.GoToState(this, OpenedStateName, true);
-                        ImageOpened?.Invoke(this, EventArgs.Empty);
-                    }
+                if (!_lastLoadCts.IsCancellationRequested)
+                {
+                    _image.Source = context.Result;
+                    VisualStateManager.GoToState(this, OpenedStateName, true);
+                    ImageOpened?.Invoke(this, EventArgs.Empty);
                 }
-                catch (Exception ex)
+            }
+            catch (Exception ex)
+            {
+                if (!_lastLoadCts.IsCancellationRequested)
                 {
-                    if (!_lastLoadCts.IsCancellationRequested)
-                    {
-                        _image.Source = null;
-                        VisualStateManager.GoToState(this, FailedStateName, true);
-                        ImageFailed?.Invoke(this, new ImageExFailedEventArgs(source, ex));
-                    }
+                    _image.Source = null;
+                    VisualStateManager.GoToState(this, FailedStateName, true);
+                    ImageFailed?.Invoke(this, new ImageExFailedEventArgs(source, ex));
                 }
             }
         }

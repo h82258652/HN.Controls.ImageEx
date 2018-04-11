@@ -28,6 +28,5 @@
   <Library Name="HN.Controls.ImageEx.Uwp">
 
   	<!--在此处为库添加指令-->
-
   </Library>
 </Directives>

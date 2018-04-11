@@ -1,4 +1,11 @@
-﻿using System;
+﻿using HN.Cache;
+using HN.Pipes;
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
@@ -11,6 +18,31 @@ namespace HN.Media
         public static readonly DependencyProperty AlignmentYProperty = DependencyProperty.Register(nameof(AlignmentY), typeof(AlignmentY), typeof(ImageBrushEx), new PropertyMetadata(AlignmentY.Center, OnAlignmentYChanged));
         public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.Register(nameof(ImageSource), typeof(object), typeof(ImageBrushEx), new PropertyMetadata(default(object), OnImageSourceChanged));
         public static readonly DependencyProperty StretchProperty = DependencyProperty.Register(nameof(Stretch), typeof(Stretch), typeof(ImageBrushEx), new PropertyMetadata(Stretch.Uniform, OnStretchChanged));
+
+        private static IImmutableList<Type> _pipes;
+        private CancellationTokenSource _lastLoadCts;
+
+        static ImageBrushEx()
+        {
+            SetPipes(new[]
+            {
+                typeof(DirectPipe<ImageSource>),
+                typeof(MemoryCachePipe<ImageSource>),
+                typeof(StringPipe<ImageSource>),
+                typeof(DiskCachePipe<ImageSource>),
+                typeof(UriPipe<ImageSource>),
+                typeof(ByteArrayPipe<ImageSource>),
+                typeof(StreamToCompositionSurfacePipe)
+            });
+            AddService<DiskCache, IDiskCache>(() => new DiskCache());
+            AddService<HttpClientHandler, HttpMessageHandler>(() => new HttpClientHandler());
+        }
+
+        public event EventHandler<ImageBrushExFailedEventArgs> ImageFailed;
+
+        public event EventHandler ImageOpened;
+
+        public static IEnumerable<Type> Pipes => _pipes;
 
         public AlignmentX AlignmentX
         {
@@ -36,14 +68,42 @@ namespace HN.Media
             set => SetValue(StretchProperty, value);
         }
 
-        protected override void OnConnected()
+        public static void AddService<T, TInterface>(Func<T> serviceFactory) where T : TInterface
+        {
+            PipeBuilder.AddService<T, TInterface>(serviceFactory);
+        }
+
+        public static void SetPipes(IEnumerable<Type> pipes)
+        {
+            if (pipes == null)
+            {
+                throw new ArgumentNullException(nameof(pipes));
+            }
+
+            var pipeList = new List<Type>();
+            foreach (var pipeType in pipes)
+            {
+                if (!typeof(PipeBase<ImageSource>).IsAssignableFrom(pipeType))
+                {
+                    throw new ArgumentException($"pipeType must inherit {nameof(PipeBase<ImageSource>)}");
+                }
+                pipeList.Add(pipeType);
+            }
+            _pipes = pipeList.ToImmutableList();
+        }
+
+        protected override async void OnConnected()
         {
             base.OnConnected();
+
+            await SetSourceAsync(ImageSource);
         }
 
         protected override void OnDisconnected()
         {
             base.OnDisconnected();
+
+            DisposeCompositionBrush();
         }
 
         private static void OnAlignmentXChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -57,17 +117,29 @@ namespace HN.Media
             }
 
             var brush = (CompositionSurfaceBrush)obj.CompositionBrush;
-            brush.HorizontalAlignmentRatio = (float)value * 0.5f;
+            brush.HorizontalAlignmentRatio = (float)value * 0.5F;
         }
 
         private static void OnAlignmentYChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            throw new NotImplementedException();
+            var obj = (ImageBrushEx)d;
+            var value = (AlignmentY)e.NewValue;
+
+            if (!Enum.IsDefined(typeof(AlignmentY), value))
+            {
+                throw new ArgumentOutOfRangeException(nameof(AlignmentY));
+            }
+
+            var brush = (CompositionSurfaceBrush)obj.CompositionBrush;
+            brush.VerticalAlignmentRatio = (float)value * 0.5F;
         }
 
-        private static void OnImageSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static async void OnImageSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            throw new NotImplementedException();
+            var obj = (ImageBrushEx)d;
+            var value = e.NewValue;
+
+            await obj.SetSourceAsync(value);
         }
 
         private static void OnStretchChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -82,6 +154,54 @@ namespace HN.Media
 
             var brush = (CompositionSurfaceBrush)obj.CompositionBrush;
             brush.Stretch = (CompositionStretch)value;
+        }
+
+        private void DisposeCompositionBrush()
+        {
+            if (CompositionBrush != null)
+            {
+                CompositionBrush.Dispose();
+                CompositionBrush = null;
+            }
+        }
+
+        private async Task SetSourceAsync(object source)
+        {
+            _lastLoadCts?.Cancel();
+            if (source == null)
+            {
+                CompositionBrush = null;
+                return;
+            }
+
+            _lastLoadCts = new CancellationTokenSource();
+            try
+            {
+                var context = new LoadingContext<LoadedImageSurface>()
+                {
+                    OriginSource = source,
+                    Current = source
+                };
+
+                var pipeDelegate = PipeBuilder.Build<LoadedImageSurface>(Pipes);
+                await pipeDelegate.Invoke(context, _lastLoadCts.Token);
+
+                if (!_lastLoadCts.IsCancellationRequested)
+                {
+                    DisposeCompositionBrush();
+                    var compositor = Window.Current.Compositor;
+                    CompositionBrush = compositor.CreateSurfaceBrush(context.Result);
+                    ImageOpened?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!_lastLoadCts.IsCancellationRequested)
+                {
+                    DisposeCompositionBrush();
+                    ImageFailed?.Invoke(this, new ImageBrushExFailedEventArgs(source, ex));
+                }
+            }
         }
     }
 }
