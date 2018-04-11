@@ -125,7 +125,8 @@
             <controls:ImageEx x:Name="CustomImage"
                               Grid.Row="1"
                               Grid.Column="4"
-                              RetryCount="5">
+                              RetryCount="5"
+                              RetryDelay="0:0:1">
                 <controls:ImageEx.LoadingTemplate>
                     <DataTemplate>
                         <TextBlock HorizontalAlignment="Center"

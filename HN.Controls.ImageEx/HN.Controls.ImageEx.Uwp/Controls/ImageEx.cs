@@ -30,6 +30,7 @@ namespace HN.Controls
         public static readonly DependencyProperty LoadingTemplateSelectorProperty = DependencyProperty.Register(nameof(LoadingTemplateSelector), typeof(DataTemplateSelector), typeof(ImageEx), new PropertyMetadata(default(DataTemplateSelector)));
         public static readonly DependencyProperty NineGridProperty = DependencyProperty.Register(nameof(NineGrid), typeof(Thickness), typeof(ImageEx), new PropertyMetadata(default(Thickness)));
         public static readonly DependencyProperty RetryCountProperty = DependencyProperty.Register(nameof(RetryCount), typeof(int), typeof(ImageEx), new PropertyMetadata(default(int)));
+        public static readonly DependencyProperty RetryDelayProperty = DependencyProperty.Register(nameof(RetryDelay), typeof(TimeSpan), typeof(ImageEx), new PropertyMetadata(TimeSpan.Zero));
         public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(nameof(Source), typeof(object), typeof(ImageEx), new PropertyMetadata(default(object), OnSourceChanged));
         public static readonly DependencyProperty StretchProperty = DependencyProperty.Register(nameof(Stretch), typeof(Stretch), typeof(ImageEx), new PropertyMetadata(Stretch.Uniform));
 
@@ -107,6 +108,12 @@ namespace HN.Controls
         {
             get => (int)GetValue(RetryCountProperty);
             set => SetValue(RetryCountProperty, value);
+        }
+
+        public TimeSpan RetryDelay
+        {
+            get => (TimeSpan)GetValue(RetryDelayProperty);
+            set => SetValue(RetryDelayProperty, value);
         }
 
         public object Source
@@ -196,7 +203,8 @@ namespace HN.Controls
                 var context = new LoadingContext<ImageSource>(source);
 
                 var pipeDelegate = PipeBuilder.Build<ImageSource>(Pipes);
-                var policy = Policy.Handle<Exception>().RetryAsync(RetryCount, (ex, count) =>
+                var retryDelay = RetryDelay;
+                var policy = Policy.Handle<Exception>().WaitAndRetryAsync(RetryCount, count => retryDelay, (ex, delay) =>
                 {
                     context.Reset();
                 });

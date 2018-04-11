@@ -1,5 +1,6 @@
 ﻿using HN.Cache;
 using HN.Pipes;
+using Polly;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -9,7 +10,6 @@ using System.Threading.Tasks;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
-using Polly;
 
 namespace HN.Media
 {
@@ -19,6 +19,7 @@ namespace HN.Media
         public static readonly DependencyProperty AlignmentYProperty = DependencyProperty.Register(nameof(AlignmentY), typeof(AlignmentY), typeof(ImageBrushEx), new PropertyMetadata(AlignmentY.Center, OnAlignmentYChanged));
         public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.Register(nameof(ImageSource), typeof(object), typeof(ImageBrushEx), new PropertyMetadata(default(object), OnImageSourceChanged));
         public static readonly DependencyProperty RetryCountProperty = DependencyProperty.Register(nameof(RetryCount), typeof(int), typeof(ImageBrushEx), new PropertyMetadata(default(int)));
+        public static readonly DependencyProperty RetryDelayProperty = DependencyProperty.Register(nameof(RetryDelay), typeof(TimeSpan), typeof(ImageBrushEx), new PropertyMetadata(TimeSpan.Zero));
         public static readonly DependencyProperty StretchProperty = DependencyProperty.Register(nameof(Stretch), typeof(Stretch), typeof(ImageBrushEx), new PropertyMetadata(Stretch.Uniform, OnStretchChanged));
 
         private static IImmutableList<Type> _pipes;
@@ -68,6 +69,12 @@ namespace HN.Media
         {
             get => (int)GetValue(RetryCountProperty);
             set => SetValue(RetryCountProperty, value);
+        }
+
+        public TimeSpan RetryDelay
+        {
+            get => (TimeSpan)GetValue(RetryDelayProperty);
+            set => SetValue(RetryDelayProperty, value);
         }
 
         public Stretch Stretch
@@ -188,7 +195,8 @@ namespace HN.Media
                 var context = new LoadingContext<ICompositionSurface>(source);
 
                 var pipeDelegate = PipeBuilder.Build<ICompositionSurface>(Pipes);
-                var policy = Policy.Handle<Exception>().RetryAsync(RetryCount, (ex, count) =>
+                var retryDelay = RetryDelay;
+                var policy = Policy.Handle<Exception>().WaitAndRetryAsync(RetryCount, count => retryDelay, (ex, delay) =>
                 {
                     context.Reset();
                 });
