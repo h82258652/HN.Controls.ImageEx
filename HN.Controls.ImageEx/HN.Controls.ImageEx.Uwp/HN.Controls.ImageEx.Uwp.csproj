@@ -114,6 +114,7 @@
     <Compile Include="Media\ImageBrushEx.cs" />
     <Compile Include="Media\ImageBrushExFailedEventArgs.cs" />
     <Compile Include="Media\ImageSurfaceFailedStatusException.cs" />
+    <Compile Include="Media\SvgImageFailedStatusException.cs" />
     <Compile Include="Pipes\ByteArrayPipe.cs" />
     <Compile Include="Pipes\DirectPipe.cs" />
     <Compile Include="Pipes\DiskCachePipe.cs" />
