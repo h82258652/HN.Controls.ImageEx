@@ -2,10 +2,21 @@
 
 namespace HN.Pipes
 {
-    public class LoadingContext<TResult>
+    public class LoadingContext<TResult> where TResult : class
     {
         private byte[] _httpResponseBytes;
         private TResult _result;
+
+        public LoadingContext(object source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            OriginSource = source;
+            Current = source;
+        }
 
         public object Current { get; set; }
 
@@ -23,7 +34,7 @@ namespace HN.Pipes
             }
         }
 
-        public object OriginSource { get; set; }
+        public object OriginSource { get; }
 
         public TResult Result
         {
@@ -37,6 +48,13 @@ namespace HN.Pipes
 
                 _result = value;
             }
+        }
+
+        internal void Reset()
+        {
+            Current = OriginSource;
+            _result = null;
+            _httpResponseBytes = null;
         }
     }
 }

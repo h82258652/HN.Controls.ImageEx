@@ -1,5 +1,6 @@
 ﻿using HN.Cache;
 using HN.Pipes;
+using Polly;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -25,6 +26,7 @@ namespace HN.Controls
         public static readonly DependencyProperty FailedTemplateSelectorProperty = DependencyProperty.Register(nameof(FailedTemplateSelector), typeof(DataTemplateSelector), typeof(ImageEx), new PropertyMetadata(default(DataTemplateSelector)));
         public static readonly DependencyProperty LoadingTemplateProperty = DependencyProperty.Register(nameof(LoadingTemplate), typeof(DataTemplate), typeof(ImageEx), new PropertyMetadata(default(DataTemplate)));
         public static readonly DependencyProperty LoadingTemplateSelectorProperty = DependencyProperty.Register(nameof(LoadingTemplateSelector), typeof(DataTemplateSelector), typeof(ImageEx), new PropertyMetadata(default(DataTemplateSelector)));
+        public static readonly DependencyProperty RetryCountProperty = DependencyProperty.Register(nameof(RetryCount), typeof(int), typeof(ImageEx), new PropertyMetadata(default(int)));
         public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(nameof(Source), typeof(object), typeof(ImageEx), new PropertyMetadata(default(object), OnSourceChanged));
         public static readonly DependencyProperty StretchDirectionProperty = DependencyProperty.Register(nameof(StretchDirection), typeof(StretchDirection), typeof(ImageEx), new PropertyMetadata(StretchDirection.Both));
         public static readonly DependencyProperty StretchProperty = DependencyProperty.Register(nameof(Stretch), typeof(Stretch), typeof(ImageEx), new PropertyMetadata(Stretch.Uniform));
@@ -88,6 +90,12 @@ namespace HN.Controls
         {
             get => (DataTemplateSelector)GetValue(LoadingTemplateSelectorProperty);
             set => SetValue(LoadingTemplateSelectorProperty, value);
+        }
+
+        public int RetryCount
+        {
+            get => (int)GetValue(RetryCountProperty);
+            set => SetValue(RetryCountProperty, value);
         }
 
         public object Source
@@ -168,14 +176,14 @@ namespace HN.Controls
             {
                 VisualStateManager.GoToState(this, LoadingStateName, true);
 
-                var context = new LoadingContext<ImageSource>()
-                {
-                    OriginSource = source,
-                    Current = source
-                };
+                var context = new LoadingContext<ImageSource>(source);
 
                 var pipeDelegate = PipeBuilder.Build<ImageSource>(Pipes);
-                await pipeDelegate.Invoke(context, _lastLoadCts.Token);
+                var policy = Policy.Handle<Exception>().RetryAsync(RetryCount, (ex, count) =>
+                {
+                    context.Reset();
+                });
+                await policy.ExecuteAsync(() => pipeDelegate.Invoke(context, _lastLoadCts.Token));
 
                 if (!_lastLoadCts.IsCancellationRequested)
                 {

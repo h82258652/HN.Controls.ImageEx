@@ -53,6 +53,14 @@
                             <Grid Background="Green" />
                         </DataTemplate>
                     </controls:ImageEx.LoadingTemplate>
+                    <controls:ImageEx.FailedTemplate>
+                        <DataTemplate>
+                            <TextBlock HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Foreground="Red"
+                                       Text="Failed" />
+                        </DataTemplate>
+                    </controls:ImageEx.FailedTemplate>
                 </controls:ImageEx>
                 <Ellipse Grid.Row="1"
                          Width="100"
@@ -116,7 +124,8 @@
             </controls:ImageEx>
             <controls:ImageEx x:Name="CustomImage"
                               Grid.Row="1"
-                              Grid.Column="4">
+                              Grid.Column="4"
+                              RetryCount="5">
                 <controls:ImageEx.LoadingTemplate>
                     <DataTemplate>
                         <TextBlock HorizontalAlignment="Center"
