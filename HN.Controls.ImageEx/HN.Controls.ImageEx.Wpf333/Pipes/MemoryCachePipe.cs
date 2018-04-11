@@ -1,0 +1,43 @@
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Weakly;
+
+namespace HN.Pipes
+{
+    public class MemoryCachePipe<TResult> : PipeBase<TResult> where TResult : class
+    {
+        private static readonly WeakValueDictionary<object, TResult> MemoryCache = new WeakValueDictionary<object, TResult>();
+
+        public override async Task InvokeAsync(LoadingContext<TResult> context, PipeDelegate<TResult> next, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (IsInDesignMode)
+            {
+                await next(context, cancellationToken);
+                return;
+            }
+
+            var source = context.Current;
+            if (source is string || source is Uri)
+            {
+                if (MemoryCache.TryGetValue(source, out var cache))
+                {
+                    context.Result = cache;
+                    return;
+                }
+
+                await next(context, cancellationToken);
+
+                var result = context.Result;
+                if (result != null)
+                {
+                    MemoryCache[source] = result;
+                }
+            }
+            else
+            {
+                await next(context, cancellationToken);
+            }
+        }
+    }
+}
