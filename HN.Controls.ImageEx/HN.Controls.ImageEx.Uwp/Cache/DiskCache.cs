@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace HN.Cache
 {
@@ -12,7 +13,7 @@ namespace HN.Cache
     {
         public DiskCache()
         {
-            CacheFolderPath = Path.Combine(Path.GetTempPath(), "ImageExCache");
+            CacheFolderPath = Path.Combine(ApplicationData.Current.LocalCacheFolder.Path, "ImageExCache");
         }
 
         public DiskCache(string cacheFolderPath)

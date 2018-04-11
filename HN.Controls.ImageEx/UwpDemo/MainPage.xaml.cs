@@ -1,17 +1,53 @@
-﻿using Windows.UI.Xaml.Controls;
-
-// https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x804 上介绍了“空白页”项模板
+﻿using HN.Cache;
+using HN.Media;
+using System;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.UI.Popups;
+using Windows.UI.Xaml;
 
 namespace UwpDemo
 {
-    /// <summary>
-    /// 可用于自身或导航至 Frame 内部的空白页。
-    /// </summary>
-    public sealed partial class MainPage : Page
+    public sealed partial class MainPage
     {
         public MainPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
+        }
+
+        private async void ClearCacheButton_Click(object sender, RoutedEventArgs e)
+        {
+            var diskCache = new DiskCache();
+            await diskCache.DeleteAllAsync();
+            await new MessageDialog("done").ShowAsync();
+        }
+
+        private void LoadButton_Click(object sender, RoutedEventArgs e)
+        {
+            CustomImage.Source = UrlTextBox.Text;
+        }
+
+        private async void LoadDiskFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            var fileOpenPicker = new FileOpenPicker();
+            fileOpenPicker.FileTypeFilter.Add(".jpg");
+            fileOpenPicker.FileTypeFilter.Add(".png");
+            var file = await fileOpenPicker.PickSingleFileAsync();
+            if (file != null)
+            {
+                var buffer = await FileIO.ReadBufferAsync(file);
+                var bytes = buffer.ToArray();
+                DiskImage.Source = bytes;
+                DiskEllipse.Fill = new ImageBrushEx() { ImageSource = bytes };
+            }
+        }
+
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            var diskCache = new DiskCache();
+            var cacheSize = await diskCache.CalculateAllSizeAsync();
+            CacheSizeTextBlock.Text = cacheSize.ToString();
         }
     }
 }

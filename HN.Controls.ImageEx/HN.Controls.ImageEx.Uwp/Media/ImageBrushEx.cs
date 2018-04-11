@@ -26,12 +26,12 @@ namespace HN.Media
         {
             SetPipes(new[]
             {
-                typeof(DirectPipe<ImageSource>),
-                typeof(MemoryCachePipe<ImageSource>),
-                typeof(StringPipe<ImageSource>),
-                typeof(DiskCachePipe<ImageSource>),
-                typeof(UriPipe<ImageSource>),
-                typeof(ByteArrayPipe<ImageSource>),
+                typeof(DirectPipe<ICompositionSurface>),
+                typeof(MemoryCachePipe<ICompositionSurface>),
+                typeof(StringPipe<ICompositionSurface>),
+                typeof(DiskCachePipe<ICompositionSurface>),
+                typeof(UriPipe<ICompositionSurface>),
+                typeof(ByteArrayPipe<ICompositionSurface>),
                 typeof(StreamToCompositionSurfacePipe)
             });
             AddService<DiskCache, IDiskCache>(() => new DiskCache());
@@ -83,9 +83,9 @@ namespace HN.Media
             var pipeList = new List<Type>();
             foreach (var pipeType in pipes)
             {
-                if (!typeof(PipeBase<ImageSource>).IsAssignableFrom(pipeType))
+                if (!typeof(PipeBase<ICompositionSurface>).IsAssignableFrom(pipeType))
                 {
-                    throw new ArgumentException($"pipeType must inherit {nameof(PipeBase<ImageSource>)}");
+                    throw new ArgumentException($"pipeType must inherit {nameof(PipeBase<ICompositionSurface>)}");
                 }
                 pipeList.Add(pipeType);
             }
@@ -177,13 +177,13 @@ namespace HN.Media
             _lastLoadCts = new CancellationTokenSource();
             try
             {
-                var context = new LoadingContext<LoadedImageSurface>()
+                var context = new LoadingContext<ICompositionSurface>()
                 {
                     OriginSource = source,
                     Current = source
                 };
 
-                var pipeDelegate = PipeBuilder.Build<LoadedImageSurface>(Pipes);
+                var pipeDelegate = PipeBuilder.Build<ICompositionSurface>(Pipes);
                 await pipeDelegate.Invoke(context, _lastLoadCts.Token);
 
                 if (!_lastLoadCts.IsCancellationRequested)

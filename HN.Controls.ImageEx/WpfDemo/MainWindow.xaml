@@ -99,10 +99,12 @@
             </StackPanel>
             <Button Grid.Row="2"
                     Grid.Column="1"
+                    HorizontalAlignment="Stretch"
                     Click="RefreshButton_Click"
                     Content="Refresh" />
             <Button Grid.Row="2"
                     Grid.Column="2"
+                    HorizontalAlignment="Stretch"
                     Click="ClearCacheButton_Click"
                     Content="Clear Cache" />
             <TextBox x:Name="UrlTextBox"
@@ -111,6 +113,7 @@
                      Text="https://www.baidu.com/img/bd_logo1.png" />
             <Button Grid.Row="2"
                     Grid.Column="4"
+                    HorizontalAlignment="Stretch"
                     Click="LoadButton_Click"
                     Content="Load" />
         </Grid>
