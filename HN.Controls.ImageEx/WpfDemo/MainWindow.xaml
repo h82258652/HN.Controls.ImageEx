@@ -107,7 +107,8 @@
                     Content="Clear Cache" />
             <TextBox x:Name="UrlTextBox"
                      Grid.Row="2"
-                     Grid.Column="3" />
+                     Grid.Column="3"
+                     Text="https://www.baidu.com/img/bd_logo1.png" />
             <Button Grid.Row="2"
                     Grid.Column="4"
                     Click="LoadButton_Click"
