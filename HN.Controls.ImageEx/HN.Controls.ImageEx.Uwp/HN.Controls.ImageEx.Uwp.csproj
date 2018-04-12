@@ -107,10 +107,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Cache\DiskCache.cs" />
-    <Compile Include="Cache\IDiskCache.cs" />
     <Compile Include="Controls\ImageEx.cs" />
     <Compile Include="Controls\ImageExFailedEventArgs.cs" />
-    <Compile Include="Extensions\UriExtensions.cs" />
     <Compile Include="Media\ImageBrushEx.cs" />
     <Compile Include="Media\ImageBrushExFailedEventArgs.cs" />
     <Compile Include="Media\ImageSurfaceFailedStatusException.cs" />
@@ -118,11 +116,9 @@
     <Compile Include="Pipes\ByteArrayPipe.cs" />
     <Compile Include="Pipes\DirectPipe.cs" />
     <Compile Include="Pipes\DiskCachePipe.cs" />
-    <Compile Include="Pipes\LoadingContext.cs" />
     <Compile Include="Pipes\MemoryCachePipe.cs" />
     <Compile Include="Pipes\PipeBase.cs" />
     <Compile Include="Pipes\PipeBuilder.cs" />
-    <Compile Include="Pipes\PipeDelegate.cs" />
     <Compile Include="Pipes\StreamToCompositionSurfacePipe.cs" />
     <Compile Include="Pipes\StreamToImageSourcePipe.cs" />
     <Compile Include="Pipes\StringPipe.cs" />
@@ -153,6 +149,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HN.Controls.ImageEx.Core\HN.Controls.ImageEx.Core.csproj">
+      <Project>{3627ca02-c266-4cea-9829-60b0847982f1}</Project>
+      <Name>HN.Controls.ImageEx.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

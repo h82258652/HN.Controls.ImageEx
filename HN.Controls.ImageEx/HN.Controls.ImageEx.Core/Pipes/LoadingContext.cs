@@ -50,7 +50,7 @@ namespace HN.Pipes
             }
         }
 
-        internal void Reset()
+        public void Reset()
         {
             Current = OriginSource;
             _result = null;
