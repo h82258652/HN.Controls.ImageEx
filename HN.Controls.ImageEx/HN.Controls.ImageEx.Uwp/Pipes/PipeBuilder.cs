@@ -23,6 +23,7 @@ namespace HN.Pipes
         {
             PipeDelegate<TResult> end = (context, cancellationToken) =>
             {
+                context.Result = context.Current as TResult;
                 if (context.Result == null)
                 {
                     throw new NotSupportedException();

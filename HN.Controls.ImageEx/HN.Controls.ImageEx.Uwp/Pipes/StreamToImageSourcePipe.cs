@@ -31,14 +31,14 @@ namespace HN.Pipes
                         throw new SvgImageFailedStatusException(svgImageLoadStatus);
                     }
                     cancellationToken.ThrowIfCancellationRequested();
-                    context.Result = bitmap;
+                    context.Current = bitmap;
                 }
                 else
                 {
                     var bitmap = new BitmapImage();
                     await bitmap.SetSourceAsync(stream.AsRandomAccessStream());
                     cancellationToken.ThrowIfCancellationRequested();
-                    context.Result = bitmap;
+                    context.Current = bitmap;
                 }
             }
             else

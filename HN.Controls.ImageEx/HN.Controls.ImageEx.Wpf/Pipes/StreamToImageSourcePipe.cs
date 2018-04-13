@@ -30,7 +30,7 @@ namespace HN.Pipes
                         tcs.SetException(ex);
                     }
                 }, cancellationToken);
-                context.Result = await tcs.Task;
+                context.Current = await tcs.Task;
             }
             else
             {

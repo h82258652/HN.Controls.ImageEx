@@ -5,7 +5,6 @@ namespace HN.Pipes
     public class LoadingContext<TResult> where TResult : class
     {
         private byte[] _httpResponseBytes;
-        private TResult _result;
 
         public LoadingContext(object source)
         {
@@ -36,24 +35,12 @@ namespace HN.Pipes
 
         public object OriginSource { get; }
 
-        public TResult Result
-        {
-            get => _result;
-            set
-            {
-                if (_result != null)
-                {
-                    throw new InvalidOperationException("value has been set.");
-                }
+        internal TResult Result { get; set; }
 
-                _result = value;
-            }
-        }
-
-        public void Reset()
+        internal void Reset()
         {
             Current = OriginSource;
-            _result = null;
+            Result = null;
             _httpResponseBytes = null;
         }
     }
