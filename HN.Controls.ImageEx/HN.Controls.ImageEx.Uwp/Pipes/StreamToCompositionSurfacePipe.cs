@@ -36,10 +36,7 @@ namespace HN.Pipes
                 imageSurface.LoadCompleted += handler;
                 context.Current = await tcs.Task;
             }
-            else
-            {
-                await next(context, cancellationToken);
-            }
+            await next(context, cancellationToken);
         }
     }
 }

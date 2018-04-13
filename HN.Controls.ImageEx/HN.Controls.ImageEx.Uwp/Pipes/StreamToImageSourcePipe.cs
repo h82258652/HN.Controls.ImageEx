@@ -41,10 +41,7 @@ namespace HN.Pipes
                     context.Current = bitmap;
                 }
             }
-            else
-            {
-                await next(context, cancellationToken);
-            }
+            await next(context, cancellationToken);
         }
     }
 }

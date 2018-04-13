@@ -32,10 +32,7 @@ namespace HN.Pipes
                 }, cancellationToken);
                 context.Current = await tcs.Task;
             }
-            else
-            {
-                await next(context, cancellationToken);
-            }
+            await next(context, cancellationToken);
         }
     }
 }
