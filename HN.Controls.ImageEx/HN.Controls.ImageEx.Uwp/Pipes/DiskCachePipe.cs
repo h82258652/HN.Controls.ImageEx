@@ -44,7 +44,7 @@ namespace HN.Pipes
                     {
                         try
                         {
-                            await _diskCache.DeleteAsync(cacheKey);
+                            await _diskCache.DeleteAsync(cacheKey).ConfigureAwait(false);
                         }
                         catch
                         {
@@ -66,7 +66,7 @@ namespace HN.Pipes
                     {
                         try
                         {
-                            await _diskCache.SetAsync(cacheKey, bytes, CancellationToken.None);
+                            await _diskCache.SetAsync(cacheKey, bytes, CancellationToken.None).ConfigureAwait(false);
                         }
                         catch
                         {
