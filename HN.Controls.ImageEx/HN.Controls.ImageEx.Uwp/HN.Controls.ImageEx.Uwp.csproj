@@ -136,7 +136,7 @@
       <Version>6.1.2</Version>
     </PackageReference>
     <PackageReference Include="Polly">
-      <Version>5.9.0</Version>
+      <Version>6.0.1</Version>
     </PackageReference>
     <PackageReference Include="Weakly">
       <Version>2.8.1</Version>
