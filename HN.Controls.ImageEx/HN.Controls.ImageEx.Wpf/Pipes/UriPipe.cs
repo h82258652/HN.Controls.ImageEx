@@ -1,9 +1,11 @@
-﻿using HN.Extensions;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using HN.Extensions;
 
 namespace HN.Pipes
 {
@@ -32,18 +34,20 @@ namespace HN.Pipes
 
             if (uri.IsHttp())
             {
-                using (var client = new HttpClient(_httpMessageHandler))
+                try
                 {
-                    var response = await client.GetAsync(uri, cancellationToken);
-                    response.EnsureSuccessStatusCode();
-                    var bytes = await response.Content.ReadAsByteArrayAsync();
+                    var task = GetDownloadTask(uri, cancellationToken);
+                    var (bytes, cacheControl) = await task;
                     context.Current = bytes;
                     await next(context, cancellationToken);
-                    var cacheControl = response.Headers.CacheControl;
                     if (cacheControl != null && !cacheControl.NoCache)
                     {
                         context.HttpResponseBytes = bytes;
                     }
+                }
+                finally
+                {
+                    UriPipeInternal.DownloadTasks.Remove(uri);
                 }
             }
             else if (string.Equals(uri.Scheme, Uri.UriSchemeFile, StringComparison.OrdinalIgnoreCase))
@@ -67,7 +71,6 @@ namespace HN.Pipes
                         await streamResourceInfo.Stream.CopyToAsync(memoryStream, 81920, cancellationToken);
                         context.Current = memoryStream.ToArray();
                     }
-
                     await next(context, cancellationToken);
                 }
                 else
@@ -76,5 +79,38 @@ namespace HN.Pipes
                 }
             }
         }
+
+        private async Task<(byte[], CacheControlHeaderValue)> CreateDownloadTask(Uri uri, CancellationToken cancellationToken)
+        {
+            using (var client = new HttpClient(_httpMessageHandler))
+            {
+                var response = await client.GetAsync(uri, cancellationToken);
+                response.EnsureSuccessStatusCode();
+                var bytes = await response.Content.ReadAsByteArrayAsync();
+                var cacheControl = response.Headers.CacheControl;
+                return (bytes, cacheControl);
+            }
+        }
+
+        private Task<(byte[], CacheControlHeaderValue)> GetDownloadTask(Uri uri, CancellationToken cancellationToken)
+        {
+            lock (UriPipeInternal.DownloadTasks)
+            {
+                Task<(byte[], CacheControlHeaderValue)> task;
+                if (UriPipeInternal.DownloadTasks.TryGetValue(uri, out task))
+                {
+                    return task;
+                }
+
+                task = CreateDownloadTask(uri, cancellationToken);
+                UriPipeInternal.DownloadTasks[uri] = task;
+                return task;
+            }
+        }
+    }
+
+    internal class UriPipeInternal
+    {
+        internal static readonly Dictionary<Uri, Task<(byte[], CacheControlHeaderValue)>> DownloadTasks = new Dictionary<Uri, Task<(byte[], CacheControlHeaderValue)>>();
     }
 }
