@@ -60,6 +60,15 @@ namespace HN.Pipes
                 }
                 await next(context, cancellationToken);
             }
+            else if (string.Equals(uri.Scheme, "data", StringComparison.OrdinalIgnoreCase))
+            {
+                var base64 = uri.OriginalString;
+                const string base64Head = "base64,";
+                var base64Index = base64.IndexOf(base64Head, StringComparison.Ordinal);
+                var bytes = Convert.FromBase64String(base64.Substring(base64Index + base64Head.Length));
+                context.Current = bytes;
+                await next(context, cancellationToken);
+            }
             else
             {
                 // pack://application:,,,/
