@@ -133,6 +133,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HN.Controls.ImageEx.Core\HN.Controls.ImageEx.Core.csproj">
+      <Project>{3627ca02-c266-4cea-9829-60b0847982f1}</Project>
+      <Name>HN.Controls.ImageEx.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HN.Controls.ImageEx.Uwp\HN.Controls.ImageEx.Uwp.csproj">
       <Project>{8702c06c-67f1-4d13-91e4-16812cb64ad2}</Project>
       <Name>HN.Controls.ImageEx.Uwp</Name>

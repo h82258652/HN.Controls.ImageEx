@@ -1,21 +1,15 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+using HN.Services;
 
 namespace HN.Pipes
 {
-    public class StringPipe<TResult> : PipeBase<TResult> where TResult : class
+    public class StringPipe<TResult> : StringPipeBase<TResult> where TResult : class
     {
-        public override Task InvokeAsync(LoadingContext<TResult> context, PipeDelegate<TResult> next, CancellationToken cancellationToken = default(CancellationToken))
+        public StringPipe(IDesignModeService designModeService) : base(designModeService)
         {
-            if (context.Current is string source)
-            {
-                context.Current = ToUriSource(source);
-            }
-            return next(context, cancellationToken);
         }
 
-        private static Uri ToUriSource(string source)
+        protected override Uri ToUriSource(string source)
         {
             Uri uriSource;
             if (Uri.TryCreate(source, UriKind.RelativeOrAbsolute, out uriSource))

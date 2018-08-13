@@ -1,24 +1,26 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace HN.Pipes
 {
-    public class LoadingContext<TResult> where TResult : class
+    public class LoadingContext<TResult> : ILoadingContext<TResult> where TResult : class
     {
         private byte[] _httpResponseBytes;
+
         private TResult _result;
 
-        public LoadingContext(object source)
+        public LoadingContext([NotNull]object source, double? desiredWidth, double? desiredHeight)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            OriginSource = source;
-            Current = source;
+            Current = OriginSource = source ?? throw new ArgumentNullException(nameof(source));
+            DesiredWidth = desiredWidth;
+            DesiredHeight = desiredHeight;
         }
 
         public object Current { get; set; }
+
+        public double? DesiredHeight { get; }
+
+        public double? DesiredWidth { get; }
 
         public byte[] HttpResponseBytes
         {
@@ -50,7 +52,7 @@ namespace HN.Pipes
             }
         }
 
-        internal void Reset()
+        public void Reset()
         {
             Current = OriginSource;
             Result = null;

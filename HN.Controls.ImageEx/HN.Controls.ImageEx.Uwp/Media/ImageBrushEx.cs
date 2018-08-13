@@ -1,15 +1,12 @@
-﻿using HN.Cache;
-using HN.Pipes;
+﻿using HN.Pipes;
 using Polly;
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
+using HN.Services;
 
 namespace HN.Media
 {
@@ -22,30 +19,11 @@ namespace HN.Media
         public static readonly DependencyProperty RetryDelayProperty = DependencyProperty.Register(nameof(RetryDelay), typeof(TimeSpan), typeof(ImageBrushEx), new PropertyMetadata(TimeSpan.Zero));
         public static readonly DependencyProperty StretchProperty = DependencyProperty.Register(nameof(Stretch), typeof(Stretch), typeof(ImageBrushEx), new PropertyMetadata(Stretch.Uniform, OnStretchChanged));
 
-        private static IImmutableList<Type> _pipes;
         private CancellationTokenSource _lastLoadCts;
-
-        static ImageBrushEx()
-        {
-            SetPipes(new[]
-            {
-                typeof(DirectPipe<ICompositionSurface>),
-                typeof(MemoryCachePipe<ICompositionSurface>),
-                typeof(StringPipe<ICompositionSurface>),
-                typeof(DiskCachePipe<ICompositionSurface>),
-                typeof(UriPipe<ICompositionSurface>),
-                typeof(ByteArrayPipe<ICompositionSurface>),
-                typeof(StreamToCompositionSurfacePipe)
-            });
-            AddService<DiskCache, IDiskCache>(() => new DiskCache());
-            AddService<HttpClientHandler, HttpMessageHandler>(() => new HttpClientHandler());
-        }
 
         public event EventHandler<ImageBrushExFailedEventArgs> ImageFailed;
 
         public event EventHandler ImageOpened;
-
-        public static IEnumerable<Type> Pipes => _pipes;
 
         public AlignmentX AlignmentX
         {
@@ -81,30 +59,6 @@ namespace HN.Media
         {
             get => (Stretch)GetValue(StretchProperty);
             set => SetValue(StretchProperty, value);
-        }
-
-        public static void AddService<T, TInterface>(Func<T> serviceFactory) where T : TInterface
-        {
-            PipeBuilder.AddService<T, TInterface>(serviceFactory);
-        }
-
-        public static void SetPipes(IEnumerable<Type> pipes)
-        {
-            if (pipes == null)
-            {
-                throw new ArgumentNullException(nameof(pipes));
-            }
-
-            var pipeList = new List<Type>();
-            foreach (var pipeType in pipes)
-            {
-                if (!typeof(PipeBase<ICompositionSurface>).IsAssignableFrom(pipeType))
-                {
-                    throw new ArgumentException($"pipeType must inherit {nameof(PipeBase<ICompositionSurface>)}");
-                }
-                pipeList.Add(pipeType);
-            }
-            _pipes = pipeList.ToImmutableList();
         }
 
         protected override async void OnConnected()
@@ -192,9 +146,9 @@ namespace HN.Media
             _lastLoadCts = new CancellationTokenSource();
             try
             {
-                var context = new LoadingContext<ICompositionSurface>(source);
+                var context = new LoadingContext<ICompositionSurface>(source, null, null);
 
-                var pipeDelegate = PipeBuilder.Build<ICompositionSurface>(Pipes);
+                var pipeDelegate = ImageExService.GetHandler<ICompositionSurface>();
                 var retryDelay = RetryDelay;
                 var policy = Policy.Handle<Exception>().WaitAndRetryAsync(RetryCount, count => retryDelay, (ex, delay) =>
                 {

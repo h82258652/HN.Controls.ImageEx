@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using HN.Services;
 using Weakly;
 
 namespace HN.Pipes
@@ -9,7 +10,11 @@ namespace HN.Pipes
     {
         private static readonly WeakValueDictionary<object, TResult> MemoryCache = new WeakValueDictionary<object, TResult>();
 
-        public override async Task InvokeAsync(LoadingContext<TResult> context, PipeDelegate<TResult> next, CancellationToken cancellationToken = default(CancellationToken))
+        public MemoryCachePipe(IDesignModeService designModeService) : base(designModeService)
+        {
+        }
+
+        public override async Task InvokeAsync(ILoadingContext<TResult> context, PipeDelegate<TResult> next, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (IsInDesignMode)
             {
@@ -33,11 +38,11 @@ namespace HN.Pipes
                 {
                     MemoryCache[source] = result;
                 }
+
+                return;
             }
-            else
-            {
-                await next(context, cancellationToken);
-            }
+
+            await next(context, cancellationToken);
         }
     }
 }

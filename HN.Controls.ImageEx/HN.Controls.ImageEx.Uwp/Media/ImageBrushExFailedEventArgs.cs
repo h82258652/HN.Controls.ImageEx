@@ -6,17 +6,8 @@ namespace HN.Media
     {
         public ImageBrushExFailedEventArgs(object source, Exception failedException)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (failedException == null)
-            {
-                throw new ArgumentNullException(nameof(failedException));
-            }
-
-            Source = source;
-            Exception = failedException;
+            Source = source ?? throw new ArgumentNullException(nameof(source));
+            Exception = failedException ?? throw new ArgumentNullException(nameof(failedException));
         }
 
         public Exception Exception { get; }

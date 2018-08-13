@@ -4,12 +4,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using HN.Services;
 
 namespace HN.Pipes
 {
     public class StreamToImageSourcePipe : PipeBase<ImageSource>
     {
-        public override async Task InvokeAsync(LoadingContext<ImageSource> context, PipeDelegate<ImageSource> next, CancellationToken cancellationToken = default(CancellationToken))
+        public StreamToImageSourcePipe(IDesignModeService designModeService) : base(designModeService)
+        {
+        }
+
+        public override async Task InvokeAsync(ILoadingContext<ImageSource> context, PipeDelegate<ImageSource> next, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (context.Current is Stream stream)
             {
@@ -32,6 +37,7 @@ namespace HN.Pipes
                 }, cancellationToken);
                 context.Current = await tcs.Task;
             }
+
             await next(context, cancellationToken);
         }
     }

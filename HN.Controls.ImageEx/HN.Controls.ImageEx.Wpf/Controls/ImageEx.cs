@@ -1,15 +1,12 @@
-﻿using HN.Cache;
-using HN.Pipes;
-using Polly;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Net.Http;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using HN.Pipes;
+using HN.Services;
+using Polly;
 
 namespace HN.Controls
 {
@@ -41,33 +38,17 @@ namespace HN.Controls
         private const string NormalStateName = "Normal";
         private const string OpenedStateName = "Opened";
 
-        private static IImmutableList<Type> _pipes;
         private Image _image;
         private CancellationTokenSource _lastLoadCts;
 
         static ImageEx()
         {
-            SetPipes(new[]
-            {
-                typeof(DirectPipe<ImageSource>),
-                typeof(MemoryCachePipe<ImageSource>),
-                typeof(StringPipe<ImageSource>),
-                typeof(DiskCachePipe<ImageSource>),
-                typeof(UriPipe<ImageSource>),
-                typeof(ByteArrayPipe<ImageSource>),
-                typeof(StreamToImageSourcePipe)
-            });
-            AddService<DiskCache, IDiskCache>(() => new DiskCache());
-            AddService<HttpClientHandler, HttpMessageHandler>(() => new HttpClientHandler());
-
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ImageEx), new FrameworkPropertyMetadata(typeof(ImageEx)));
         }
 
         public event EventHandler<ImageExFailedEventArgs> ImageFailed;
 
         public event EventHandler ImageOpened;
-
-        public static IEnumerable<Type> Pipes => _pipes;
 
         public DataTemplate FailedTemplate
         {
@@ -123,30 +104,6 @@ namespace HN.Controls
             set => SetValue(StretchDirectionProperty, value);
         }
 
-        public static void AddService<T, TInterface>(Func<T> serviceFactory) where T : TInterface
-        {
-            PipeBuilder.AddService<T, TInterface>(serviceFactory);
-        }
-
-        public static void SetPipes(IEnumerable<Type> pipes)
-        {
-            if (pipes == null)
-            {
-                throw new ArgumentNullException(nameof(pipes));
-            }
-
-            var pipeList = new List<Type>();
-            foreach (var pipeType in pipes)
-            {
-                if (!typeof(PipeBase<ImageSource>).IsAssignableFrom(pipeType))
-                {
-                    throw new ArgumentException($"pipeType must inherit {nameof(PipeBase<ImageSource>)}");
-                }
-                pipeList.Add(pipeType);
-            }
-            _pipes = pipeList.ToImmutableList();
-        }
-
         public override async void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -183,9 +140,9 @@ namespace HN.Controls
             {
                 VisualStateManager.GoToState(this, LoadingStateName, true);
 
-                var context = new LoadingContext<ImageSource>(source);
+                var context = new LoadingContext<ImageSource>(source, ActualWidth, ActualHeight);
 
-                var pipeDelegate = PipeBuilder.Build<ImageSource>(Pipes);
+                var pipeDelegate = ImageExService.GetHandler<ImageSource>();
                 var retryDelay = RetryDelay;
                 var policy = Policy.Handle<Exception>().WaitAndRetryAsync(RetryCount, count => retryDelay, (ex, delay) =>
                 {

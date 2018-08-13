@@ -113,19 +113,13 @@
     <Compile Include="Media\ImageBrushExFailedEventArgs.cs" />
     <Compile Include="Media\ImageSurfaceFailedStatusException.cs" />
     <Compile Include="Media\SvgImageFailedStatusException.cs" />
-    <Compile Include="Pipes\ByteArrayPipe.cs" />
-    <Compile Include="Pipes\DirectPipe.cs" />
-    <Compile Include="Pipes\DiskCachePipe.cs" />
-    <Compile Include="Pipes\LoadingContext.cs" />
-    <Compile Include="Pipes\MemoryCachePipe.cs" />
-    <Compile Include="Pipes\PipeBase.cs" />
-    <Compile Include="Pipes\PipeBuilder.cs" />
-    <Compile Include="Pipes\PipeDelegate.cs" />
     <Compile Include="Pipes\StreamToCompositionSurfacePipe.cs" />
     <Compile Include="Pipes\StreamToImageSourcePipe.cs" />
     <Compile Include="Pipes\StringPipe.cs" />
     <Compile Include="Pipes\UriPipe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\DesignModeService.cs" />
+    <Compile Include="Services\ImageExService.cs" />
     <EmbeddedResource Include="Properties\HN.Controls.ImageEx.Uwp.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -158,6 +152,7 @@
       <Name>HN.Controls.ImageEx.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

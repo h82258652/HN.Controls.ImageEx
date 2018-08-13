@@ -34,6 +34,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Services\DesignModeService.cs" />
+    <Compile Include="Services\ImageExService.cs" />
     <Page Include="Controls\ImageEx.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -47,14 +49,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\ImageExFailedEventArgs.cs" />
-    <Compile Include="Pipes\ByteArrayPipe.cs" />
-    <Compile Include="Pipes\DirectPipe.cs" />
-    <Compile Include="Pipes\DiskCachePipe.cs" />
-    <Compile Include="Pipes\LoadingContext.cs" />
-    <Compile Include="Pipes\MemoryCachePipe.cs" />
-    <Compile Include="Pipes\PipeBase.cs" />
-    <Compile Include="Pipes\PipeBuilder.cs" />
-    <Compile Include="Pipes\PipeDelegate.cs" />
     <Compile Include="Pipes\StreamToImageSourcePipe.cs" />
     <Compile Include="Pipes\StringPipe.cs" />
     <Compile Include="Pipes\UriPipe.cs" />

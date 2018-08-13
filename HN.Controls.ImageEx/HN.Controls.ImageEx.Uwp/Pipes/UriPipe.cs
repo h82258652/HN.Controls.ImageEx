@@ -7,6 +7,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
 using HN.Extensions;
+using HN.Services;
 using Windows.Storage;
 
 namespace HN.Pipes
@@ -15,17 +16,12 @@ namespace HN.Pipes
     {
         private readonly HttpMessageHandler _httpMessageHandler;
 
-        public UriPipe(HttpMessageHandler httpMessageHandler)
+        public UriPipe(IDesignModeService designModeService, HttpMessageHandler httpMessageHandler) : base(designModeService)
         {
-            if (httpMessageHandler == null)
-            {
-                throw new ArgumentNullException(nameof(httpMessageHandler));
-            }
-
-            _httpMessageHandler = httpMessageHandler;
+            _httpMessageHandler = httpMessageHandler ?? throw new ArgumentNullException(nameof(httpMessageHandler));
         }
 
-        public override async Task InvokeAsync(LoadingContext<TResult> context, PipeDelegate<TResult> next, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task InvokeAsync(ILoadingContext<TResult> context, PipeDelegate<TResult> next, CancellationToken cancellationToken = default(CancellationToken))
         {
             var uri = context.Current as Uri;
             if (uri == null)
