@@ -39,6 +39,11 @@ namespace HN.Services
             Services[typeof(T)] = options.Services;
         }
 
+        public static void ConfigureImageEx(Action<ImageExOptions<ImageSource>> configure)
+        {
+            Configure(configure);
+        }
+
         public static PipeDelegate<T> GetHandler<T>() where T : class
         {
             if (!Services.TryGetValue(typeof(T), out var services))
