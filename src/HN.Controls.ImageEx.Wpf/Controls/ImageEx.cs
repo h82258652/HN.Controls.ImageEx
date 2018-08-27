@@ -21,6 +21,7 @@ namespace HN.Controls
     {
         public static readonly DependencyProperty FailedTemplateProperty = DependencyProperty.Register(nameof(FailedTemplate), typeof(DataTemplate), typeof(ImageEx), new PropertyMetadata(default(DataTemplate)));
         public static readonly DependencyProperty FailedTemplateSelectorProperty = DependencyProperty.Register(nameof(FailedTemplateSelector), typeof(DataTemplateSelector), typeof(ImageEx), new PropertyMetadata(default(DataTemplateSelector)));
+        public static readonly DependencyProperty IsLoadingProperty;
         public static readonly DependencyProperty LoadingTemplateProperty = DependencyProperty.Register(nameof(LoadingTemplate), typeof(DataTemplate), typeof(ImageEx), new PropertyMetadata(default(DataTemplate)));
         public static readonly DependencyProperty LoadingTemplateSelectorProperty = DependencyProperty.Register(nameof(LoadingTemplateSelector), typeof(DataTemplateSelector), typeof(ImageEx), new PropertyMetadata(default(DataTemplateSelector)));
         public static readonly DependencyProperty RetryCountProperty = DependencyProperty.Register(nameof(RetryCount), typeof(int), typeof(ImageEx), new PropertyMetadata(default(int)));
@@ -37,12 +38,15 @@ namespace HN.Controls
         private const string LoadingStateName = "Loading";
         private const string NormalStateName = "Normal";
         private const string OpenedStateName = "Opened";
+        private static readonly DependencyPropertyKey IsLoadingPropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsLoading), typeof(bool), typeof(ImageEx), new PropertyMetadata(default(bool)));
 
         private Image _image;
         private CancellationTokenSource _lastLoadCts;
 
         static ImageEx()
         {
+            IsLoadingProperty = IsLoadingPropertyKey.DependencyProperty;
+
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ImageEx), new FrameworkPropertyMetadata(typeof(ImageEx)));
         }
 
@@ -60,6 +64,12 @@ namespace HN.Controls
         {
             get => (DataTemplateSelector)GetValue(FailedTemplateSelectorProperty);
             set => SetValue(FailedTemplateSelectorProperty, value);
+        }
+
+        public bool IsLoading
+        {
+            get => (bool)GetValue(IsLoadingProperty);
+            private set => SetValue(IsLoadingPropertyKey, value);
         }
 
         public DataTemplate LoadingTemplate
@@ -138,16 +148,19 @@ namespace HN.Controls
             _lastLoadCts = new CancellationTokenSource();
             try
             {
+                IsLoading = true;
+
                 VisualStateManager.GoToState(this, LoadingStateName, true);
 
                 var context = new LoadingContext<ImageSource>(source, ActualWidth, ActualHeight);
 
                 var pipeDelegate = ImageExService.GetHandler<ImageSource>();
                 var retryDelay = RetryDelay;
-                var policy = Policy.Handle<Exception>().WaitAndRetryAsync(RetryCount, count => retryDelay, (ex, delay) =>
-                {
-                    context.Reset();
-                });
+                var policy = Policy.Handle<Exception>()
+                    .WaitAndRetryAsync(RetryCount, count => retryDelay, (ex, delay) =>
+                    {
+                        context.Reset();
+                    });
                 await policy.ExecuteAsync(() => pipeDelegate.Invoke(context, _lastLoadCts.Token));
 
                 if (!_lastLoadCts.IsCancellationRequested)
@@ -164,6 +177,13 @@ namespace HN.Controls
                     _image.Source = null;
                     VisualStateManager.GoToState(this, FailedStateName, true);
                     ImageFailed?.Invoke(this, new ImageExFailedEventArgs(source, ex));
+                }
+            }
+            finally
+            {
+                if (!_lastLoadCts.IsCancellationRequested)
+                {
+                    IsLoading = false;
                 }
             }
         }

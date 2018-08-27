@@ -2,13 +2,13 @@
 using System.Threading;
 using System.Threading.Tasks;
 using HN.Pipes;
+using HN.Services;
 using Polly;
 using Windows.Media.Casting;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using HN.Services;
 
 namespace HN.Controls
 {
@@ -23,6 +23,7 @@ namespace HN.Controls
     {
         public static readonly DependencyProperty FailedTemplateProperty = DependencyProperty.Register(nameof(FailedTemplate), typeof(DataTemplate), typeof(ImageEx), new PropertyMetadata(default(DataTemplate)));
         public static readonly DependencyProperty FailedTemplateSelectorProperty = DependencyProperty.Register(nameof(FailedTemplateSelector), typeof(DataTemplateSelector), typeof(ImageEx), new PropertyMetadata(default(DataTemplateSelector)));
+        public static readonly DependencyProperty IsLoadingProperty = DependencyProperty.Register(nameof(IsLoading), typeof(bool), typeof(ImageEx), new PropertyMetadata(default(bool)));
         public static readonly DependencyProperty LoadingTemplateProperty = DependencyProperty.Register(nameof(LoadingTemplate), typeof(DataTemplate), typeof(ImageEx), new PropertyMetadata(default(DataTemplate)));
         public static readonly DependencyProperty LoadingTemplateSelectorProperty = DependencyProperty.Register(nameof(LoadingTemplateSelector), typeof(DataTemplateSelector), typeof(ImageEx), new PropertyMetadata(default(DataTemplateSelector)));
         public static readonly DependencyProperty NineGridProperty = DependencyProperty.Register(nameof(NineGrid), typeof(Thickness), typeof(ImageEx), new PropertyMetadata(default(Thickness)));
@@ -62,6 +63,12 @@ namespace HN.Controls
         {
             get => (DataTemplateSelector)GetValue(FailedTemplateSelectorProperty);
             set => SetValue(FailedTemplateSelectorProperty, value);
+        }
+
+        public bool IsLoading
+        {
+            get => (bool)GetValue(IsLoadingProperty);
+            private set => SetValue(IsLoadingProperty, value);
         }
 
         public DataTemplate LoadingTemplate
@@ -152,16 +159,19 @@ namespace HN.Controls
             _lastLoadCts = new CancellationTokenSource();
             try
             {
+                IsLoading = true;
+
                 VisualStateManager.GoToState(this, LoadingStateName, true);
 
                 var context = new LoadingContext<ImageSource>(source, ActualWidth, ActualHeight);
 
                 var pipeDelegate = ImageExService.GetHandler<ImageSource>();
                 var retryDelay = RetryDelay;
-                var policy = Policy.Handle<Exception>().WaitAndRetryAsync(RetryCount, count => retryDelay, (ex, delay) =>
-                {
-                    context.Reset();
-                });
+                var policy = Policy.Handle<Exception>()
+                    .WaitAndRetryAsync(RetryCount, count => retryDelay, (ex, delay) =>
+                    {
+                        context.Reset();
+                    });
                 await policy.ExecuteAsync(() => pipeDelegate.Invoke(context, _lastLoadCts.Token));
 
                 if (!_lastLoadCts.IsCancellationRequested)
@@ -178,6 +188,13 @@ namespace HN.Controls
                     _image.Source = null;
                     VisualStateManager.GoToState(this, FailedStateName, true);
                     ImageFailed?.Invoke(this, new ImageExFailedEventArgs(source, ex));
+                }
+            }
+            finally
+            {
+                if (!_lastLoadCts.IsCancellationRequested)
+                {
+                    IsLoading = false;
                 }
             }
         }
