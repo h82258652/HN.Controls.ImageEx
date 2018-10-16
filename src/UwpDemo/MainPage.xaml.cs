@@ -1,7 +1,7 @@
-﻿using HN.Cache;
-using HN.Media;
-using System;
+﻿using System;
 using System.Runtime.InteropServices.WindowsRuntime;
+using HN.Cache;
+using HN.Media;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Popups;
@@ -23,6 +23,11 @@ namespace UwpDemo
             await new MessageDialog("done").ShowAsync();
         }
 
+        private void LazyLoadingButton_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(LazyLoadingPage));
+        }
+
         private void LoadButton_Click(object sender, RoutedEventArgs e)
         {
             CustomImage.Source = UrlTextBox.Text;
@@ -39,7 +44,10 @@ namespace UwpDemo
                 var buffer = await FileIO.ReadBufferAsync(file);
                 var bytes = buffer.ToArray();
                 DiskImage.Source = bytes;
-                DiskEllipse.Fill = new ImageBrushEx() { ImageSource = bytes };
+                DiskEllipse.Fill = new ImageBrushEx()
+                {
+                    ImageSource = bytes
+                };
             }
         }
 

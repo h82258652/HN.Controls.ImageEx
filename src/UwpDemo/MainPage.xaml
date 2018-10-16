@@ -8,49 +8,140 @@
       mc:Ignorable="d">
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid Margin="20">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0"
-                       Grid.Column="0"
-                       Text="Network Image"
-                       TextAlignment="Center" />
-            <TextBlock Grid.Row="0"
-                       Grid.Column="1"
-                       Text="Resource Image"
-                       TextAlignment="Center" />
-            <TextBlock Grid.Row="0"
-                       Grid.Column="2"
-                       Text="Disk Image"
-                       TextAlignment="Center" />
-            <TextBlock Grid.Row="0"
-                       Grid.Column="3"
-                       Text="Failed Image"
-                       TextAlignment="Center" />
-            <TextBlock Grid.Row="0"
-                       Grid.Column="4"
-                       Text="Custom Image"
-                       TextAlignment="Center" />
-            <Grid Grid.Row="1"
-                  Grid.Column="0">
+            <Button Grid.Row="0"
+                    HorizontalAlignment="Stretch"
+                    Click="LazyLoadingButton_Click"
+                    Content="LazyLoading" />
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <controls:ImageEx Grid.Row="0"
-                                  Source="https://www.baidu.com/img/bd_logo1.png">
+                <TextBlock Grid.Row="0"
+                           Grid.Column="0"
+                           Text="Network Image"
+                           TextAlignment="Center" />
+                <TextBlock Grid.Row="0"
+                           Grid.Column="1"
+                           Text="Resource Image"
+                           TextAlignment="Center" />
+                <TextBlock Grid.Row="0"
+                           Grid.Column="2"
+                           Text="Disk Image"
+                           TextAlignment="Center" />
+                <TextBlock Grid.Row="0"
+                           Grid.Column="3"
+                           Text="Failed Image"
+                           TextAlignment="Center" />
+                <TextBlock Grid.Row="0"
+                           Grid.Column="4"
+                           Text="Custom Image"
+                           TextAlignment="Center" />
+                <Grid Grid.Row="1"
+                      Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <controls:ImageEx Grid.Row="0"
+                                      Source="https://www.baidu.com/img/bd_logo1.png">
+                        <controls:ImageEx.LoadingTemplate>
+                            <DataTemplate>
+                                <Grid Background="Green" />
+                            </DataTemplate>
+                        </controls:ImageEx.LoadingTemplate>
+                        <controls:ImageEx.FailedTemplate>
+                            <DataTemplate>
+                                <TextBlock HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Foreground="Red"
+                                           Text="Failed" />
+                            </DataTemplate>
+                        </controls:ImageEx.FailedTemplate>
+                    </controls:ImageEx>
+                    <Ellipse Grid.Row="1"
+                             Width="100"
+                             Height="100"
+                             Stroke="Gray"
+                             StrokeThickness="5">
+                        <Shape.Fill>
+                            <media:ImageBrushEx ImageSource="https://www.baidu.com/img/bd_logo1.png" />
+                        </Shape.Fill>
+                    </Ellipse>
+                </Grid>
+                <Grid Grid.Row="1"
+                      Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <controls:ImageEx Grid.Row="0"
+                                      Source="/resource_image.png" />
+                    <Ellipse Grid.Row="1"
+                             Width="100"
+                             Height="100"
+                             Stroke="Gray"
+                             StrokeThickness="5">
+                        <Shape.Fill>
+                            <media:ImageBrushEx ImageSource="/resource_image.png" />
+                        </Shape.Fill>
+                    </Ellipse>
+                </Grid>
+                <Grid Grid.Row="1"
+                      Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <controls:ImageEx x:Name="DiskImage"
+                                      Grid.Row="0" />
+                    <Button Grid.Row="1"
+                            HorizontalAlignment="Center"
+                            Click="LoadDiskFileButton_Click"
+                            Content="Load Disk File" />
+                    <Ellipse x:Name="DiskEllipse"
+                             Grid.Row="2"
+                             Width="100"
+                             Height="100"
+                             Stroke="Gray"
+                             StrokeThickness="5" />
+                </Grid>
+                <controls:ImageEx Grid.Row="1"
+                                  Grid.Column="3"
+                                  Source="http://www.baidu.com/a.png">
+                    <controls:ImageEx.FailedTemplate>
+                        <DataTemplate>
+                            <TextBlock HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Foreground="Red"
+                                       Text="Failed" />
+                        </DataTemplate>
+                    </controls:ImageEx.FailedTemplate>
+                </controls:ImageEx>
+                <controls:ImageEx x:Name="CustomImage"
+                                  Grid.Row="1"
+                                  Grid.Column="4"
+                                  RetryCount="5"
+                                  RetryDelay="0:0:1">
                     <controls:ImageEx.LoadingTemplate>
                         <DataTemplate>
-                            <Grid Background="Green" />
+                            <TextBlock HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Foreground="Green"
+                                       Text="Loading" />
                         </DataTemplate>
                     </controls:ImageEx.LoadingTemplate>
                     <controls:ImageEx.FailedTemplate>
@@ -62,114 +153,33 @@
                         </DataTemplate>
                     </controls:ImageEx.FailedTemplate>
                 </controls:ImageEx>
-                <Ellipse Grid.Row="1"
-                         Width="100"
-                         Height="100"
-                         Stroke="Gray"
-                         StrokeThickness="5">
-                    <Shape.Fill>
-                        <media:ImageBrushEx ImageSource="https://www.baidu.com/img/bd_logo1.png" />
-                    </Shape.Fill>
-                </Ellipse>
-            </Grid>
-            <Grid Grid.Row="1"
-                  Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <controls:ImageEx Grid.Row="0"
-                                  Source="/resource_image.png" />
-                <Ellipse Grid.Row="1"
-                         Width="100"
-                         Height="100"
-                         Stroke="Gray"
-                         StrokeThickness="5">
-                    <Shape.Fill>
-                        <media:ImageBrushEx ImageSource="/resource_image.png" />
-                    </Shape.Fill>
-                </Ellipse>
-            </Grid>
-            <Grid Grid.Row="1"
-                  Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <controls:ImageEx x:Name="DiskImage"
-                                  Grid.Row="0" />
-                <Button Grid.Row="1"
-                        HorizontalAlignment="Center"
-                        Click="LoadDiskFileButton_Click"
-                        Content="Load Disk File" />
-                <Ellipse x:Name="DiskEllipse"
+                <StackPanel Grid.Row="2"
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                    <TextBlock Text="cache size: " />
+                    <TextBlock x:Name="CacheSizeTextBlock" />
+                </StackPanel>
+                <Button Grid.Row="2"
+                        Grid.Column="1"
+                        HorizontalAlignment="Stretch"
+                        Click="RefreshButton_Click"
+                        Content="Refresh" />
+                <Button Grid.Row="2"
+                        Grid.Column="2"
+                        HorizontalAlignment="Stretch"
+                        Click="ClearCacheButton_Click"
+                        Content="Clear Cache" />
+                <TextBox x:Name="UrlTextBox"
                          Grid.Row="2"
-                         Width="100"
-                         Height="100"
-                         Stroke="Gray"
-                         StrokeThickness="5" />
+                         Grid.Column="3"
+                         Text="https://www.baidu.com/img/bd_logo1.png" />
+                <Button Grid.Row="2"
+                        Grid.Column="4"
+                        HorizontalAlignment="Stretch"
+                        Click="LoadButton_Click"
+                        Content="Load" />
             </Grid>
-            <controls:ImageEx Grid.Row="1"
-                              Grid.Column="3"
-                              Source="http://www.baidu.com/a.png">
-                <controls:ImageEx.FailedTemplate>
-                    <DataTemplate>
-                        <TextBlock HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   Foreground="Red"
-                                   Text="Failed" />
-                    </DataTemplate>
-                </controls:ImageEx.FailedTemplate>
-            </controls:ImageEx>
-            <controls:ImageEx x:Name="CustomImage"
-                              Grid.Row="1"
-                              Grid.Column="4"
-                              RetryCount="5"
-                              RetryDelay="0:0:1">
-                <controls:ImageEx.LoadingTemplate>
-                    <DataTemplate>
-                        <TextBlock HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   Foreground="Green"
-                                   Text="Loading" />
-                    </DataTemplate>
-                </controls:ImageEx.LoadingTemplate>
-                <controls:ImageEx.FailedTemplate>
-                    <DataTemplate>
-                        <TextBlock HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   Foreground="Red"
-                                   Text="Failed" />
-                    </DataTemplate>
-                </controls:ImageEx.FailedTemplate>
-            </controls:ImageEx>
-            <StackPanel Grid.Row="2"
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        Orientation="Horizontal">
-                <TextBlock Text="cache size: " />
-                <TextBlock x:Name="CacheSizeTextBlock" />
-            </StackPanel>
-            <Button Grid.Row="2"
-                    Grid.Column="1"
-                    HorizontalAlignment="Stretch"
-                    Click="RefreshButton_Click"
-                    Content="Refresh" />
-            <Button Grid.Row="2"
-                    Grid.Column="2"
-                    HorizontalAlignment="Stretch"
-                    Click="ClearCacheButton_Click"
-                    Content="Clear Cache" />
-            <TextBox x:Name="UrlTextBox"
-                     Grid.Row="2"
-                     Grid.Column="3"
-                     Text="https://www.baidu.com/img/bd_logo1.png" />
-            <Button Grid.Row="2"
-                    Grid.Column="4"
-                    HorizontalAlignment="Stretch"
-                    Click="LoadButton_Click"
-                    Content="Load" />
         </Grid>
     </Grid>
 </Page>

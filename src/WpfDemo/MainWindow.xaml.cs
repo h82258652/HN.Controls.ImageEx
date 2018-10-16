@@ -1,6 +1,6 @@
-﻿using HN.Cache;
-using System.IO;
+﻿using System.IO;
 using System.Windows;
+using HN.Cache;
 
 namespace WpfDemo
 {
@@ -17,6 +17,11 @@ namespace WpfDemo
             var diskCache = new DiskCache();
             await diskCache.DeleteAllAsync();
             MessageBox.Show("done");
+        }
+
+        private void LazyLoadingButton_Click(object sender, RoutedEventArgs e)
+        {
+            new LazyLoadingWindow().ShowDialog();
         }
 
         private void LoadButton_Click(object sender, RoutedEventArgs e)

@@ -19,6 +19,7 @@ namespace HN.Controls
     [TemplateVisualState(GroupName = ImageStateGroupName, Name = LoadingStateName)]
     public class ImageEx : Control
     {
+        public static readonly DependencyProperty EnableLazyLoadingProperty = DependencyProperty.Register(nameof(EnableLazyLoading), typeof(bool), typeof(ImageEx), new PropertyMetadata(default(bool)));
         public static readonly DependencyProperty FailedTemplateProperty = DependencyProperty.Register(nameof(FailedTemplate), typeof(DataTemplate), typeof(ImageEx), new PropertyMetadata(default(DataTemplate)));
         public static readonly DependencyProperty FailedTemplateSelectorProperty = DependencyProperty.Register(nameof(FailedTemplateSelector), typeof(DataTemplateSelector), typeof(ImageEx), new PropertyMetadata(default(DataTemplateSelector)));
         public static readonly DependencyProperty IsLoadingProperty;
@@ -41,7 +42,9 @@ namespace HN.Controls
         private static readonly DependencyPropertyKey IsLoadingPropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsLoading), typeof(bool), typeof(ImageEx), new PropertyMetadata(default(bool)));
 
         private Image _image;
+        private bool _isInViewport;
         private CancellationTokenSource _lastLoadCts;
+        private object _lazyLoadingSource;
 
         static ImageEx()
         {
@@ -50,9 +53,20 @@ namespace HN.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ImageEx), new FrameworkPropertyMetadata(typeof(ImageEx)));
         }
 
+        public ImageEx()
+        {
+            LayoutUpdated += ImageEx_LayoutUpdated;
+        }
+
         public event EventHandler<ImageExFailedEventArgs> ImageFailed;
 
         public event EventHandler ImageOpened;
+
+        public bool EnableLazyLoading
+        {
+            get => (bool)GetValue(EnableLazyLoadingProperty);
+            set => SetValue(EnableLazyLoadingProperty, value);
+        }
 
         public DataTemplate FailedTemplate
         {
@@ -119,7 +133,15 @@ namespace HN.Controls
             base.OnApplyTemplate();
 
             _image = (Image)GetTemplateChild(ImageTemplateName);
-            await SetSourceAsync(Source);
+            if (!EnableLazyLoading || _isInViewport)
+            {
+                _lazyLoadingSource = null;
+                await SetSourceAsync(Source);
+            }
+            else
+            {
+                _lazyLoadingSource = Source;
+            }
         }
 
         private static async void OnSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -127,7 +149,64 @@ namespace HN.Controls
             var obj = (ImageEx)d;
             var value = e.NewValue;
 
-            await obj.SetSourceAsync(value);
+            if (!obj.EnableLazyLoading || obj._isInViewport)
+            {
+                obj._lazyLoadingSource = null;
+                await obj.SetSourceAsync(value);
+            }
+            else
+            {
+                obj._lazyLoadingSource = value;
+            }
+        }
+
+        private async void ImageEx_LayoutUpdated(object sender, EventArgs e)
+        {
+            if (!IsLoaded)
+            {
+                return;
+            }
+
+            FrameworkElement hostElement = this;
+            while (true)
+            {
+                var parent = VisualTreeHelper.GetParent(hostElement) as FrameworkElement;
+                if (parent == null)
+                {
+                    break;
+                }
+
+                if (parent is ScrollViewer)
+                {
+                    hostElement = parent;
+                    break;
+                }
+
+                hostElement = parent;
+            }
+
+            if (!ReferenceEquals(hostElement, this))
+            {
+                var controlRect = TransformToVisual(hostElement)
+                    .TransformBounds(new Rect(0, 0, ActualWidth, ActualHeight));
+                var hostRect = new Rect(0, 0, hostElement.ActualWidth, hostElement.ActualHeight);
+
+                if (controlRect.IntersectsWith(hostRect))
+                {
+                    _isInViewport = true;
+
+                    if (_lazyLoadingSource != null)
+                    {
+                        var source = _lazyLoadingSource;
+                        _lazyLoadingSource = null;
+                        await SetSourceAsync(source);
+                    }
+                }
+                else
+                {
+                    _isInViewport = false;
+                }
+            }
         }
 
         private async Task SetSourceAsync(object source)
