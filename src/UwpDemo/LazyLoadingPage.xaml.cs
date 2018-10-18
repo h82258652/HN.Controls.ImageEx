@@ -1,4 +1,6 @@
-﻿using Windows.UI.Xaml;
+﻿using System;
+using Windows.UI.Popups;
+using Windows.UI.Xaml;
 
 namespace UwpDemo
 {
@@ -15,6 +17,11 @@ namespace UwpDemo
             {
                 Frame.GoBack();
             }
+        }
+
+        private async void ImageEx_ImageOpened(object sender, EventArgs e)
+        {
+            await new MessageDialog("Image Opened").ShowAsync();
         }
     }
 }

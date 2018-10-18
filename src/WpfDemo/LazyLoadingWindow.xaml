@@ -18,6 +18,7 @@
                         BorderBrush="Black"
                         BorderThickness="1">
                     <controls:ImageEx EnableLazyLoading="True"
+                                      ImageOpened="ImageEx_ImageOpened"
                                       Source="https://www.baidu.com/img/bd_logo1.png" />
                 </Border>
             </Grid>
