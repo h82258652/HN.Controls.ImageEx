@@ -133,7 +133,7 @@ namespace HN.Controls
             base.OnApplyTemplate();
 
             _image = (Image)GetTemplateChild(ImageTemplateName);
-            if (!EnableLazyLoading || _isInViewport)
+            if (Source == null || !EnableLazyLoading || _isInViewport)
             {
                 _lazyLoadingSource = null;
                 await SetSourceAsync(Source);
@@ -149,7 +149,7 @@ namespace HN.Controls
             var obj = (ImageEx)d;
             var value = e.NewValue;
 
-            if (!obj.EnableLazyLoading || obj._isInViewport)
+            if (obj.Source == null || !obj.EnableLazyLoading || obj._isInViewport)
             {
                 obj._lazyLoadingSource = null;
                 await obj.SetSourceAsync(value);
