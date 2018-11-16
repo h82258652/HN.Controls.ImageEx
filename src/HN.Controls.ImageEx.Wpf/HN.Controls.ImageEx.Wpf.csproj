@@ -68,7 +68,7 @@
       <Version>2018.2.1</Version>
     </PackageReference>
     <PackageReference Include="Polly">
-      <Version>6.1.0</Version>
+      <Version>6.1.1</Version>
     </PackageReference>
     <PackageReference Include="Weakly">
       <Version>2.8.1</Version>
