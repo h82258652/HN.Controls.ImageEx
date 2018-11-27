@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>HN.Controls.ImageEx.Wpf</id>
+    <id>HN.Controls.ImageEx.Uwp</id>
     <version>$version$</version>
-    <title>HN.Controls.ImageEx.Wpf</title>
+    <title>HN.Controls.ImageEx.Uwp</title>
     <authors>h82258652</authors>
     <owners>h82258652</owners>
     <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
     <projectUrl>https://github.com/h82258652/HN.Controls.ImageEx</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>HN.Controls.ImageEx.Wpf</description>
+    <description>HN.Controls.ImageEx.Uwp</description>
     <tags></tags>
     <dependencies>
       <dependency id="HN.Controls.ImageEx.Core" version="1.0.0" />
