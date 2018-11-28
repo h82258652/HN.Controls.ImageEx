@@ -15,4 +15,12 @@
       <dependency id="HN.Controls.ImageEx.Core" version="1.0.0" />
     </dependencies>
   </metadata>
+  <files>
+    <file src="bin\Release\HN.Controls.ImageEx.Uwp.dll" target="lib\uap10.0.17763" />
+    <file src="bin\Release\HN.Controls.ImageEx.Uwp.xml" target="lib\uap10.0.17763" />
+    <file src="bin\Release\HN.Controls.ImageEx.Uwp.pri" target="lib\uap10.0.17763" />
+    <file src="bin\Release\HN.Controls.ImageEx.Uwp.pdb" target="lib\uap10.0.17763" />
+    <file src="bin\Release\HN.Controls.ImageEx.Uwp\**\*.*" target="lib\uap10.0.17763\HN.Controls.ImageEx.Uwp" />  
+    <file src="bin\Release\VisualStudioToolsManifest.xml" target="tools" />
+  </files>  
 </package>
