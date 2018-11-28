@@ -1,8 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>HN</RootNamespace>
+    <PackageId>HN.Controls.ImageEx.Core</PackageId>
+    <Version>1.0.0</Version>
+    <Title>HN.Controls.ImageEx.Core</Title>
+    <Authors>h82258652</Authors>
+    <PackageLicenseUrl>https://licenses.nuget.org/MIT</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/h82258652/HN.Controls.ImageEx</PackageProjectUrl>
+    <Description>HN.Controls.ImageEx.Core</Description>
+    <PackageTags></PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
