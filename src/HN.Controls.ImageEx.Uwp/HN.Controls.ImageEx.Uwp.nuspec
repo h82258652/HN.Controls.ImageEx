@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>HN.Controls.ImageEx.Uwp</id>
-    <version>1.0.1</version>
+    <version>$version$</version>
     <title>HN.Controls.ImageEx.Uwp</title>
     <authors>h82258652</authors>
     <owners>h82258652</owners>
