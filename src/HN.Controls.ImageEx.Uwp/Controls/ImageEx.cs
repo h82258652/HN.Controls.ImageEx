@@ -25,13 +25,28 @@ namespace HN.Controls
     [TemplateVisualState(GroupName = ImageStateGroupName, Name = LoadingStateName)]
     public class ImageEx : Control
     {
+        /// <summary>
+        /// 标识 <see cref="EnableLazyLoading" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="EnableLazyLoading" /> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty EnableLazyLoadingProperty = DependencyProperty.Register(nameof(EnableLazyLoading), typeof(bool), typeof(ImageEx), new PropertyMetadata(default(bool)));
+
         public static readonly DependencyProperty FailedTemplateProperty = DependencyProperty.Register(nameof(FailedTemplate), typeof(DataTemplate), typeof(ImageEx), new PropertyMetadata(default(DataTemplate)));
         public static readonly DependencyProperty FailedTemplateSelectorProperty = DependencyProperty.Register(nameof(FailedTemplateSelector), typeof(DataTemplateSelector), typeof(ImageEx), new PropertyMetadata(default(DataTemplateSelector)));
         public static readonly DependencyProperty IsLoadingProperty = DependencyProperty.Register(nameof(IsLoading), typeof(bool), typeof(ImageEx), new PropertyMetadata(default(bool)));
         public static readonly DependencyProperty LoadingTemplateProperty = DependencyProperty.Register(nameof(LoadingTemplate), typeof(DataTemplate), typeof(ImageEx), new PropertyMetadata(default(DataTemplate)));
         public static readonly DependencyProperty LoadingTemplateSelectorProperty = DependencyProperty.Register(nameof(LoadingTemplateSelector), typeof(DataTemplateSelector), typeof(ImageEx), new PropertyMetadata(default(DataTemplateSelector)));
+
+        /// <summary>
+        /// 标识 <see cref="NineGrid" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="NineGrid" /> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty NineGridProperty = DependencyProperty.Register(nameof(NineGrid), typeof(Thickness), typeof(ImageEx), new PropertyMetadata(default(Thickness)));
+
         public static readonly DependencyProperty RetryCountProperty = DependencyProperty.Register(nameof(RetryCount), typeof(int), typeof(ImageEx), new PropertyMetadata(default(int)));
         public static readonly DependencyProperty RetryDelayProperty = DependencyProperty.Register(nameof(RetryDelay), typeof(TimeSpan), typeof(ImageEx), new PropertyMetadata(TimeSpan.Zero));
 
@@ -44,10 +59,10 @@ namespace HN.Controls
         public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(nameof(Source), typeof(object), typeof(ImageEx), new PropertyMetadata(default(object), OnSourceChanged));
 
         /// <summary>
-        /// 标识 <see cref="Stretch"/> 依赖属性。
+        /// 标识 <see cref="Stretch" /> 依赖属性。
         /// </summary>
         /// <returns>
-        /// <see cref="Stretch"/> 依赖项属性的标识符。
+        /// <see cref="Stretch" /> 依赖项属性的标识符。
         /// </returns>
         public static readonly DependencyProperty StretchProperty = DependencyProperty.Register(nameof(Stretch), typeof(Stretch), typeof(ImageEx), new PropertyMetadata(Stretch.Uniform));
 
