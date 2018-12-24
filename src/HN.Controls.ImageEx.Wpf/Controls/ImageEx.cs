@@ -23,8 +23,22 @@ namespace HN.Controls
     [TemplateVisualState(GroupName = ImageStateGroupName, Name = LoadingStateName)]
     public class ImageEx : Control
     {
+        /// <summary>
+        /// 标识 <see cref="EnableLazyLoading" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="EnableLazyLoading" /> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty EnableLazyLoadingProperty = DependencyProperty.Register(nameof(EnableLazyLoading), typeof(bool), typeof(ImageEx), new PropertyMetadata(default(bool)));
+
+        /// <summary>
+        /// 标识 <see cref="FailedTemplate" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="FailedTemplate" /> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty FailedTemplateProperty = DependencyProperty.Register(nameof(FailedTemplate), typeof(DataTemplate), typeof(ImageEx), new PropertyMetadata(default(DataTemplate)));
+
         public static readonly DependencyProperty FailedTemplateSelectorProperty = DependencyProperty.Register(nameof(FailedTemplateSelector), typeof(DataTemplateSelector), typeof(ImageEx), new PropertyMetadata(default(DataTemplateSelector)));
         public static readonly DependencyProperty IsLoadingProperty;
         public static readonly DependencyProperty LoadingTemplateProperty = DependencyProperty.Register(nameof(LoadingTemplate), typeof(DataTemplate), typeof(ImageEx), new PropertyMetadata(default(DataTemplate)));
@@ -151,6 +165,13 @@ namespace HN.Controls
             set => SetValue(SourceProperty, value);
         }
 
+        /// <summary>
+        /// 获取或设置一个值，该值描述应如何拉伸 <see cref="ImageEx" /> 以填充目标矩形。
+        /// </summary>
+        /// <returns>
+        /// <see cref="System.Windows.Media.Stretch" /> 值之一。
+        /// 默认值为 <see cref="System.Windows.Media.Stretch.Uniform" />。
+        /// </returns>
         public Stretch Stretch
         {
             get => (Stretch)GetValue(StretchProperty);
