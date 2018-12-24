@@ -59,6 +59,10 @@ namespace HN.Controls
         private CancellationTokenSource _lastLoadCts;
         private object _lazyLoadingSource;
 
+        /// <inheritdoc />
+        /// <summary>
+        /// 初始化 ImageEx 类的新实例。
+        /// </summary>
         public ImageEx()
         {
             DefaultStyleKey = typeof(ImageEx);

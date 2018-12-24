@@ -65,6 +65,10 @@ namespace HN.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ImageEx), new FrameworkPropertyMetadata(typeof(ImageEx)));
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// 初始化 ImageEx 类的新实例。
+        /// </summary>
         public ImageEx()
         {
             LayoutUpdated += ImageEx_LayoutUpdated;
