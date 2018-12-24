@@ -134,6 +134,12 @@ namespace HN.Controls
             set => SetValue(RetryDelayProperty, value);
         }
 
+        /// <summary>
+        /// 获取或设置图像的源。
+        /// </summary>
+        /// <returns>
+        /// 所绘制图像的源。
+        /// </returns>
         public object Source
         {
             get => GetValue(SourceProperty);
