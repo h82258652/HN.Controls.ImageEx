@@ -10,6 +10,10 @@ using Polly;
 
 namespace HN.Controls
 {
+    /// <inheritdoc />
+    /// <summary>
+    /// 表示具备缓存功能的显示图像的控件。
+    /// </summary>
     [TemplatePart(Name = ImageTemplateName, Type = typeof(Image))]
     [TemplatePart(Name = FailedContentHostTemplateName, Type = typeof(ContentPresenter))]
     [TemplatePart(Name = LoadingContentHostTemplateName, Type = typeof(ContentPresenter))]
