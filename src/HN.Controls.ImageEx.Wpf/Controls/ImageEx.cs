@@ -40,7 +40,20 @@ namespace HN.Controls
         /// </returns>
         public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(nameof(Source), typeof(object), typeof(ImageEx), new PropertyMetadata(default(object), OnSourceChanged));
 
+        /// <summary>
+        /// 标识 <see cref="StretchDirection"/> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="StretchDirection"/> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty StretchDirectionProperty = DependencyProperty.Register(nameof(StretchDirection), typeof(StretchDirection), typeof(ImageEx), new PropertyMetadata(StretchDirection.Both));
+
+        /// <summary>
+        /// 标识 <see cref="Stretch"/> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="Stretch"/> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty StretchProperty = DependencyProperty.Register(nameof(Stretch), typeof(Stretch), typeof(ImageEx), new PropertyMetadata(Stretch.Uniform));
 
         private const string FailedContentHostTemplateName = "PART_FailedContentHost";
