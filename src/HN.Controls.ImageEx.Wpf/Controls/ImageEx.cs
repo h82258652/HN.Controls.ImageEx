@@ -39,11 +39,52 @@ namespace HN.Controls
         /// </returns>
         public static readonly DependencyProperty FailedTemplateProperty = DependencyProperty.Register(nameof(FailedTemplate), typeof(DataTemplate), typeof(ImageEx), new PropertyMetadata(default(DataTemplate)));
 
+        /// <summary>
+        /// 标识 <see cref="FailedTemplateSelector" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="FailedTemplateSelector" /> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty FailedTemplateSelectorProperty = DependencyProperty.Register(nameof(FailedTemplateSelector), typeof(DataTemplateSelector), typeof(ImageEx), new PropertyMetadata(default(DataTemplateSelector)));
+
+        /// <summary>
+        /// 标识 <see cref="IsLoading" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="IsLoading" /> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty IsLoadingProperty;
+
+        /// <summary>
+        /// 标识 <see cref="LoadingTemplate" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="LoadingTemplate" /> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty LoadingTemplateProperty = DependencyProperty.Register(nameof(LoadingTemplate), typeof(DataTemplate), typeof(ImageEx), new PropertyMetadata(default(DataTemplate)));
+
+        /// <summary>
+        /// 标识 <see cref="LoadingTemplateSelector" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="LoadingTemplateSelector" /> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty LoadingTemplateSelectorProperty = DependencyProperty.Register(nameof(LoadingTemplateSelector), typeof(DataTemplateSelector), typeof(ImageEx), new PropertyMetadata(default(DataTemplateSelector)));
+
+        /// <summary>
+        /// 标识 <see cref="RetryCount" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="RetryCount" /> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty RetryCountProperty = DependencyProperty.Register(nameof(RetryCount), typeof(int), typeof(ImageEx), new PropertyMetadata(default(int)));
+
+        /// <summary>
+        /// 标识 <see cref="RetryDelay" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="RetryDelay" /> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty RetryDelayProperty = DependencyProperty.Register(nameof(RetryDelay), typeof(TimeSpan), typeof(ImageEx), new PropertyMetadata(TimeSpan.Zero));
 
         /// <summary>
