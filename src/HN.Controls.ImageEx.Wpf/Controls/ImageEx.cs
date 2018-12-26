@@ -142,8 +142,14 @@ namespace HN.Controls
             LayoutUpdated += ImageEx_LayoutUpdated;
         }
 
+        /// <summary>
+        /// 在无法加载图像源时发生。
+        /// </summary>
         public event EventHandler<ImageExFailedEventArgs> ImageFailed;
 
+        /// <summary>
+        /// 在成功显示图像后发生。
+        /// </summary>
         public event EventHandler ImageOpened;
 
         public bool EnableLazyLoading

@@ -138,8 +138,14 @@ namespace HN.Controls
             EffectiveViewportChanged += ImageEx_EffectiveViewportChanged;
         }
 
+        /// <summary>
+        /// 在无法加载图像源时发生。
+        /// </summary>
         public event EventHandler<ImageExFailedEventArgs> ImageFailed;
 
+        /// <summary>
+        /// 在成功显示图像后发生。
+        /// </summary>
         public event EventHandler ImageOpened;
 
         public bool EnableLazyLoading
@@ -178,6 +184,12 @@ namespace HN.Controls
             set => SetValue(LoadingTemplateSelectorProperty, value);
         }
 
+        /// <summary>
+        /// 获取或设置控制图像小大调整方式的九格形式的值。九网格形式使你可以将图像的边缘和角拉伸成与其中心不同的形状。
+        /// </summary>
+        /// <returns>
+        /// 为九网格大小调整比喻设置 **Left**、**Top**、**Right**、**Bottom** 量化指标的 Thickness 值。
+        /// </returns>
         public Thickness NineGrid
         {
             get => (Thickness)GetValue(NineGridProperty);
@@ -208,18 +220,37 @@ namespace HN.Controls
             set => SetValue(SourceProperty, value);
         }
 
+        /// <summary>
+        /// 获取或设置一个值，该值描述应如何拉伸 <see cref="ImageEx" /> 以填充目标矩形。
+        /// </summary>
+        /// <returns>
+        /// <see cref="Windows.UI.Xaml.Media.Stretch" /> 值之一。
+        /// 默认值为 <see cref="Windows.UI.Xaml.Media.Stretch.Uniform" />。
+        /// </returns>
         public Stretch Stretch
         {
             get => (Stretch)GetValue(StretchProperty);
             set => SetValue(StretchProperty, value);
         }
 
+        /// <summary>
+        /// 返回将图像的 alpha 通道表示为 <see cref="CompositionBrush" /> 的掩码。
+        /// </summary>
+        /// <returns>
+        /// 表示图像的 alpha 通道的掩码。
+        /// </returns>
         public CompositionBrush GetAlphaMask()
         {
             ApplyTemplate();
             return _image?.GetAlphaMask();
         }
 
+        /// <summary>
+        /// 返回图像作为 <see cref="CastingSource" />。
+        /// </summary>
+        /// <returns>
+        /// 图像作为 <see cref="CastingSource" />。
+        /// </returns>
         public CastingSource GetAsCastingSource()
         {
             ApplyTemplate();
