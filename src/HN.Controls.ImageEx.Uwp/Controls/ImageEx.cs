@@ -154,12 +154,24 @@ namespace HN.Controls
             set => SetValue(EnableLazyLoadingProperty, value);
         }
 
+        /// <summary>
+        /// 获取或设置用于显示加载失败时的内容的数据模板。
+        /// </summary>
+        /// <returns>
+        /// 用于显示加载失败时的内容的数据模板。
+        /// </returns>
         public DataTemplate FailedTemplate
         {
             get => (DataTemplate)GetValue(FailedTemplateProperty);
             set => SetValue(FailedTemplateProperty, value);
         }
 
+        /// <summary>
+        /// 获取或设置用于显示加载失败时的内容的数据模板选择器。
+        /// </summary>
+        /// <returns>
+        /// 用于显示加载失败时的内容的数据模板选择器。
+        /// </returns>
         public DataTemplateSelector FailedTemplateSelector
         {
             get => (DataTemplateSelector)GetValue(FailedTemplateSelectorProperty);
@@ -172,12 +184,24 @@ namespace HN.Controls
             private set => SetValue(IsLoadingProperty, value);
         }
 
+        /// <summary>
+        /// 获取或设置用于显示加载中的内容的数据模板。
+        /// </summary>
+        /// <returns>
+        /// 用于显示加载中的内容的数据模板。
+        /// </returns>
         public DataTemplate LoadingTemplate
         {
             get => (DataTemplate)GetValue(LoadingTemplateProperty);
             set => SetValue(LoadingTemplateProperty, value);
         }
 
+        /// <summary>
+        /// 获取或设置用于显示加载中的内容的数据模板选择器。
+        /// </summary>
+        /// <returns>
+        /// 用于显示加载中的内容的数据模板选择器。
+        /// </returns>
         public DataTemplateSelector LoadingTemplateSelector
         {
             get => (DataTemplateSelector)GetValue(LoadingTemplateSelectorProperty);
