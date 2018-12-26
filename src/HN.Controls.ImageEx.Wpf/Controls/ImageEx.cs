@@ -225,6 +225,13 @@ namespace HN.Controls
             set => SetValue(StretchProperty, value);
         }
 
+        /// <summary>
+        /// 获取或设置一个值，指示如何将图像进行缩放。
+        /// </summary>
+        /// <returns>
+        /// <see cref="System.Windows.Controls.StretchDirection" /> 值之一。
+        /// 默认值为 <see cref="System.Windows.Controls.StretchDirection.Both" />。
+        /// </returns>
         public StretchDirection StretchDirection
         {
             get => (StretchDirection)GetValue(StretchDirectionProperty);
