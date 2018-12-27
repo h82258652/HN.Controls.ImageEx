@@ -148,6 +148,12 @@ namespace HN.Controls
         /// </summary>
         public event EventHandler ImageOpened;
 
+        /// <summary>
+        /// 获取或设置是否启用延迟加载。
+        /// </summary>
+        /// <returns>
+        /// 是否启用延迟加载。
+        /// </returns>
         public bool EnableLazyLoading
         {
             get => (bool)GetValue(EnableLazyLoadingProperty);
