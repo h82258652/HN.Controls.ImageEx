@@ -188,6 +188,12 @@ namespace HN.Controls
             set => SetValue(FailedTemplateSelectorProperty, value);
         }
 
+        /// <summary>
+        /// 获取是否正在加载图像的源。
+        /// </summary>
+        /// <returns>
+        /// 是否正在加载图像的源。
+        /// </returns>
         public bool IsLoading
         {
             get => (bool)GetValue(IsLoadingProperty);
@@ -218,12 +224,24 @@ namespace HN.Controls
             set => SetValue(LoadingTemplateSelectorProperty, value);
         }
 
+        /// <summary>
+        /// 获取或设置加载失败时的重试次数。
+        /// </summary>
+        /// <returns>
+        /// 加载失败时的重试次数。
+        /// </returns>
         public int RetryCount
         {
             get => (int)GetValue(RetryCountProperty);
             set => SetValue(RetryCountProperty, value);
         }
 
+        /// <summary>
+        /// 获取或设置加载失败时的重试间隔。
+        /// </summary>
+        /// <returns>
+        /// 加载失败时的重试间隔。
+        /// </returns>
         public TimeSpan RetryDelay
         {
             get => (TimeSpan)GetValue(RetryDelayProperty);
@@ -268,6 +286,7 @@ namespace HN.Controls
             set => SetValue(StretchDirectionProperty, value);
         }
 
+        /// <inheritdoc />
         public override async void OnApplyTemplate()
         {
             base.OnApplyTemplate();
