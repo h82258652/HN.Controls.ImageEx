@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Markup;
 using System.Windows.Media;
 using HN.Pipes;
@@ -13,6 +14,11 @@ namespace HN.Media
 {
     public class ImageBrushExExtension : MarkupExtension
     {
+        public ImageBrushExExtension()
+        {
+            _imageSourceBindingProxy = new BindingSource(this, ImageSourceProperty.Name, OnImageSourceChanged);
+        }
+
         [NotNull] private readonly ImageBrush _brush = new ImageBrush
         {
             AlignmentX = AlignmentX.Center,
@@ -23,7 +29,7 @@ namespace HN.Media
             ViewportUnits = BrushMappingMode.RelativeToBoundingBox,
         };
 
-        private object _imageSource;
+        private readonly BindingSource _imageSourceBindingProxy;
         private CancellationTokenSource _lastLoadCts;
 
         public event EventHandler<ImageBrushExFailedEventArgs> ImageFailed;
@@ -42,17 +48,13 @@ namespace HN.Media
             set => _brush.AlignmentY = value;
         }
 
+        public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.RegisterAttached(
+            "ImageSource", typeof(object), typeof(ImageBrushExExtension), new PropertyMetadata(null));
+
         public object ImageSource
         {
-            get => _imageSource;
-            set
-            {
-                if (_imageSource != value)
-                {
-                    _imageSource = value;
-                    SetSource(value);
-                }
-            }
+            get => _imageSourceBindingProxy.GetValue(ImageSourceProperty);
+            set => _imageSourceBindingProxy.SetValue(ImageSourceProperty, value);
         }
 
         public int RetryCount { get; set; }
@@ -93,6 +95,11 @@ namespace HN.Media
         {
             get => _brush.ViewportUnits;
             set => _brush.ViewportUnits = value;
+        }
+
+        private void OnImageSourceChanged(object oldValue, object newValue)
+        {
+            SetSource(newValue);
         }
 
         public ImageBrush Clone()
@@ -150,6 +157,36 @@ namespace HN.Media
                     _brush.ImageSource = null;
                     ImageFailed?.Invoke(this, new ImageBrushExFailedEventArgs(source, ex));
                 }
+            }
+        }
+
+        private class BindingSource : DependencyObject
+        {
+            private readonly Action<object, object> _valueChangeCallback;
+
+            public BindingSource(object owner, string propertyName, Action<object, object> valueChangeCallback = null)
+            {
+                _valueChangeCallback = valueChangeCallback;
+                BindingOperations.SetBinding(this, ValueProperty, new Binding(propertyName)
+                {
+                    Source = owner,
+                    Mode = BindingMode.TwoWay,
+                });
+            }
+
+            public object Value
+            {
+                get => GetValue(ValueProperty);
+                set => SetValue(ValueProperty, value);
+            }
+
+            public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(
+                "Value", typeof(object), typeof(BindingSource),
+                new PropertyMetadata(null, OnValuePropertyChanged));
+
+            private static void OnValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+            {
+                ((BindingSource)d)._valueChangeCallback?.Invoke(e.OldValue, e.NewValue);
             }
         }
     }
