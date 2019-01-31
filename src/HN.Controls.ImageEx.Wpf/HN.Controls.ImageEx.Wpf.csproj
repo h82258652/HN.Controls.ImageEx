@@ -36,6 +36,8 @@
     <DocumentationFile>bin\Release\HN.Controls.ImageEx.Wpf.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Media\ImageBrushExExtension.cs" />
+    <Compile Include="Media\ImageBrushExFailedEventArgs.cs" />
     <Compile Include="Services\DesignModeService.cs" />
     <Compile Include="Services\ImageExService.cs" />
     <Page Include="Controls\ImageEx.xaml">
@@ -79,6 +81,7 @@
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

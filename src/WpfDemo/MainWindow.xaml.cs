@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Windows;
 using HN.Cache;
 
@@ -9,7 +10,9 @@ namespace WpfDemo
         public MainWindow()
         {
             InitializeComponent();
-            DiskImage.Source = Path.Combine(System.Windows.Forms.Application.StartupPath, "disk_image.png");
+            var diskImageSource =  Path.Combine(AppContext.BaseDirectory, "disk_image.png");
+            DiskImage.Source = diskImageSource;
+            DiskImageBrush.ImageSource = diskImageSource;
         }
 
         private async void ClearCacheButton_Click(object sender, RoutedEventArgs e)

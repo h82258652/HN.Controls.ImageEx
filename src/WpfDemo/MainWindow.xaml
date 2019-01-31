@@ -4,6 +4,7 @@
         xmlns:controls="clr-namespace:HN.Controls;assembly=HN.Controls.ImageEx.Wpf"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:media="clr-namespace:HN.Media;assembly=HN.Controls.ImageEx.Wpf"
         Title="MainWindow"
         Width="1000"
         Height="450"
@@ -50,30 +51,78 @@
                            Grid.Column="4"
                            Text="Custom Image"
                            TextAlignment="Center" />
-                <controls:ImageEx Grid.Row="1"
-                                  Grid.Column="0"
-                                  Source="https://www.baidu.com/img/bd_logo1.png">
-                    <controls:ImageEx.LoadingTemplate>
-                        <DataTemplate>
-                            <Grid Background="Green" />
-                        </DataTemplate>
-                    </controls:ImageEx.LoadingTemplate>
-                    <controls:ImageEx.FailedTemplate>
-                        <DataTemplate>
-                            <TextBlock HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       Foreground="Red"
-                                       Text="Failed" />
-                        </DataTemplate>
-                    </controls:ImageEx.FailedTemplate>
-                </controls:ImageEx>
-                <!--  must use full pack uri  -->
-                <controls:ImageEx Grid.Row="1"
-                                  Grid.Column="1"
-                                  Source="pack://application:,,,/WpfDemo;component/resource_image.png" />
-                <controls:ImageEx x:Name="DiskImage"
-                                  Grid.Row="1"
-                                  Grid.Column="2" />
+                <Grid Grid.Row="1"
+                      Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <controls:ImageEx Grid.Row="0"
+                                      Source="https://www.baidu.com/img/bd_logo1.png">
+                        <controls:ImageEx.LoadingTemplate>
+                            <DataTemplate>
+                                <Grid Background="Green" />
+                            </DataTemplate>
+                        </controls:ImageEx.LoadingTemplate>
+                        <controls:ImageEx.FailedTemplate>
+                            <DataTemplate>
+                                <TextBlock HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Foreground="Red"
+                                           Text="Failed" />
+                            </DataTemplate>
+                        </controls:ImageEx.FailedTemplate>
+                    </controls:ImageEx>
+                    <Ellipse Grid.Row="1"
+                             Width="100"
+                             Height="100"
+                             Stroke="Gray"
+                             StrokeThickness="5">
+                        <Shape.Fill>
+                            <media:ImageBrushEx ImageSource="https://www.baidu.com/img/bd_logo1.png"
+                                                Stretch="Uniform" />
+                        </Shape.Fill>
+                    </Ellipse>
+                </Grid>
+                <Grid Grid.Row="1"
+                      Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <!--  must use full pack uri  -->
+                    <controls:ImageEx Grid.Row="0"
+                                      Source="pack://application:,,,/WpfDemo;component/resource_image.png" />
+                    <Ellipse Grid.Row="1"
+                             Width="100"
+                             Height="100"
+                             Stroke="Gray"
+                             StrokeThickness="5">
+                        <Shape.Fill>
+                            <media:ImageBrushEx ImageSource="pack://application:,,,/WpfDemo;component/resource_image.png"
+                                                Stretch="Uniform" />
+                        </Shape.Fill>
+                    </Ellipse>
+                </Grid>
+                <Grid Grid.Row="1"
+                      Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <controls:ImageEx x:Name="DiskImage"
+                                      Grid.Row="0" />
+                    <Ellipse Grid.Row="1"
+                             Width="100"
+                             Height="100"
+                             Stroke="Gray"
+                             StrokeThickness="5">
+                        <Shape.Fill>
+                            <media:ImageBrushEx x:Name="DiskImageBrush"
+                                                Stretch="Uniform" />
+                        </Shape.Fill>
+                    </Ellipse>
+                </Grid>
                 <controls:ImageEx Grid.Row="1"
                                   Grid.Column="3"
                                   Source="http://www.baidu.com/a.png">
