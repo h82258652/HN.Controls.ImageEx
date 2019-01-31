@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,7 +18,7 @@ namespace HN.Media
     {
         public ImageBrushExExtension()
         {
-            _imageSourceBindingProxy = new BindingSource(this, ImageSourceProperty.Name, OnImageSourceChanged);
+            _imageSourceBindingExchanger = new ClrBindingExchanger(this, ImageSourceProperty, OnImageSourceChanged);
         }
 
         [NotNull] private readonly ImageBrush _brush = new ImageBrush
@@ -29,7 +31,7 @@ namespace HN.Media
             ViewportUnits = BrushMappingMode.RelativeToBoundingBox,
         };
 
-        private readonly BindingSource _imageSourceBindingProxy;
+        private readonly ClrBindingExchanger _imageSourceBindingExchanger;
         private CancellationTokenSource _lastLoadCts;
 
         public event EventHandler<ImageBrushExFailedEventArgs> ImageFailed;
@@ -49,12 +51,18 @@ namespace HN.Media
         }
 
         public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.RegisterAttached(
-            "ImageSource", typeof(object), typeof(ImageBrushExExtension), new PropertyMetadata(null));
+            "ImageSource", typeof(object), typeof(ImageBrushExExtension),
+            new PropertyMetadata(null, ClrBindingExchanger.ValueChangeCallback));
 
         public object ImageSource
         {
-            get => _imageSourceBindingProxy.GetValue(ImageSourceProperty);
-            set => _imageSourceBindingProxy.SetValue(ImageSourceProperty, value);
+            get => _imageSourceBindingExchanger.GetValue();
+            set => _imageSourceBindingExchanger.SetValue(value);
+        }
+
+        private void OnImageSourceChanged(object oldValue, object newValue)
+        {
+            SetSource(newValue);
         }
 
         public int RetryCount { get; set; }
@@ -97,11 +105,6 @@ namespace HN.Media
             set => _brush.ViewportUnits = value;
         }
 
-        private void OnImageSourceChanged(object oldValue, object newValue)
-        {
-            SetSource(newValue);
-        }
-
         public ImageBrush Clone()
         {
             return _brush.Clone();
@@ -138,10 +141,8 @@ namespace HN.Media
 
                 var pipeDelegate = ImageExService.GetHandler<ImageSource>();
                 var retryDelay = RetryDelay;
-                var policy = Policy.Handle<Exception>().WaitAndRetryAsync(RetryCount, count => retryDelay, (ex, delay) =>
-                {
-                    context.Reset();
-                });
+                var policy = Policy.Handle<Exception>()
+                    .WaitAndRetryAsync(RetryCount, count => retryDelay, (ex, delay) => { context.Reset(); });
                 await policy.ExecuteAsync(() => pipeDelegate.Invoke(context, _lastLoadCts.Token));
 
                 if (!_lastLoadCts.IsCancellationRequested)
@@ -160,34 +161,49 @@ namespace HN.Media
             }
         }
 
-        private class BindingSource : DependencyObject
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            private readonly Action<object, object> _valueChangeCallback;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
 
-            public BindingSource(object owner, string propertyName, Action<object, object> valueChangeCallback = null)
+    internal class ClrBindingExchanger : DependencyObject
+    {
+        private readonly object _owner;
+        private readonly DependencyProperty _attachedProperty;
+        private readonly Action<object, object> _valueChangeCallback;
+
+        public ClrBindingExchanger(object owner, DependencyProperty attachedProperty,
+            Action<object, object> valueChangeCallback = null)
+        {
+            _owner = owner;
+            _attachedProperty = attachedProperty;
+            _valueChangeCallback = valueChangeCallback;
+        }
+
+        public object GetValue()
+        {
+            return GetValue(_attachedProperty);
+        }
+
+        public void SetValue(object value)
+        {
+            if (value is Binding binding)
             {
-                _valueChangeCallback = valueChangeCallback;
-                BindingOperations.SetBinding(this, ValueProperty, new Binding(propertyName)
-                {
-                    Source = owner,
-                    Mode = BindingMode.TwoWay,
-                });
+                BindingOperations.SetBinding(this, _attachedProperty, binding);
             }
-
-            public object Value
+            else
             {
-                get => GetValue(ValueProperty);
-                set => SetValue(ValueProperty, value);
+                SetValue(_attachedProperty, value);
             }
+        }
 
-            public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(
-                "Value", typeof(object), typeof(BindingSource),
-                new PropertyMetadata(null, OnValuePropertyChanged));
-
-            private static void OnValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-            {
-                ((BindingSource)d)._valueChangeCallback?.Invoke(e.OldValue, e.NewValue);
-            }
+        public static void ValueChangeCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((ClrBindingExchanger)d)._valueChangeCallback?.Invoke(e.OldValue, e.NewValue);
         }
     }
 }
