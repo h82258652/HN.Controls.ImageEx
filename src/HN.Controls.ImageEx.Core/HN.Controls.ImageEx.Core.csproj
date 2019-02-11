@@ -24,7 +24,7 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2018.3.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="15.8.209" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="16.0.102" />
     <PackageReference Include="Weakly" Version="2.8.1" />
   </ItemGroup>
 
