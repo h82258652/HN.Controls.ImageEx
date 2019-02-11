@@ -1,36 +1,38 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Markup;
 using System.Windows.Media;
 using HN.Pipes;
 using HN.Services;
+using JetBrains.Annotations;
 using Polly;
 
 namespace HN.Media
 {
     public class ImageBrushExExtension : MarkupExtension
     {
-        public static readonly DependencyProperty AlignmentXProperty = DependencyProperty.RegisterAttached(nameof(AlignmentX), typeof(AlignmentX), typeof(ImageBrushExExtension), new PropertyMetadata(AlignmentX.Center, OnAlignmentXChanged));
-        public static readonly DependencyProperty AlignmentYProperty = DependencyProperty.RegisterAttached(nameof(AlignmentY), typeof(AlignmentY), typeof(ImageBrushExExtension), new PropertyMetadata(AlignmentY.Center, OnAlignmentYChanged));
-        public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.RegisterAttached(nameof(ImageSource), typeof(object), typeof(ImageBrushExExtension), new PropertyMetadata(default(object), OnImageSourceChanged));
-        public static readonly DependencyProperty RetryCountProperty = DependencyProperty.RegisterAttached(nameof(RetryCount), typeof(int), typeof(ImageBrushExExtension), new PropertyMetadata(default(int)));
-        public static readonly DependencyProperty RetryDelayProperty = DependencyProperty.RegisterAttached(nameof(RetryDelay), typeof(TimeSpan), typeof(ImageBrushExExtension), new PropertyMetadata(TimeSpan.Zero));
-        public static readonly DependencyProperty StretchProperty = DependencyProperty.RegisterAttached(nameof(Stretch), typeof(Stretch), typeof(ImageBrushExExtension), new PropertyMetadata(Stretch.Fill, OnStretchChanged));
-        public static readonly DependencyProperty TileModeProperty = DependencyProperty.RegisterAttached(nameof(TileMode), typeof(TileMode), typeof(ImageBrushExExtension), new PropertyMetadata(TileMode.None, OnTileModeChanged));
-        public static readonly DependencyProperty ViewboxProperty = DependencyProperty.RegisterAttached(nameof(Viewbox), typeof(Rect), typeof(ImageBrushExExtension), new PropertyMetadata(new Rect(0.0, 0.0, 1.0, 1.0), OnViewboxChanged));
-        public static readonly DependencyProperty ViewboxUnitsProperty = DependencyProperty.RegisterAttached(nameof(ViewboxUnits), typeof(BrushMappingMode), typeof(ImageBrushExExtension), new PropertyMetadata(BrushMappingMode.RelativeToBoundingBox, OnViewboxUnitsChanged));
-        public static readonly DependencyProperty ViewportProperty = DependencyProperty.RegisterAttached(nameof(Viewport), typeof(Rect), typeof(ImageBrushExExtension), new PropertyMetadata(new Rect(0.0, 0.0, 1.0, 1.0), OnViewportChanged));
-        public static readonly DependencyProperty ViewportUnitsProperty = DependencyProperty.RegisterAttached(nameof(ViewportUnits), typeof(BrushMappingMode), typeof(ImageBrushExExtension), new PropertyMetadata(BrushMappingMode.RelativeToBoundingBox, OnViewportUnitsChanged));
-        private readonly ImageBrushExInternal _internal;
-        private ImageBrush _brush;
-        private CancellationTokenSource _lastLoadCts;
-
         public ImageBrushExExtension()
         {
-            _internal = new ImageBrushExInternal(this);
+            _imageSourceBindingExchanger = new ClrBindingExchanger(this, ImageSourceProperty, OnImageSourceChanged);
         }
+
+        [NotNull] private readonly ImageBrush _brush = new ImageBrush
+        {
+            AlignmentX = AlignmentX.Center,
+            AlignmentY = AlignmentY.Center,
+            Viewbox = new Rect(0, 0, 1, 1),
+            ViewboxUnits = BrushMappingMode.RelativeToBoundingBox,
+            Viewport = new Rect(0, 0, 1, 1),
+            ViewportUnits = BrushMappingMode.RelativeToBoundingBox,
+        };
+
+        private readonly ClrBindingExchanger _imageSourceBindingExchanger;
+        private CancellationTokenSource _lastLoadCts;
 
         public event EventHandler<ImageBrushExFailedEventArgs> ImageFailed;
 
@@ -38,216 +40,92 @@ namespace HN.Media
 
         public AlignmentX AlignmentX
         {
-            get => (AlignmentX)_internal.GetValue(AlignmentXProperty);
-            set => _internal.SetValue(AlignmentXProperty, value);
+            get => _brush.AlignmentX;
+            set => _brush.AlignmentX = value;
         }
 
         public AlignmentY AlignmentY
         {
-            get => (AlignmentY)_internal.GetValue(AlignmentYProperty);
-            set => _internal.SetValue(AlignmentYProperty, value);
+            get => _brush.AlignmentY;
+            set => _brush.AlignmentY = value;
         }
+
+        public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.RegisterAttached(
+            "ImageSource", typeof(object), typeof(ImageBrushExExtension),
+            new PropertyMetadata(null, ClrBindingExchanger.ValueChangeCallback));
 
         public object ImageSource
         {
-            get => _internal.GetValue(ImageSourceProperty);
-            set => _internal.SetValue(ImageSourceProperty, value);
+            get => _imageSourceBindingExchanger.GetValue();
+            set => _imageSourceBindingExchanger.SetValue(value);
         }
 
-        public int RetryCount
+        private void OnImageSourceChanged(object oldValue, object newValue)
         {
-            get => (int)_internal.GetValue(RetryCountProperty);
-            set => _internal.SetValue(RetryCountProperty, value);
+            SetSource(newValue);
         }
 
-        public TimeSpan RetryDelay
-        {
-            get => (TimeSpan)_internal.GetValue(RetryDelayProperty);
-            set => _internal.SetValue(RetryDelayProperty, value);
-        }
+        public int RetryCount { get; set; }
+
+        public TimeSpan RetryDelay { get; set; } = TimeSpan.Zero;
 
         public Stretch Stretch
         {
-            get => (Stretch)_internal.GetValue(StretchProperty);
-            set => _internal.SetValue(StretchProperty, value);
+            get => _brush.Stretch;
+            set => _brush.Stretch = value;
         }
 
         public TileMode TileMode
         {
-            get => (TileMode)_internal.GetValue(TileModeProperty);
-            set => _internal.SetValue(TileModeProperty, value);
+            get => _brush.TileMode;
+            set => _brush.TileMode = value;
         }
 
         public Rect Viewbox
         {
-            get => (Rect)_internal.GetValue(ViewboxProperty);
-            set => _internal.SetValue(ViewboxProperty, value);
+            get => _brush.Viewbox;
+            set => _brush.Viewbox = value;
         }
 
         public BrushMappingMode ViewboxUnits
         {
-            get => (BrushMappingMode)_internal.GetValue(ViewboxUnitsProperty);
-            set => _internal.SetValue(ViewboxUnitsProperty, value);
+            get => _brush.ViewboxUnits;
+            set => _brush.ViewboxUnits = value;
         }
 
         public Rect Viewport
         {
-            get => (Rect)_internal.GetValue(ViewportProperty);
-            set => _internal.SetValue(ViewportProperty, value);
+            get => _brush.Viewport;
+            set => _brush.Viewport = value;
         }
 
         public BrushMappingMode ViewportUnits
         {
-            get => (BrushMappingMode)_internal.GetValue(ViewportUnitsProperty);
-            set => _internal.SetValue(ViewportUnitsProperty, value);
+            get => _brush.ViewportUnits;
+            set => _brush.ViewportUnits = value;
         }
 
         public ImageBrush Clone()
         {
-            if (_brush == null)
-            {
-                CreateImageBrush();
-            }
-
             return _brush.Clone();
         }
 
         public ImageBrush CloneCurrentValue()
         {
-            if (_brush == null)
-            {
-                CreateImageBrush();
-            }
-
             return _brush.CloneCurrentValue();
         }
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            if (_brush == null)
-            {
-                CreateImageBrush();
-            }
-
             return _brush;
         }
 
-        private static void OnAlignmentXChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private async void SetSource([CanBeNull] object source)
         {
-            var obj = (ImageBrushExInternal)d;
-            var value = (AlignmentX)e.NewValue;
-
-            if (obj.Owner._brush != null)
-            {
-                obj.Owner._brush.AlignmentX = value;
-            }
+            await SetSourceAsync(source);
         }
 
-        private static void OnAlignmentYChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = (ImageBrushExInternal)d;
-            var value = (AlignmentY)e.NewValue;
-
-            if (obj.Owner._brush != null)
-            {
-                obj.Owner._brush.AlignmentY = value;
-            }
-        }
-
-        private static async void OnImageSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = (ImageBrushExInternal)d;
-            var value = e.NewValue;
-
-            if (obj.Owner._brush != null)
-            {
-                await obj.Owner.SetSourceAsync(value);
-            }
-        }
-
-        private static void OnStretchChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = (ImageBrushExInternal)d;
-            var value = (Stretch)e.NewValue;
-
-            if (obj.Owner._brush != null)
-            {
-                obj.Owner._brush.Stretch = value;
-            }
-        }
-
-        private static void OnTileModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = (ImageBrushExInternal)d;
-            var value = (TileMode)e.NewValue;
-
-            if (obj.Owner._brush != null)
-            {
-                obj.Owner._brush.TileMode = value;
-            }
-        }
-
-        private static void OnViewboxChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = (ImageBrushExInternal)d;
-            var value = (Rect)e.NewValue;
-
-            if (obj.Owner._brush != null)
-            {
-                obj.Owner._brush.Viewbox = value;
-            }
-        }
-
-        private static void OnViewboxUnitsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = (ImageBrushExInternal)d;
-            var value = (BrushMappingMode)e.NewValue;
-
-            if (obj.Owner._brush != null)
-            {
-                obj.Owner._brush.ViewboxUnits = value;
-            }
-        }
-
-        private static void OnViewportChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = (ImageBrushExInternal)d;
-            var value = (Rect)e.NewValue;
-
-            if (obj.Owner._brush != null)
-            {
-                obj.Owner._brush.Viewport = value;
-            }
-        }
-
-        private static void OnViewportUnitsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = (ImageBrushExInternal)d;
-            var value = (BrushMappingMode)e.NewValue;
-
-            if (obj.Owner._brush != null)
-            {
-                obj.Owner._brush.ViewportUnits = value;
-            }
-        }
-
-        private async void CreateImageBrush()
-        {
-            _brush = new ImageBrush
-            {
-                ViewportUnits = ViewportUnits,
-                ViewboxUnits = ViewboxUnits,
-                Viewport = Viewport,
-                Viewbox = Viewbox,
-                Stretch = Stretch,
-                TileMode = TileMode,
-                AlignmentX = AlignmentX,
-                AlignmentY = AlignmentY
-            };
-            await SetSourceAsync(ImageSource);
-        }
-
-        private async Task SetSourceAsync(object source)
+        private async Task SetSourceAsync([CanBeNull] object source)
         {
             _lastLoadCts?.Cancel();
             if (source == null)
@@ -263,10 +141,8 @@ namespace HN.Media
 
                 var pipeDelegate = ImageExService.GetHandler<ImageSource>();
                 var retryDelay = RetryDelay;
-                var policy = Policy.Handle<Exception>().WaitAndRetryAsync(RetryCount, count => retryDelay, (ex, delay) =>
-                {
-                    context.Reset();
-                });
+                var policy = Policy.Handle<Exception>()
+                    .WaitAndRetryAsync(RetryCount, count => retryDelay, (ex, delay) => { context.Reset(); });
                 await policy.ExecuteAsync(() => pipeDelegate.Invoke(context, _lastLoadCts.Token));
 
                 if (!_lastLoadCts.IsCancellationRequested)
@@ -283,6 +159,51 @@ namespace HN.Media
                     ImageFailed?.Invoke(this, new ImageBrushExFailedEventArgs(source, ex));
                 }
             }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    internal class ClrBindingExchanger : DependencyObject
+    {
+        private readonly object _owner;
+        private readonly DependencyProperty _attachedProperty;
+        private readonly Action<object, object> _valueChangeCallback;
+
+        public ClrBindingExchanger(object owner, DependencyProperty attachedProperty,
+            Action<object, object> valueChangeCallback = null)
+        {
+            _owner = owner;
+            _attachedProperty = attachedProperty;
+            _valueChangeCallback = valueChangeCallback;
+        }
+
+        public object GetValue()
+        {
+            return GetValue(_attachedProperty);
+        }
+
+        public void SetValue(object value)
+        {
+            if (value is Binding binding)
+            {
+                BindingOperations.SetBinding(this, _attachedProperty, binding);
+            }
+            else
+            {
+                SetValue(_attachedProperty, value);
+            }
+        }
+
+        public static void ValueChangeCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((ClrBindingExchanger)d)._valueChangeCallback?.Invoke(e.OldValue, e.NewValue);
         }
     }
 }
