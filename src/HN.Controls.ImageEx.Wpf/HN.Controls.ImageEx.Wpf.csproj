@@ -38,7 +38,6 @@
   <ItemGroup>
     <Compile Include="Media\ImageBrushExExtension.cs" />
     <Compile Include="Media\ImageBrushExFailedEventArgs.cs" />
-    <Compile Include="Media\ImageBrushExInternal.cs" />
     <Compile Include="Services\DesignModeService.cs" />
     <Compile Include="Services\ImageExService.cs" />
     <Page Include="Controls\ImageEx.xaml">

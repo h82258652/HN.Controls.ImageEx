@@ -1,6 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -9,30 +9,33 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using HN.Pipes;
 using HN.Services;
-using JetBrains.Annotations;
 using Polly;
 
 namespace HN.Media
 {
     public class ImageBrushExExtension : MarkupExtension
     {
+        public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.RegisterAttached(nameof(ImageSource), typeof(object), typeof(ImageBrushExExtension), new PropertyMetadata(default(object)));
+
+        private static readonly List<ImageBrushExExtension> Instances = new List<ImageBrushExExtension>();
+        private AlignmentX _alignmentX = AlignmentX.Center;
+        private AlignmentY _alignmentY = AlignmentY.Center;
+        private ImageBrush _brush;
+        private object _imageSource;
+        private CancellationTokenSource _lastLoadCts;
+        private object _lastLoadSource;
+        private Stretch _stretch = Stretch.Fill;
+        private DependencyObject _targetObject;
+        private TileMode _tileMode = TileMode.None;
+        private Rect _viewbox = new Rect(0.0, 0.0, 1.0, 1.0);
+        private BrushMappingMode _viewboxUnits = BrushMappingMode.RelativeToBoundingBox;
+        private Rect _viewport = new Rect(0.0, 0.0, 1.0, 1.0);
+        private BrushMappingMode _viewportUnits = BrushMappingMode.RelativeToBoundingBox;
+
         public ImageBrushExExtension()
         {
-            _imageSourceBindingExchanger = new ClrBindingExchanger(this, ImageSourceProperty, OnImageSourceChanged);
+            Instances.Add(this);
         }
-
-        [NotNull] private readonly ImageBrush _brush = new ImageBrush
-        {
-            AlignmentX = AlignmentX.Center,
-            AlignmentY = AlignmentY.Center,
-            Viewbox = new Rect(0, 0, 1, 1),
-            ViewboxUnits = BrushMappingMode.RelativeToBoundingBox,
-            Viewport = new Rect(0, 0, 1, 1),
-            ViewportUnits = BrushMappingMode.RelativeToBoundingBox,
-        };
-
-        private readonly ClrBindingExchanger _imageSourceBindingExchanger;
-        private CancellationTokenSource _lastLoadCts;
 
         public event EventHandler<ImageBrushExFailedEventArgs> ImageFailed;
 
@@ -40,29 +43,66 @@ namespace HN.Media
 
         public AlignmentX AlignmentX
         {
-            get => _brush.AlignmentX;
-            set => _brush.AlignmentX = value;
+            get => _alignmentX;
+            set
+            {
+                if (_alignmentX != value)
+                {
+                    _alignmentX = value;
+                    if (_brush != null)
+                    {
+                        _brush.AlignmentX = value;
+                    }
+                }
+            }
         }
 
         public AlignmentY AlignmentY
         {
-            get => _brush.AlignmentY;
-            set => _brush.AlignmentY = value;
+            get => _alignmentY;
+            set
+            {
+                if (_alignmentY != value)
+                {
+                    _alignmentY = value;
+                    if (_brush != null)
+                    {
+                        _brush.AlignmentY = value;
+                    }
+                }
+            }
         }
-
-        public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.RegisterAttached(
-            "ImageSource", typeof(object), typeof(ImageBrushExExtension),
-            new PropertyMetadata(null, ClrBindingExchanger.ValueChangeCallback));
 
         public object ImageSource
         {
-            get => _imageSourceBindingExchanger.GetValue();
-            set => _imageSourceBindingExchanger.SetValue(value);
-        }
+            get => _imageSource;
+            set
+            {
+                if (_imageSource != value)
+                {
+                    if (_imageSource is Binding && _targetObject != null)
+                    {
+                        // old value is Binding
+                        BindingOperations.ClearBinding(_targetObject, ImageSourceBindingHelper.ImageSourceBindingProperty);
+                    }
 
-        private void OnImageSourceChanged(object oldValue, object newValue)
-        {
-            SetSource(newValue);
+                    _imageSource = value;
+                    if (value is Binding newValueBinding)
+                    {
+                        if (_targetObject != null)
+                        {
+                            BindingOperations.SetBinding(_targetObject, ImageSourceBindingHelper.ImageSourceBindingProperty, newValueBinding);
+                        }
+                    }
+                    else
+                    {
+                        if (_brush != null)
+                        {
+                            SetSource(value);
+                        }
+                    }
+                }
+            }
         }
 
         public int RetryCount { get; set; }
@@ -71,62 +111,171 @@ namespace HN.Media
 
         public Stretch Stretch
         {
-            get => _brush.Stretch;
-            set => _brush.Stretch = value;
+            get => _stretch;
+            set
+            {
+                if (_stretch != value)
+                {
+                    _stretch = value;
+                    if (_brush != null)
+                    {
+                        _brush.Stretch = value;
+                    }
+                }
+            }
         }
 
         public TileMode TileMode
         {
-            get => _brush.TileMode;
-            set => _brush.TileMode = value;
+            get => _tileMode;
+            set
+            {
+                if (_tileMode != value)
+                {
+                    _tileMode = value;
+                    if (_brush != null)
+                    {
+                        _brush.TileMode = value;
+                    }
+                }
+            }
         }
 
         public Rect Viewbox
         {
-            get => _brush.Viewbox;
-            set => _brush.Viewbox = value;
+            get => _viewbox;
+            set
+            {
+                if (_viewbox != value)
+                {
+                    _viewbox = value;
+                    if (_brush != null)
+                    {
+                        _brush.Viewbox = value;
+                    }
+                }
+            }
         }
 
         public BrushMappingMode ViewboxUnits
         {
-            get => _brush.ViewboxUnits;
-            set => _brush.ViewboxUnits = value;
+            get => _viewboxUnits;
+            set
+            {
+                if (_viewboxUnits != value)
+                {
+                    _viewboxUnits = value;
+                    if (_brush != null)
+                    {
+                        _brush.ViewboxUnits = value;
+                    }
+                }
+            }
         }
 
         public Rect Viewport
         {
-            get => _brush.Viewport;
-            set => _brush.Viewport = value;
+            get => _viewport;
+            set
+            {
+                if (_viewport != value)
+                {
+                    _viewport = value;
+                    if (_brush != null)
+                    {
+                        _brush.Viewport = value;
+                    }
+                }
+            }
         }
 
         public BrushMappingMode ViewportUnits
         {
-            get => _brush.ViewportUnits;
-            set => _brush.ViewportUnits = value;
+            get => _viewportUnits;
+            set
+            {
+                if (_viewportUnits != value)
+                {
+                    _viewportUnits = value;
+                    if (_brush != null)
+                    {
+                        _brush.ViewportUnits = value;
+                    }
+                }
+            }
         }
 
         public ImageBrush Clone()
         {
+            if (_brush == null)
+            {
+                CreateImageBrush();
+            }
+
             return _brush.Clone();
         }
 
         public ImageBrush CloneCurrentValue()
         {
+            if (_brush == null)
+            {
+                CreateImageBrush();
+            }
+
             return _brush.CloneCurrentValue();
         }
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
+            if (serviceProvider.GetService(typeof(IProvideValueTarget)) is IProvideValueTarget provideValueTarget)
+            {
+                _targetObject = provideValueTarget.TargetObject as DependencyObject;
+                if (_targetObject != null && ImageSource is Binding binding)
+                {
+                    BindingOperations.SetBinding(_targetObject, ImageSourceBindingHelper.ImageSourceBindingProperty, binding);
+                }
+            }
+
+            if (_brush == null)
+            {
+                CreateImageBrush();
+            }
+
             return _brush;
         }
 
-        private async void SetSource([CanBeNull] object source)
+        private void CreateImageBrush()
+        {
+            _brush = new ImageBrush
+            {
+                ViewportUnits = ViewportUnits,
+                ViewboxUnits = ViewboxUnits,
+                Viewport = Viewport,
+                Viewbox = Viewbox,
+                Stretch = Stretch,
+                TileMode = TileMode,
+                AlignmentX = AlignmentX,
+                AlignmentY = AlignmentY
+            };
+            if (!(ImageSource is Binding))
+            {
+                SetSource(ImageSource);
+            }
+        }
+
+        private async void SetSource(object source)
         {
             await SetSourceAsync(source);
         }
 
-        private async Task SetSourceAsync([CanBeNull] object source)
+        private async Task SetSourceAsync(object source)
         {
+            if (_lastLoadSource == source)
+            {
+                return;
+            }
+            _lastLoadSource = source;
+
             _lastLoadCts?.Cancel();
             if (source == null)
             {
@@ -141,8 +290,10 @@ namespace HN.Media
 
                 var pipeDelegate = ImageExService.GetHandler<ImageSource>();
                 var retryDelay = RetryDelay;
-                var policy = Policy.Handle<Exception>()
-                    .WaitAndRetryAsync(RetryCount, count => retryDelay, (ex, delay) => { context.Reset(); });
+                var policy = Policy.Handle<Exception>().WaitAndRetryAsync(RetryCount, count => retryDelay, (ex, delay) =>
+                {
+                    context.Reset();
+                });
                 await policy.ExecuteAsync(() => pipeDelegate.Invoke(context, _lastLoadCts.Token));
 
                 if (!_lastLoadCts.IsCancellationRequested)
@@ -161,49 +312,18 @@ namespace HN.Media
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        private static class ImageSourceBindingHelper
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
+            internal static readonly DependencyProperty ImageSourceBindingProperty = DependencyProperty.RegisterAttached("ImageSourceBinding", typeof(object), typeof(DependencyObject), new PropertyMetadata(default(object), OnImageSourceBindingChagned));
 
-    internal class ClrBindingExchanger : DependencyObject
-    {
-        private readonly object _owner;
-        private readonly DependencyProperty _attachedProperty;
-        private readonly Action<object, object> _valueChangeCallback;
-
-        public ClrBindingExchanger(object owner, DependencyProperty attachedProperty,
-            Action<object, object> valueChangeCallback = null)
-        {
-            _owner = owner;
-            _attachedProperty = attachedProperty;
-            _valueChangeCallback = valueChangeCallback;
-        }
-
-        public object GetValue()
-        {
-            return GetValue(_attachedProperty);
-        }
-
-        public void SetValue(object value)
-        {
-            if (value is Binding binding)
+            private static void OnImageSourceBindingChagned(DependencyObject d, DependencyPropertyChangedEventArgs e)
             {
-                BindingOperations.SetBinding(this, _attachedProperty, binding);
+                var binding = BindingOperations.GetBinding(d, e.Property);
+                foreach (var imageBrushExExtension in Instances.Where(temp => temp.ImageSource == binding))
+                {
+                    imageBrushExExtension.SetSource(e.NewValue);
+                }
             }
-            else
-            {
-                SetValue(_attachedProperty, value);
-            }
-        }
-
-        public static void ValueChangeCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((ClrBindingExchanger)d)._valueChangeCallback?.Invoke(e.OldValue, e.NewValue);
         }
     }
 }
