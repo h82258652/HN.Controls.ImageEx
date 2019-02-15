@@ -139,7 +139,7 @@
       <Version>6.2.2</Version>
     </PackageReference>
     <PackageReference Include="Polly">
-      <Version>7.0.1</Version>
+      <Version>7.0.2</Version>
     </PackageReference>
     <PackageReference Include="Weakly">
       <Version>2.8.1</Version>
