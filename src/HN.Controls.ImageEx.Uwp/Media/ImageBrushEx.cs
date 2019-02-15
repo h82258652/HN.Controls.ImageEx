@@ -98,12 +98,24 @@ namespace HN.Media
             set => SetValue(ImageSourceProperty, value);
         }
 
+        /// <summary>
+        /// 获取或设置加载失败时的重试次数。
+        /// </summary>
+        /// <returns>
+        /// 加载失败时的重试次数。
+        /// </returns>
         public int RetryCount
         {
             get => (int)GetValue(RetryCountProperty);
             set => SetValue(RetryCountProperty, value);
         }
 
+        /// <summary>
+        /// 获取或设置加载失败时的重试间隔。
+        /// </summary>
+        /// <returns>
+        /// 加载失败时的重试间隔。
+        /// </returns>
         public TimeSpan RetryDelay
         {
             get => (TimeSpan)GetValue(RetryDelayProperty);
