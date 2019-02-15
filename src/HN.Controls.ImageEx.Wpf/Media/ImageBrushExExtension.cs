@@ -41,6 +41,13 @@ namespace HN.Media
 
         public event EventHandler ImageOpened;
 
+        /// <summary>
+        /// 获取或设置 <see cref="TileBrush" /> 基本磁贴中内容的水平对齐方式。
+        /// </summary>
+        /// <returns>
+        /// 用于指定 <see cref="TileBrush" /> 内容在其基本磁贴中水平位置的值。
+        /// 默认值为 <see cref="System.Windows.Media.AlignmentX.Center" />。
+        /// </returns>
         public AlignmentX AlignmentX
         {
             get => _alignmentX;
@@ -57,6 +64,13 @@ namespace HN.Media
             }
         }
 
+        /// <summary>
+        /// 获取或设置 <see cref="TileBrush" /> 基本磁贴中内容的垂直对齐方式。
+        /// </summary>
+        /// <returns>
+        /// 用于指定 <see cref="TileBrush" /> 内容在其基本磁贴中垂直位置的值。
+        /// 默认值为 <see cref="System.Windows.Media.AlignmentY.Center" />。
+        /// </returns>
         public AlignmentY AlignmentY
         {
             get => _alignmentY;

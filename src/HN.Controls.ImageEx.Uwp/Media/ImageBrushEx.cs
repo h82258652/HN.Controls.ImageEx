@@ -1,22 +1,63 @@
-﻿using HN.Pipes;
-using Polly;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using HN.Pipes;
+using HN.Services;
+using Polly;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
-using HN.Services;
 
 namespace HN.Media
 {
     public class ImageBrushEx : XamlCompositionBrushBase
     {
+        /// <summary>
+        /// 标识 <see cref="AlignmentX" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="AlignmentX" /> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty AlignmentXProperty = DependencyProperty.Register(nameof(AlignmentX), typeof(AlignmentX), typeof(ImageBrushEx), new PropertyMetadata(AlignmentX.Center, OnAlignmentXChanged));
+
+        /// <summary>
+        /// 标识 <see cref="AlignmentY" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="AlignmentY" /> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty AlignmentYProperty = DependencyProperty.Register(nameof(AlignmentY), typeof(AlignmentY), typeof(ImageBrushEx), new PropertyMetadata(AlignmentY.Center, OnAlignmentYChanged));
+
+        /// <summary>
+        /// 标识 <see cref="ImageSource" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="ImageSource" /> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.Register(nameof(ImageSource), typeof(object), typeof(ImageBrushEx), new PropertyMetadata(default(object), OnImageSourceChanged));
+
+        /// <summary>
+        /// 标识 <see cref="RetryCount" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="RetryCount" /> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty RetryCountProperty = DependencyProperty.Register(nameof(RetryCount), typeof(int), typeof(ImageBrushEx), new PropertyMetadata(default(int)));
+
+        /// <summary>
+        /// 标识 <see cref="RetryDelay" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="RetryDelay" /> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty RetryDelayProperty = DependencyProperty.Register(nameof(RetryDelay), typeof(TimeSpan), typeof(ImageBrushEx), new PropertyMetadata(TimeSpan.Zero));
+
+        /// <summary>
+        /// 标识 <see cref="Stretch" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="Stretch" /> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty StretchProperty = DependencyProperty.Register(nameof(Stretch), typeof(Stretch), typeof(ImageBrushEx), new PropertyMetadata(Stretch.Uniform, OnStretchChanged));
 
         private CancellationTokenSource _lastLoadCts;
@@ -25,12 +66,26 @@ namespace HN.Media
 
         public event EventHandler ImageOpened;
 
+        /// <summary>
+        /// 获取或设置 <see cref="TileBrush" /> 基本磁贴中内容的水平对齐方式。
+        /// </summary>
+        /// <returns>
+        /// 用于指定 <see cref="TileBrush" /> 内容在其基本磁贴中水平位置的值。
+        /// 默认值为 <see cref="Windows.UI.Xaml.Media.AlignmentX.Center" />。
+        /// </returns>
         public AlignmentX AlignmentX
         {
             get => (AlignmentX)GetValue(AlignmentXProperty);
             set => SetValue(AlignmentXProperty, value);
         }
 
+        /// <summary>
+        /// 获取或设置 <see cref="TileBrush" /> 基本磁贴中内容的垂直对齐方式。
+        /// </summary>
+        /// <returns>
+        /// 用于指定 <see cref="TileBrush" /> 内容在其基本磁贴中垂直位置的值。
+        /// 默认值为 <see cref="Windows.UI.Xaml.Media.AlignmentY.Center" />。
+        /// </returns>
         public AlignmentY AlignmentY
         {
             get => (AlignmentY)GetValue(AlignmentYProperty);
