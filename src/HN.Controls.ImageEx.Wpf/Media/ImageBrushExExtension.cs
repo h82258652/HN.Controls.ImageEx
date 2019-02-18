@@ -158,6 +158,13 @@ namespace HN.Media
             }
         }
 
+        /// <summary>
+        /// 获取或设置一个值，该值指定在基本图块小于输出区时 <see cref="TileBrush" /> 如何填充你正在绘画的区域。
+        /// </summary>
+        /// <returns>
+        /// 一个值，该值指定在 <see cref="Viewport" /> 属性指定的基本图块小于输出区域时 <see cref="TileBrush" /> 图块如何填充输出区域的值。
+        /// 默认值为 <see cref="System.Windows.Media.TileMode.None" />。
+        /// </returns>
         public TileMode TileMode
         {
             get => _tileMode;
@@ -174,6 +181,13 @@ namespace HN.Media
             }
         }
 
+        /// <summary>
+        /// 获取或设置 <see cref="TileBrush" /> 图块中内容的位置和尺寸。
+        /// </summary>
+        /// <returns>
+        /// <see cref="TileBrush" /> 内容的位置和尺寸。
+        /// 默认值为矩形 (<see cref="Rect" />)，其 <see cref="Rect.TopLeft" /> 为 (0,0)，<see cref="Rect.Width" /> 和 <see cref="Rect.Height" /> 为 1。
+        /// </returns>
         public Rect Viewbox
         {
             get => _viewbox;
@@ -190,6 +204,13 @@ namespace HN.Media
             }
         }
 
+        /// <summary>
+        /// 获取或设置一个值，该值指定 <see cref="Viewbox" /> 值是相对于 <see cref="TileBrush" /> 内容的边界框而言，还是绝对值。
+        /// </summary>
+        /// <returns>
+        /// 一个值，该值指示 <see cref="Viewbox" /> 值是相对于 <see cref="TileBrush" /> 内容的边界框而言，还是绝对值。
+        /// 默认值为 <see cref="BrushMappingMode.RelativeToBoundingBox" />。
+        /// </returns>
         public BrushMappingMode ViewboxUnits
         {
             get => _viewboxUnits;
@@ -206,6 +227,13 @@ namespace HN.Media
             }
         }
 
+        /// <summary>
+        /// 获取或设置 <see cref="TileBrush" /> 的基本图块的位置和尺寸。
+        /// </summary>
+        /// <returns>
+        /// <see cref="TileBrush" /> 的基本图块的位置和尺寸。
+        /// 默认值是一个矩形 (<see cref="Rect" />)，其 <see cref="Rect.TopLeft" /> 为 (0,0)，其 <see cref="Rect.Width" /> 和 <see cref="Rect.Height" /> 为 1。
+        /// </returns>
         public Rect Viewport
         {
             get => _viewport;
@@ -222,6 +250,13 @@ namespace HN.Media
             }
         }
 
+        /// <summary>
+        /// 获取或设置 <see cref="BrushMappingMode" /> 枚举，该枚举指定 <see cref="Viewport" /> 的值（该值指示 <see cref="TileBrush" /> 基本图块的大小和位置）是否是相对于输出区域的大小。
+        /// </summary>
+        /// <returns>
+        /// 指示 <see cref="Viewport" /> 的值（该值用于描述 <see cref="TileBrush" /> 磁贴的大小和位置）是否是相对于整体输出区域的大小。
+        /// 默认值为 <see cref="BrushMappingMode.RelativeToBoundingBox "/>。
+        /// </returns>
         public BrushMappingMode ViewportUnits
         {
             get => _viewportUnits;
@@ -238,6 +273,13 @@ namespace HN.Media
             }
         }
 
+        /// <summary>
+        /// 创建的可修改复本 <see cref="ImageBrush" />，从而深度复制此对象的值。
+        /// </summary>
+        /// <returns>
+        /// 当前对象的可修改复本。
+        /// 即使源的 <see cref="Freezable.IsFrozen" /> 属性为 <see langword="true" />，所克隆对象的 <see cref="Freezable.IsFrozen" /> 属性也为 <see langword="false" />。
+        /// </returns>
         public ImageBrush Clone()
         {
             if (_brush == null)
@@ -248,6 +290,13 @@ namespace HN.Media
             return _brush.Clone();
         }
 
+        /// <summary>
+        /// 创建此 <see cref="ImageBrush" /> 对象的可修改复本，从而深度复制此对象的当前值。
+        /// </summary>
+        /// <returns>
+        /// 当前对象的可修改复本。
+        /// 克隆的对象 <see cref="Freezable.IsFrozen" /> 属性是 <see langword="false" /> 即使源的 <see cref="Freezable.IsFrozen" /> 属性是 <see langword="true" />。
+        /// </returns>
         public ImageBrush CloneCurrentValue()
         {
             if (_brush == null)
@@ -258,6 +307,7 @@ namespace HN.Media
             return _brush.CloneCurrentValue();
         }
 
+        /// <inheritdoc />
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             if (serviceProvider.GetService(typeof(IProvideValueTarget)) is IProvideValueTarget provideValueTarget)
