@@ -135,6 +135,7 @@ namespace HN.Media
             set => SetValue(StretchProperty, value);
         }
 
+        /// <inheritdoc />
         protected override async void OnConnected()
         {
             base.OnConnected();
@@ -142,6 +143,7 @@ namespace HN.Media
             await SetSourceAsync(ImageSource);
         }
 
+        /// <inheritdoc />
         protected override void OnDisconnected()
         {
             base.OnDisconnected();
