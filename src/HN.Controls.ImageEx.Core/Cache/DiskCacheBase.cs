@@ -5,18 +5,30 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace HN.Cache
 {
+    /// <inheritdoc />
+    /// <summary>
+    /// 磁盘缓存基础实现。
+    /// </summary>
     public abstract class DiskCacheBase : IDiskCache
     {
-        protected DiskCacheBase(string cacheFolderPath)
+        /// <summary>
+        /// 初始化 <see cref="DiskCacheBase" /> 类的新实例。
+        /// </summary>
+        /// <param name="cacheFolderPath">缓存文件夹路径。</param>
+        /// <exception cref="ArgumentNullException">缓存文件夹路径为 <see langword="null" />。</exception>
+        protected DiskCacheBase([NotNull]string cacheFolderPath)
         {
             CacheFolderPath = cacheFolderPath ?? throw new ArgumentNullException(nameof(cacheFolderPath));
         }
 
+        /// <inheritdoc />
         public string CacheFolderPath { get; }
 
+        /// <inheritdoc />
         public Task<long> CalculateAllSizeAsync()
         {
             if (Directory.Exists(CacheFolderPath))
@@ -30,6 +42,7 @@ namespace HN.Cache
             return Task.FromResult(0L);
         }
 
+        /// <inheritdoc />
         public Task<long> CalculateSizeAsync(string key)
         {
             if (key == null)
@@ -41,6 +54,7 @@ namespace HN.Cache
             return Task.FromResult(new FileInfo(cacheFileName).Length);
         }
 
+        /// <inheritdoc />
         public Task DeleteAllAsync()
         {
             var cacheFolderPath = CacheFolderPath;
@@ -53,6 +67,7 @@ namespace HN.Cache
             });
         }
 
+        /// <inheritdoc />
         public Task DeleteAsync(string key)
         {
             if (key == null)
@@ -64,6 +79,7 @@ namespace HN.Cache
             return Task.Run(() => File.Delete(cacheFilePath));
         }
 
+        /// <inheritdoc />
         public async Task<byte[]> GetAsync(string key, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (key == null)
@@ -80,6 +96,7 @@ namespace HN.Cache
             }
         }
 
+        /// <inheritdoc />
         public Task<bool> IsExistAsync(string key)
         {
             if (key == null)
@@ -91,6 +108,7 @@ namespace HN.Cache
             return Task.FromResult(File.Exists(cacheFilePath));
         }
 
+        /// <inheritdoc />
         public async Task SetAsync(string key, byte[] data, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (key == null)
