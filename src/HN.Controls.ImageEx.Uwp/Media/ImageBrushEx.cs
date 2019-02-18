@@ -122,6 +122,13 @@ namespace HN.Media
             set => SetValue(RetryDelayProperty, value);
         }
 
+        /// <summary>
+        /// 获取或设置一个值，它指定此 <see cref="TileBrush" /> 的内容如何拉伸才适合其磁贴。
+        /// </summary>
+        /// <returns>
+        /// 指定此 <see cref="TileBrush" /> 内容如何投影到其基本磁贴的值。
+        /// 默认值为 <see cref="Windows.UI.Xaml.Media.Stretch.Fill" />。
+        /// </returns>
         public Stretch Stretch
         {
             get => (Stretch)GetValue(StretchProperty);
