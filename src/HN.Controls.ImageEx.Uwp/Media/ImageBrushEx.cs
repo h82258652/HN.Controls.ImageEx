@@ -10,6 +10,10 @@ using Windows.UI.Xaml.Media;
 
 namespace HN.Media
 {
+    /// <inheritdoc />
+    /// <summary>
+    /// 使用图像绘制区域。
+    /// </summary>
     public class ImageBrushEx : XamlCompositionBrushBase
     {
         /// <summary>
@@ -62,8 +66,14 @@ namespace HN.Media
 
         private CancellationTokenSource _lastLoadCts;
 
+        /// <summary>
+        /// 在无法加载图像源时发生。
+        /// </summary>
         public event EventHandler<ImageBrushExFailedEventArgs> ImageFailed;
 
+        /// <summary>
+        /// 在成功显示图像后发生。
+        /// </summary>
         public event EventHandler ImageOpened;
 
         /// <summary>
@@ -92,6 +102,12 @@ namespace HN.Media
             set => SetValue(AlignmentYProperty, value);
         }
 
+        /// <summary>
+        /// 获取或设置此 <see cref="ImageBrush" /> 显示的图像。
+        /// </summary>
+        /// <returns>
+        /// 此 <see cref="ImageBrush" /> 显示的图像。
+        /// </returns>
         public object ImageSource
         {
             get => GetValue(ImageSourceProperty);
