@@ -19,6 +19,12 @@ namespace HN.Media
     /// </summary>
     public class ImageBrushExExtension : MarkupExtension
     {
+        /// <summary>
+        /// 标识 <see cref="ImageSource" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="ImageSource" /> 依赖项属性的标识符。
+        /// </returns>
         public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.RegisterAttached(nameof(ImageSource), typeof(object), typeof(ImageBrushExExtension), new PropertyMetadata(default(object)));
 
         private static readonly List<ImageBrushExExtension> Instances = new List<ImageBrushExExtension>();
