@@ -135,7 +135,7 @@ namespace HN.Controls
 
         /// <inheritdoc />
         /// <summary>
-        /// 初始化 ImageEx 类的新实例。
+        /// 初始化 <see cref="ImageEx" /> 类的新实例。
         /// </summary>
         public ImageEx()
         {
