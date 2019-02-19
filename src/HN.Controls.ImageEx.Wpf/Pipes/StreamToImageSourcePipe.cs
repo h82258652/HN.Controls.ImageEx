@@ -8,13 +8,13 @@ using HN.Services;
 
 namespace HN.Pipes
 {
-    public class StreamToImageSourcePipe : PipeBase<ImageSource>
+    public class StreamToImageSourcePipe : LoadingPipeBase<ImageSource>
     {
         public StreamToImageSourcePipe(IDesignModeService designModeService) : base(designModeService)
         {
         }
 
-        public override async Task InvokeAsync(ILoadingContext<ImageSource> context, PipeDelegate<ImageSource> next, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task InvokeAsync(ILoadingContext<ImageSource> context, LoadingPipeDelegate<ImageSource> next, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (context.Current is Stream stream)
             {

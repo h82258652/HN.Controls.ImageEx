@@ -8,16 +8,28 @@ using Microsoft.VisualStudio.Threading;
 
 namespace HN.Pipes
 {
-    public class DiskCachePipe<TResult> : PipeBase<TResult> where TResult : class
+    /// <inheritdoc />
+    /// <summary>
+    /// 磁盘加载管道。
+    /// </summary>
+    /// <typeparam name="TResult">加载目标的类型。</typeparam>
+    public class DiskCachePipe<TResult> : LoadingPipeBase<TResult> where TResult : class
     {
         private readonly IDiskCache _diskCache;
 
+        /// <inheritdoc />
+        /// <summary>
+        /// 初始化 <see cref="DiskCachePipe{TResult}" /> 类的新实例。
+        /// </summary>
+        /// <param name="designModeService">设计模式服务。</param>
+        /// <param name="diskCache">磁盘缓存。</param>
         public DiskCachePipe(IDesignModeService designModeService, IDiskCache diskCache) : base(designModeService)
         {
             _diskCache = diskCache ?? throw new ArgumentNullException(nameof(diskCache));
         }
 
-        public override async Task InvokeAsync(ILoadingContext<TResult> context, PipeDelegate<TResult> next, CancellationToken cancellationToken = default(CancellationToken))
+        /// <inheritdoc />
+        public override async Task InvokeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (IsInDesignMode)
             {

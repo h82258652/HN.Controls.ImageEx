@@ -44,14 +44,14 @@ namespace HN.Services
             Configure(configure);
         }
 
-        public static PipeDelegate<T> GetHandler<T>() where T : class
+        public static LoadingPipeDelegate<T> GetHandler<T>() where T : class
         {
             if (!Services.TryGetValue(typeof(T), out var services))
             {
                 throw new InvalidOperationException($"type {typeof(T).FullName} is not configure");
             }
 
-            return PipeBuilder.Build<T>(services);
+            return LoadingPipeBuilder.Build<T>(services);
         }
     }
 }

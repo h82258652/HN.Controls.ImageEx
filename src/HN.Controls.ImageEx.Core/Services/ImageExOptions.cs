@@ -17,9 +17,9 @@ namespace HN.Services
             Services.AddTransient<TService, TImplementation>();
         }
 
-        public void AddPipe<TPipe>() where TPipe : class, IPipe<T>
+        public void AddPipe<TPipe>() where TPipe : class, ILoadingPipe<T>
         {
-            Services.AddTransient<IPipe<T>, TPipe>();
+            Services.AddTransient<ILoadingPipe<T>, TPipe>();
         }
     }
 }

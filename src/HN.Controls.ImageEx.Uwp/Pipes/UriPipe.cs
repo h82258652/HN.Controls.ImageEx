@@ -12,7 +12,7 @@ using Windows.Storage;
 
 namespace HN.Pipes
 {
-    public class UriPipe<TResult> : PipeBase<TResult> where TResult : class
+    public class UriPipe<TResult> : LoadingPipeBase<TResult> where TResult : class
     {
         private readonly HttpMessageHandler _httpMessageHandler;
 
@@ -21,7 +21,7 @@ namespace HN.Pipes
             _httpMessageHandler = httpMessageHandler ?? throw new ArgumentNullException(nameof(httpMessageHandler));
         }
 
-        public override async Task InvokeAsync(ILoadingContext<TResult> context, PipeDelegate<TResult> next, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task InvokeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, CancellationToken cancellationToken = default(CancellationToken))
         {
             var uri = context.Current as Uri;
             if (uri == null)

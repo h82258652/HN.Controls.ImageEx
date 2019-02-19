@@ -5,11 +5,25 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HN.Pipes
 {
-    public static class PipeBuilder
+    /// <summary>
+    /// 该类用于构建加载管道。
+    /// </summary>
+    public static class LoadingPipeBuilder
     {
-        public static PipeDelegate<TResult> Build<TResult>(IServiceCollection services) where TResult : class
+        /// <summary>
+        /// 构建加载管道。
+        /// </summary>
+        /// <typeparam name="TResult">加载目标的类型。</typeparam>
+        /// <param name="services">服务集合。</param>
+        /// <returns>管道调用的委托。</returns>
+        public static LoadingPipeDelegate<TResult> Build<TResult>(IServiceCollection services) where TResult : class
         {
-            PipeDelegate<TResult> end = (context, cancellationToken) =>
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            LoadingPipeDelegate<TResult> end = (context, cancellationToken) =>
             {
                 if (context.Result == null)
                 {
@@ -25,10 +39,10 @@ namespace HN.Pipes
             };
 
             var serviceProvider = services.BuildServiceProvider();
-            var pipes = serviceProvider.GetServices<IPipe<TResult>>();
+            var pipes = serviceProvider.GetServices<ILoadingPipe<TResult>>();
             foreach (var pipe in pipes.Reverse())
             {
-                Func<PipeDelegate<TResult>, PipeDelegate<TResult>> handler = next =>
+                Func<LoadingPipeDelegate<TResult>, LoadingPipeDelegate<TResult>> handler = next =>
                 {
                     return (context, cancellationToken) =>
                     {
