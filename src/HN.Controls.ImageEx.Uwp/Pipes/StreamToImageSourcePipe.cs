@@ -9,6 +9,10 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace HN.Pipes
 {
+    /// <inheritdoc />
+    /// <summary>
+    /// 若当前的值是 <see cref="Stream" /> 类型，则该管道会转换为 <see cref="ImageSource" /> 类型。
+    /// </summary>
     public class StreamToImageSourcePipe : LoadingPipeBase<ImageSource>
     {
         /// <inheritdoc />

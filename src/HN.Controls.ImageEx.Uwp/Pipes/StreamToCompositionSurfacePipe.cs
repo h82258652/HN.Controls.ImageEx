@@ -9,6 +9,10 @@ using Windows.UI.Xaml.Media;
 
 namespace HN.Pipes
 {
+    /// <inheritdoc />
+    /// <summary>
+    /// 若当前的值是 <see cref="Stream" /> 类型，则该管道会转换为 <see cref="ICompositionSurface" /> 类型。
+    /// </summary>
     public class StreamToCompositionSurfacePipe : LoadingPipeBase<ICompositionSurface>
     {
         /// <inheritdoc />
