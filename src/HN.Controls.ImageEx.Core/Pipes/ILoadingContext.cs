@@ -22,7 +22,7 @@
         double? DesiredWidth { get; }
 
         /// <summary>
-        /// 若管道处理过程中涉及 Http 传输，则存放 Http 响应的内容在此。
+        /// 若管道处理过程中涉及 HTTP 传输，则存放 HTTP 响应的内容在此。
         /// </summary>
         byte[] HttpResponseBytes { get; set; }
 

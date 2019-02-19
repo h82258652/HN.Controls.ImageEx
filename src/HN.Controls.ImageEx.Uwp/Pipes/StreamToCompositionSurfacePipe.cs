@@ -11,10 +11,16 @@ namespace HN.Pipes
 {
     public class StreamToCompositionSurfacePipe : LoadingPipeBase<ICompositionSurface>
     {
+        /// <inheritdoc />
+        /// <summary>
+        /// 初始化 <see cref="StreamToCompositionSurfacePipe" /> 类的新实例。
+        /// </summary>
+        /// <param name="designModeService">设计模式服务。</param>
         public StreamToCompositionSurfacePipe(IDesignModeService designModeService) : base(designModeService)
         {
         }
 
+        /// <inheritdoc />
         public override async Task InvokeAsync(ILoadingContext<ICompositionSurface> context, LoadingPipeDelegate<ICompositionSurface> next, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (context.Current is Stream stream)

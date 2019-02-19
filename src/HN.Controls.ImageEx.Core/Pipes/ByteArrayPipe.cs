@@ -7,7 +7,7 @@ namespace HN.Pipes
 {
     /// <inheritdoc />
     /// <summary>
-    /// 若当前的值是字节数组，则该管道会进行处理。
+    /// 若当前的值是 <see langword="byte" /> 数组类型，则该管道会进行处理。
     /// </summary>
     /// <typeparam name="TResult">加载目标的类型。</typeparam>
     public class ByteArrayPipe<TResult> : LoadingPipeBase<TResult> where TResult : class

@@ -12,15 +12,27 @@ using Windows.Storage;
 
 namespace HN.Pipes
 {
+    /// <inheritdoc />
+    /// <summary>
+    /// 若当前的值是 <see cref="Uri" /> 类型，则该管道会进行处理。
+    /// </summary>
+    /// <typeparam name="TResult">加载目标的类型。</typeparam>
     public class UriPipe<TResult> : LoadingPipeBase<TResult> where TResult : class
     {
         private readonly HttpMessageHandler _httpMessageHandler;
 
+        /// <inheritdoc />
+        /// <summary>
+        /// 初始化 <see cref="UriPipe{TResult}" /> 类的新实例。
+        /// </summary>
+        /// <param name="designModeService">设计模式服务。</param>
+        /// <param name="httpMessageHandler">HTTP 消息处理程序。</param>
         public UriPipe(IDesignModeService designModeService, HttpMessageHandler httpMessageHandler) : base(designModeService)
         {
             _httpMessageHandler = httpMessageHandler ?? throw new ArgumentNullException(nameof(httpMessageHandler));
         }
 
+        /// <inheritdoc />
         public override async Task InvokeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, CancellationToken cancellationToken = default(CancellationToken))
         {
             var uri = context.Current as Uri;
