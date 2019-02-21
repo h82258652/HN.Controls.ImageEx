@@ -7,6 +7,9 @@ using Windows.UI.Xaml.Media;
 
 namespace HN.Services
 {
+    /// <summary>
+    /// <see cref="IImageExOptions{T}" /> 扩展类。
+    /// </summary>
     public static class ImageExOptionsExtensions
     {
         public static IImageExOptions<ImageSource> WithDefaultPipes(this IImageExOptions<ImageSource> options)

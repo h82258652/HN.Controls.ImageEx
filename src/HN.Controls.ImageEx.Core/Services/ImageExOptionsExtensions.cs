@@ -4,6 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HN.Services
 {
+    /// <summary>
+    /// <see cref="IImageExOptions{T}" /> 扩展类。
+    /// </summary>
     public static class ImageExOptionsExtensions
     {
         public static IImageExOptions<T> AddPipe<T, TPipe>(this IImageExOptions<T> options) where T : class where TPipe : class, ILoadingPipe<T>
