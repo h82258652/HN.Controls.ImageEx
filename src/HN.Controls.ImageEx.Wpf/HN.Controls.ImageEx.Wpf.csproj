@@ -39,6 +39,7 @@
     <Compile Include="Media\ImageBrushExExtension.cs" />
     <Compile Include="Media\ImageBrushExFailedEventArgs.cs" />
     <Compile Include="Services\DesignModeService.cs" />
+    <Compile Include="Services\ImageExOptionsExtensions.cs" />
     <Compile Include="Services\ImageExService.cs" />
     <Page Include="Controls\ImageEx.xaml">
       <SubType>Designer</SubType>

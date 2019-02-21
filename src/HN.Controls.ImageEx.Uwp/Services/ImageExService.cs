@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using HN.Cache;
 using HN.Pipes;
 using Microsoft.Extensions.DependencyInjection;
 using Windows.UI.Composition;
@@ -9,45 +7,42 @@ using Windows.UI.Xaml.Media;
 
 namespace HN.Services
 {
+    /// <summary>
+    /// ImageEx 服务。
+    /// </summary>
     public static class ImageExService
     {
         private static readonly Dictionary<Type, IServiceCollection> Services = new Dictionary<Type, IServiceCollection>();
 
         static ImageExService()
         {
-            Configure<ImageSource>(options =>
+            ConfigureImageSource(options =>
             {
-                options.AddService<IDiskCache, DiskCache>();
-                options.AddService<IDesignModeService, DesignModeService>();
-                options.AddService<HttpMessageHandler, HttpClientHandler>();
+                options.WithDefaultServices();
 
-                options.AddPipe<DirectPipe<ImageSource>>();
-                options.AddPipe<MemoryCachePipe<ImageSource>>();
-                options.AddPipe<StringPipe<ImageSource>>();
-                options.AddPipe<DiskCachePipe<ImageSource>>();
-                options.AddPipe<UriPipe<ImageSource>>();
-                options.AddPipe<ByteArrayPipe<ImageSource>>();
-                options.AddPipe<StreamToImageSourcePipe>();
+                options.WithDefaultPipes();
             });
 
-            Configure<ICompositionSurface>(options =>
+            ConfigureCompositionSurface(options =>
             {
-                options.AddService<IDiskCache, DiskCache>();
-                options.AddService<IDesignModeService, DesignModeService>();
-                options.AddService<HttpMessageHandler, HttpClientHandler>();
+                options.WithDefaultServices();
 
-                options.AddPipe<DirectPipe<ICompositionSurface>>();
-                options.AddPipe<MemoryCachePipe<ICompositionSurface>>();
-                options.AddPipe<StringPipe<ICompositionSurface>>();
-                options.AddPipe<DiskCachePipe<ICompositionSurface>>();
-                options.AddPipe<UriPipe<ICompositionSurface>>();
-                options.AddPipe<ByteArrayPipe<ICompositionSurface>>();
-                options.AddPipe<StreamToCompositionSurfacePipe>();
+                options.WithDefaultPipes();
             });
         }
 
-        public static void Configure<T>(Action<ImageExOptions<T>> configure) where T : class
+        /// <summary>
+        /// 进行配置。
+        /// </summary>
+        /// <typeparam name="T">输出值的类型。</typeparam>
+        /// <param name="configure">执行配置的委托。</param>
+        public static void Configure<T>(Action<IImageExOptions<T>> configure) where T : class
         {
+            if (configure == null)
+            {
+                throw new ArgumentNullException(nameof(configure));
+            }
+
             var options = new ImageExOptions<T>();
 
             configure(options);
@@ -55,16 +50,29 @@ namespace HN.Services
             Services[typeof(T)] = options.Services;
         }
 
-        public static void ConfigureImageBrushEx(Action<ImageExOptions<ICompositionSurface>> configure)
+        /// <summary>
+        /// 进行输出值类型为 <see cref="ICompositionSurface" /> 的配置。
+        /// </summary>
+        /// <param name="configure">执行配置的委托。</param>
+        public static void ConfigureCompositionSurface(Action<IImageExOptions<ICompositionSurface>> configure)
         {
             Configure(configure);
         }
 
-        public static void ConfigureImageEx(Action<ImageExOptions<ImageSource>> configure)
+        /// <summary>
+        /// 进行输出值类型为 <see cref="ImageSource" /> 的配置。
+        /// </summary>
+        /// <param name="configure">执行配置的委托。</param>
+        public static void ConfigureImageSource(Action<IImageExOptions<ImageSource>> configure)
         {
             Configure(configure);
         }
 
+        /// <summary>
+        /// 获取管道组装后，输出值的委托调用。
+        /// </summary>
+        /// <typeparam name="T">输出值的类型。</typeparam>
+        /// <returns>输出值的委托调用。</returns>
         public static LoadingPipeDelegate<T> GetHandler<T>() where T : class
         {
             if (!Services.TryGetValue(typeof(T), out var services))
