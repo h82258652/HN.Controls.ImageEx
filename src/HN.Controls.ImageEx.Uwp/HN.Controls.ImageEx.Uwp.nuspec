@@ -12,7 +12,7 @@
     <description>HN.Controls.ImageEx.Uwp</description>
     <tags></tags>
     <dependencies>
-      <dependency id="HN.Controls.ImageEx.Core" version="1.0.0" />
+      <dependency id="HN.Controls.ImageEx.Core" version="$version$" />
       <dependency id="Polly" version="7.0.3" />
     </dependencies>
   </metadata>
