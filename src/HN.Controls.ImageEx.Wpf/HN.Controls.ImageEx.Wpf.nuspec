@@ -15,4 +15,9 @@
       <dependency id="HN.Controls.ImageEx.Core" version="1.0.0" />
     </dependencies>
   </metadata>
+  <files>
+    <file src="bin\Release\HN.Controls.ImageEx.Wpf.dll" target="lib\net461" />
+    <file src="bin\Release\HN.Controls.ImageEx.Wpf.xml" target="lib\net461" />
+    <file src="bin\Release\HN.Controls.ImageEx.Wpf.pdb" target="lib\net461" />
+  </files>
 </package>
