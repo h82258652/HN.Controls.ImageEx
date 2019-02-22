@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>HN.Controls.ImageEx.Core</id>
+    <version>$version$</version>
+    <title>HN.Controls.ImageEx.Core</title>
+    <authors>h82258652</authors>
+    <owners>h82258652</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/h82258652/HN.Controls.ImageEx</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>HN.Controls.ImageEx.Core</description>
+    <tags></tags>
+    <dependencies>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\netstandard2.0\HN.Controls.ImageEx.Core.dll" target="lib\netstandard2.0" />
+    <file src="bin\Release\netstandard2.0\HN.Controls.ImageEx.Core.xml" target="lib\netstandard2.0" />
+    <file src="bin\Release\netstandard2.0\HN.Controls.ImageEx.Core.pdb" target="lib\netstandard2.0" />
+  </files>  
+</package>

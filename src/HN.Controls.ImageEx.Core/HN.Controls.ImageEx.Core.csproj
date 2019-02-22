@@ -11,7 +11,6 @@
     <PackageProjectUrl>https://github.com/h82258652/HN.Controls.ImageEx</PackageProjectUrl>
     <Description>HN.Controls.ImageEx.Core</Description>
     <PackageTags></PackageTags>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -21,6 +20,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard2.0\HN.Controls.ImageEx.Core.xml</DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="HN.Controls.ImageEx.Core.nuspec" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2018.3.0" />
