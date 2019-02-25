@@ -9,7 +9,8 @@
         Height="450"
         mc:Ignorable="d">
     <Grid>
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <ScrollViewer PanningMode="VerticalOnly"
+                      VerticalScrollBarVisibility="Auto">
             <Grid Height="3000">
                 <Border Width="100"
                         Height="100"
