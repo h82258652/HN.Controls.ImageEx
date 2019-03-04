@@ -115,6 +115,9 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="Cache\DiskCache.cs" />
     <Compile Include="Controls\ImageEx.cs" />
     <Compile Include="Controls\ImageExFailedEventArgs.cs" />

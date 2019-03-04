@@ -11,6 +11,7 @@
     <PackageProjectUrl>https://github.com/h82258652/HN.Controls.ImageEx</PackageProjectUrl>
     <Description>HN.Controls.ImageEx.Core</Description>
     <PackageTags></PackageTags>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -23,6 +24,10 @@
 
   <ItemGroup>
     <None Remove="HN.Controls.ImageEx.Core.nuspec" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\SolutionInfo.cs" Link="SolutionInfo.cs" />
   </ItemGroup>
 
   <ItemGroup>

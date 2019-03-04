@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 // TOOLS / ADDINS
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -37,8 +37,22 @@ Task("Restore-NuGet-Packages")
     NuGetRestore(solution);
 });
 
-Task("Build")
+Task("Version")
     .IsDependentOn("Restore-NuGet-Packages")
+    .Does(() =>
+{
+    var file = "./src/SolutionInfo.cs";
+    CreateAssemblyInfo(file, new AssemblyInfoSettings
+    {
+        Version = version,
+        FileVersion = version,
+        InformationalVersion = version,
+        Copyright = string.Format("Copyright © h82258652 2018 - {0}", DateTime.Now.Year)
+    });
+});
+
+Task("Build")
+    .IsDependentOn("Version")
     .Does(() =>
 {
     if(IsRunningOnWindows())
