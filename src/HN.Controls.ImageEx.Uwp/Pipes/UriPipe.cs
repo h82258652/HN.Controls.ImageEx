@@ -91,7 +91,7 @@ namespace HN.Pipes
 
         private async Task<(byte[], CacheControlHeaderValue)> CreateDownloadTask(Uri uri, CancellationToken cancellationToken)
         {
-            using (var client = new HttpClient(_httpMessageHandler))
+            using (var client = new HttpClient(_httpMessageHandler, false))
             {
                 var response = await client.GetAsync(uri, cancellationToken);
                 response.EnsureSuccessStatusCode();
