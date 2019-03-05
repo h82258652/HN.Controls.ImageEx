@@ -121,8 +121,10 @@
     <Compile Include="Cache\DiskCache.cs" />
     <Compile Include="Controls\ImageEx.cs" />
     <Compile Include="Controls\ImageExFailedEventArgs.cs" />
+    <Compile Include="Controls\ImageExFailedEventHandler.cs" />
     <Compile Include="Media\ImageBrushEx.cs" />
     <Compile Include="Media\ImageBrushExFailedEventArgs.cs" />
+    <Compile Include="Media\ImageBrushExFailedEventHandler.cs" />
     <Compile Include="Media\ImageSurfaceFailedStatusException.cs" />
     <Compile Include="Media\SvgImageFailedStatusException.cs" />
     <Compile Include="Pipes\StreamToCompositionSurfacePipe.cs" />

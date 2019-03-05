@@ -54,7 +54,7 @@ namespace HN.Media
         /// <summary>
         /// 在无法加载图像源时发生。
         /// </summary>
-        public event EventHandler<ImageBrushExFailedEventArgs> ImageFailed;
+        public event ImageBrushExFailedEventHandler ImageFailed;
 
         /// <summary>
         /// 在成功显示图像后发生。

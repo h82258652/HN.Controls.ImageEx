@@ -141,7 +141,7 @@ namespace HN.Controls
         /// <summary>
         /// 在无法加载图像源时发生。
         /// </summary>
-        public event EventHandler<ImageExFailedEventArgs> ImageFailed;
+        public event ImageExFailedEventHandler ImageFailed;
 
         /// <summary>
         /// 在成功显示图像后发生。

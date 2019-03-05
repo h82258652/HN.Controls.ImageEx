@@ -39,8 +39,10 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Controls\ImageExFailedEventHandler.cs" />
     <Compile Include="Media\ImageBrushExExtension.cs" />
     <Compile Include="Media\ImageBrushExFailedEventArgs.cs" />
+    <Compile Include="Media\ImageBrushExFailedEventHandler.cs" />
     <Compile Include="Services\DesignModeService.cs" />
     <Compile Include="Services\ImageExOptionsExtensions.cs" />
     <Compile Include="Services\ImageExService.cs" />
