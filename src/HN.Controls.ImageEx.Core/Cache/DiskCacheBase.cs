@@ -132,6 +132,12 @@ namespace HN.Cache
         private string GetCacheFilePath(string key)
         {
             var extension = Path.GetExtension(key) ?? string.Empty;
+            var invalidCharIndex = extension.IndexOfAny(Path.GetInvalidFileNameChars());
+            if (invalidCharIndex > -1)
+            {
+                extension = extension.Substring(0, invalidCharIndex);
+            }
+
             using (var md5 = MD5.Create())
             {
                 var buffer = Encoding.UTF8.GetBytes(key);
