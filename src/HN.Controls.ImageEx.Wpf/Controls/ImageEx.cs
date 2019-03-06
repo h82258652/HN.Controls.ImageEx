@@ -17,7 +17,7 @@ namespace HN.Controls
     [TemplatePart(Name = ImageTemplateName, Type = typeof(Image))]
     [TemplatePart(Name = FailedContentHostTemplateName, Type = typeof(ContentPresenter))]
     [TemplatePart(Name = LoadingContentHostTemplateName, Type = typeof(ContentPresenter))]
-    [TemplateVisualState(GroupName = ImageStateGroupName, Name = NormalStateName)]
+    [TemplateVisualState(GroupName = ImageStateGroupName, Name = EmptyStateName)]
     [TemplateVisualState(GroupName = ImageStateGroupName, Name = OpenedStateName)]
     [TemplateVisualState(GroupName = ImageStateGroupName, Name = FailedStateName)]
     [TemplateVisualState(GroupName = ImageStateGroupName, Name = LoadingStateName)]
@@ -72,6 +72,22 @@ namespace HN.Controls
         public static readonly DependencyProperty LoadingTemplateSelectorProperty = DependencyProperty.Register(nameof(LoadingTemplateSelector), typeof(DataTemplateSelector), typeof(ImageEx), new PropertyMetadata(default(DataTemplateSelector)));
 
         /// <summary>
+        /// 标识 <see cref="PlaceholderTemplate" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="PlaceholderTemplate" /> 依赖项属性的标识符。
+        /// </returns>
+        public static readonly DependencyProperty PlaceholderTemplateProperty = DependencyProperty.Register(nameof(PlaceholderTemplate), typeof(DataTemplate), typeof(ImageEx), new PropertyMetadata(default(DataTemplate)));
+
+        /// <summary>
+        /// 标识 <see cref="PlaceholderTemplateSelector" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="PlaceholderTemplateSelector" /> 依赖项属性的标识符。
+        /// </returns>
+        public static readonly DependencyProperty PlaceholderTemplateSelectorProperty = DependencyProperty.Register(nameof(PlaceholderTemplateSelector), typeof(DataTemplateSelector), typeof(ImageEx), new PropertyMetadata(default(DataTemplateSelector)));
+
+        /// <summary>
         /// 标识 <see cref="RetryCount" /> 依赖属性。
         /// </summary>
         /// <returns>
@@ -111,13 +127,13 @@ namespace HN.Controls
         /// </returns>
         public static readonly DependencyProperty StretchProperty = DependencyProperty.Register(nameof(Stretch), typeof(Stretch), typeof(ImageEx), new PropertyMetadata(Stretch.Uniform));
 
+        private const string EmptyStateName = "Empty";
         private const string FailedContentHostTemplateName = "PART_FailedContentHost";
         private const string FailedStateName = "Failed";
         private const string ImageStateGroupName = "ImageStates";
         private const string ImageTemplateName = "PART_Image";
         private const string LoadingContentHostTemplateName = "PART_LoadingContentHost";
         private const string LoadingStateName = "Loading";
-        private const string NormalStateName = "Normal";
         private const string OpenedStateName = "Opened";
         private static readonly DependencyPropertyKey IsLoadingPropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsLoading), typeof(bool), typeof(ImageEx), new PropertyMetadata(default(bool)));
 
@@ -222,6 +238,30 @@ namespace HN.Controls
         {
             get => (DataTemplateSelector)GetValue(LoadingTemplateSelectorProperty);
             set => SetValue(LoadingTemplateSelectorProperty, value);
+        }
+
+        /// <summary>
+        /// 获取或设置用于显示占位的内容的数据模板。
+        /// </summary>
+        /// <returns>
+        /// 用于显示占位的内容的数据模板。
+        /// </returns>
+        public DataTemplate PlaceholderTemplate
+        {
+            get => (DataTemplate)GetValue(PlaceholderTemplateProperty);
+            set => SetValue(PlaceholderTemplateProperty, value);
+        }
+
+        /// <summary>
+        /// 获取或设置用于显示占位的内容的数据模板选择器。
+        /// </summary>
+        /// <returns>
+        /// 用于显示占位的内容的数据模板选择器。
+        /// </returns>
+        public DataTemplateSelector PlaceholderTemplateSelector
+        {
+            get => (DataTemplateSelector)GetValue(PlaceholderTemplateSelectorProperty);
+            set => SetValue(PlaceholderTemplateSelectorProperty, value);
         }
 
         /// <summary>
@@ -379,7 +419,7 @@ namespace HN.Controls
             if (source == null)
             {
                 _image.Source = null;
-                VisualStateManager.GoToState(this, NormalStateName, true);
+                VisualStateManager.GoToState(this, EmptyStateName, true);
                 return;
             }
 

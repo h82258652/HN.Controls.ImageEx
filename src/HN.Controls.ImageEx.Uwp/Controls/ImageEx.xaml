@@ -10,7 +10,18 @@
                           BorderThickness="{TemplateBinding BorderThickness}">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="ImageStates">
-                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="Empty">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_PlaceholderContentHost"
+                                                                       Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <Visibility>Visible</Visibility>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
                                 <VisualState x:Name="Opened" />
                                 <VisualState x:Name="Failed">
                                     <Storyboard>
@@ -38,6 +49,10 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
+                        <ContentPresenter x:Name="PART_PlaceholderContentHost"
+                                          ContentTemplate="{TemplateBinding PlaceholderTemplate}"
+                                          ContentTemplateSelector="{TemplateBinding PlaceholderTemplateSelector}"
+                                          Visibility="Collapsed" />
                         <Image x:Name="PART_Image"
                                NineGrid="{TemplateBinding NineGrid}"
                                Stretch="{TemplateBinding Stretch}" />

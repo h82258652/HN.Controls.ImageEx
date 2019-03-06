@@ -25,6 +25,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -33,26 +34,41 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0"
                            Grid.Column="0"
-                           Text="Network Image"
+                           Text="Placeholder"
                            TextAlignment="Center" />
                 <TextBlock Grid.Row="0"
                            Grid.Column="1"
-                           Text="Resource Image"
+                           Text="Network Image"
                            TextAlignment="Center" />
                 <TextBlock Grid.Row="0"
                            Grid.Column="2"
-                           Text="Disk Image"
+                           Text="Resource Image"
                            TextAlignment="Center" />
                 <TextBlock Grid.Row="0"
                            Grid.Column="3"
-                           Text="Failed Image"
+                           Text="Disk Image"
                            TextAlignment="Center" />
                 <TextBlock Grid.Row="0"
                            Grid.Column="4"
+                           Text="Failed Image"
+                           TextAlignment="Center" />
+                <TextBlock Grid.Row="0"
+                           Grid.Column="5"
                            Text="Custom Image"
                            TextAlignment="Center" />
+                <controls:ImageEx Grid.Row="1"
+                                  Grid.Column="0">
+                    <controls:ImageEx.PlaceholderTemplate>
+                        <DataTemplate>
+                            <TextBlock HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Text="No Image Available"
+                                       TextWrapping="Wrap" />
+                        </DataTemplate>
+                    </controls:ImageEx.PlaceholderTemplate>
+                </controls:ImageEx>
                 <Grid Grid.Row="1"
-                      Grid.Column="0">
+                      Grid.Column="1">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
@@ -85,7 +101,7 @@
                     </Ellipse>
                 </Grid>
                 <Grid Grid.Row="1"
-                      Grid.Column="1">
+                      Grid.Column="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
@@ -105,7 +121,7 @@
                     </Ellipse>
                 </Grid>
                 <Grid Grid.Row="1"
-                      Grid.Column="2">
+                      Grid.Column="3">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
@@ -124,7 +140,7 @@
                     </Ellipse>
                 </Grid>
                 <controls:ImageEx Grid.Row="1"
-                                  Grid.Column="3"
+                                  Grid.Column="4"
                                   Source="http://www.baidu.com/a.png">
                     <controls:ImageEx.FailedTemplate>
                         <DataTemplate>
@@ -137,7 +153,7 @@
                 </controls:ImageEx>
                 <controls:ImageEx x:Name="CustomImage"
                                   Grid.Row="1"
-                                  Grid.Column="4"
+                                  Grid.Column="5"
                                   RetryCount="5"
                                   RetryDelay="0:0:1">
                     <controls:ImageEx.LoadingTemplate>
@@ -176,10 +192,10 @@
                         Content="Clear Cache" />
                 <TextBox x:Name="UrlTextBox"
                          Grid.Row="2"
-                         Grid.Column="3"
+                         Grid.Column="4"
                          Text="https://www.baidu.com/img/bd_logo1.png" />
                 <Button Grid.Row="2"
-                        Grid.Column="4"
+                        Grid.Column="5"
                         HorizontalAlignment="Stretch"
                         Click="LoadButton_Click"
                         Content="Load" />
