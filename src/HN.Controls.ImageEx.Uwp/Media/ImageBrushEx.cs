@@ -65,6 +65,7 @@ namespace HN.Media
         public static readonly DependencyProperty StretchProperty = DependencyProperty.Register(nameof(Stretch), typeof(Stretch), typeof(ImageBrushEx), new PropertyMetadata(Stretch.Uniform, OnStretchChanged));
 
         private CancellationTokenSource _lastLoadCts;
+        private object _lastLoadSource;
 
         /// <summary>
         /// 在无法加载图像源时发生。
@@ -228,6 +229,12 @@ namespace HN.Media
 
         private async Task SetSourceAsync(object source)
         {
+            if (_lastLoadSource == source)
+            {
+                return;
+            }
+            _lastLoadSource = source;
+
             _lastLoadCts?.Cancel();
             if (source == null)
             {
