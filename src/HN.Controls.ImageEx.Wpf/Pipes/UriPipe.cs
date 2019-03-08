@@ -10,7 +10,6 @@ using HN.Services;
 
 namespace HN.Pipes
 {
-
     /// <inheritdoc />
     /// <summary>
     /// 若当前的值是 <see cref="Uri" /> 类型，则该管道会进行处理。
@@ -18,17 +17,22 @@ namespace HN.Pipes
     /// <typeparam name="TResult">加载目标的类型。</typeparam>
     public class UriPipe<TResult> : LoadingPipeBase<TResult> where TResult : class
     {
-        private readonly HttpMessageHandler _httpMessageHandler;
+        private readonly IHttpClientFactory _httpClientFactory;
 
         /// <inheritdoc />
         /// <summary>
         /// 初始化 <see cref="UriPipe{TResult}" /> 类的新实例。
         /// </summary>
         /// <param name="designModeService">设计模式服务。</param>
-        /// <param name="httpMessageHandler">HTTP 消息处理程序。</param>
-        public UriPipe(IDesignModeService designModeService, HttpMessageHandler httpMessageHandler) : base(designModeService)
+        /// <param name="httpClientFactory">HttpClient 工厂。</param>
+        public UriPipe(IDesignModeService designModeService, IHttpClientFactory httpClientFactory) : base(designModeService)
         {
-            _httpMessageHandler = httpMessageHandler ?? throw new ArgumentNullException(nameof(httpMessageHandler));
+            if (httpClientFactory == null)
+            {
+                throw new ArgumentNullException(nameof(httpClientFactory));
+            }
+
+            _httpClientFactory = httpClientFactory;
         }
 
         /// <inheritdoc />
@@ -100,14 +104,12 @@ namespace HN.Pipes
 
         private async Task<(byte[], CacheControlHeaderValue)> CreateDownloadTask(Uri uri, CancellationToken cancellationToken)
         {
-            using (var client = new HttpClient(_httpMessageHandler, false))
-            {
-                var response = await client.GetAsync(uri, cancellationToken);
-                response.EnsureSuccessStatusCode();
-                var bytes = await response.Content.ReadAsByteArrayAsync();
-                var cacheControl = response.Headers.CacheControl;
-                return (bytes, cacheControl);
-            }
+            var client = _httpClientFactory.CreateClient("ImageEx");
+            var response = await client.GetAsync(uri, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            var bytes = await response.Content.ReadAsByteArrayAsync();
+            var cacheControl = response.Headers.CacheControl;
+            return (bytes, cacheControl);
         }
 
         private Task<(byte[], CacheControlHeaderValue)> GetDownloadTask(Uri uri, CancellationToken cancellationToken)
