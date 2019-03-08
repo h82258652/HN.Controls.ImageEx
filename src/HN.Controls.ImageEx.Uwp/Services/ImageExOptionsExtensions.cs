@@ -71,7 +71,7 @@ namespace HN.Services
 
             options.AddService<T, IDiskCache, DiskCache>();
             options.AddService<T, IDesignModeService, DesignModeService>();
-            options.AddService<T, HttpMessageHandler, HttpClientHandler>();
+            options.UseHttpHandler<T, HttpClientHandler>();
             return options;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using HN.Pipes;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -61,6 +62,24 @@ namespace HN.Services
             }
 
             options.Services.AddTransient<TService, TImplementation>();
+            return options;
+        }
+
+        /// <summary>
+        /// 使用指定的 Http 处理程序。
+        /// </summary>
+        /// <typeparam name="T">输出值的类型。</typeparam>
+        /// <typeparam name="THandler">Http 处理程序。</typeparam>
+        /// <param name="options">ImageEx 配置项。</param>
+        /// <returns>ImageEx 配置项。</returns>
+        public static IImageExOptions<T> UseHttpHandler<T, THandler>(this IImageExOptions<T> options) where T : class where THandler : HttpMessageHandler
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            options.Services.AddHttpClient("ImageEx").ConfigurePrimaryHttpMessageHandler<THandler>();
             return options;
         }
     }
