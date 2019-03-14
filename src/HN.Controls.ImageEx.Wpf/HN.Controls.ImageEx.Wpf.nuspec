@@ -13,7 +13,7 @@
     <tags></tags>
     <dependencies>
       <dependency id="HN.Controls.ImageEx.Core" version="$version$" />
-      <dependency id="Polly" version="7.0.3" />
+      <dependency id="Polly" version="7.1.0" />
     </dependencies>
   </metadata>
   <files>
