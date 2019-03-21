@@ -227,6 +227,12 @@ namespace HN.Media
             }
         }
 
+        private void SetBrush(CompositionBrush brush)
+        {
+            DisposeCompositionBrush();
+            CompositionBrush = brush;
+        }
+
         private async Task SetSourceAsync(object source)
         {
             if (_lastLoadSource == source)
@@ -235,10 +241,12 @@ namespace HN.Media
             }
             _lastLoadSource = source;
 
+            var sourceSetter = ImageExService.GetSourceSetter<IImageBrushExSourceSetter>();
+
             _lastLoadCts?.Cancel();
             if (source == null)
             {
-                CompositionBrush = null;
+                sourceSetter.SetSource(SetBrush, null);
                 return;
             }
 
@@ -257,9 +265,7 @@ namespace HN.Media
 
                 if (!_lastLoadCts.IsCancellationRequested)
                 {
-                    DisposeCompositionBrush();
-                    var compositor = Window.Current.Compositor;
-                    CompositionBrush = compositor.CreateSurfaceBrush(context.Result);
+                    sourceSetter.SetSource(SetBrush, context.Result);
                     ImageOpened?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -267,7 +273,7 @@ namespace HN.Media
             {
                 if (!_lastLoadCts.IsCancellationRequested)
                 {
-                    DisposeCompositionBrush();
+                    sourceSetter.SetSource(SetBrush, null);
                     ImageFailed?.Invoke(this, new ImageBrushExFailedEventArgs(source, ex));
                 }
             }

@@ -385,10 +385,12 @@ namespace HN.Media
             }
             _lastLoadSource = source;
 
+            var sourceSetter = ImageExService.GetSourceSetter<IImageBrushExSourceSetter>();
+
             _lastLoadCts?.Cancel();
             if (source == null)
             {
-                _brush.ImageSource = null;
+                sourceSetter.SetSource(_brush, null);
                 return;
             }
 
@@ -407,7 +409,7 @@ namespace HN.Media
 
                 if (!_lastLoadCts.IsCancellationRequested)
                 {
-                    _brush.ImageSource = context.Result;
+                    sourceSetter.SetSource(_brush, context.Result);
                     ImageOpened?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -415,7 +417,7 @@ namespace HN.Media
             {
                 if (!_lastLoadCts.IsCancellationRequested)
                 {
-                    _brush.ImageSource = null;
+                    sourceSetter.SetSource(_brush, null);
                     ImageFailed?.Invoke(this, new ImageBrushExFailedEventArgs(source, ex));
                 }
             }

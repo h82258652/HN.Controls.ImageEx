@@ -415,10 +415,12 @@ namespace HN.Controls
                 return;
             }
 
+            var sourceSetter = ImageExService.GetSourceSetter<IImageExSourceSetter>();
+
             _lastLoadCts?.Cancel();
             if (source == null)
             {
-                _image.Source = null;
+                sourceSetter.SetSource(_image, null);
                 VisualStateManager.GoToState(this, EmptyStateName, true);
                 return;
             }
@@ -443,7 +445,7 @@ namespace HN.Controls
 
                 if (!_lastLoadCts.IsCancellationRequested)
                 {
-                    _image.Source = context.Result;
+                    sourceSetter.SetSource(_image, context.Result);
                     VisualStateManager.GoToState(this, OpenedStateName, true);
                     ImageOpened?.Invoke(this, EventArgs.Empty);
                 }
@@ -452,7 +454,7 @@ namespace HN.Controls
             {
                 if (!_lastLoadCts.IsCancellationRequested)
                 {
-                    _image.Source = null;
+                    sourceSetter.SetSource(_image, null);
                     VisualStateManager.GoToState(this, FailedStateName, true);
                     ImageFailed?.Invoke(this, new ImageExFailedEventArgs(source, ex));
                 }
