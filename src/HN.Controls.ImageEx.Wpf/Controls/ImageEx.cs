@@ -425,7 +425,8 @@ namespace HN.Controls
                 return;
             }
 
-            _lastLoadCts = new CancellationTokenSource();
+            var loadCts = new CancellationTokenSource();
+            _lastLoadCts = loadCts;
             try
             {
                 IsLoading = true;
@@ -441,9 +442,9 @@ namespace HN.Controls
                     {
                         context.Reset();
                     });
-                await policy.ExecuteAsync(() => pipeDelegate.Invoke(context, _lastLoadCts.Token));
+                await policy.ExecuteAsync(() => pipeDelegate.Invoke(context, loadCts.Token));
 
-                if (!_lastLoadCts.IsCancellationRequested)
+                if (!loadCts.IsCancellationRequested)
                 {
                     sourceSetter.SetSource(_image, context.Result);
                     VisualStateManager.GoToState(this, OpenedStateName, true);
@@ -452,7 +453,7 @@ namespace HN.Controls
             }
             catch (Exception ex)
             {
-                if (!_lastLoadCts.IsCancellationRequested)
+                if (!loadCts.IsCancellationRequested)
                 {
                     sourceSetter.SetSource(_image, null);
                     VisualStateManager.GoToState(this, FailedStateName, true);
@@ -461,7 +462,7 @@ namespace HN.Controls
             }
             finally
             {
-                if (!_lastLoadCts.IsCancellationRequested)
+                if (!loadCts.IsCancellationRequested)
                 {
                     IsLoading = false;
                 }

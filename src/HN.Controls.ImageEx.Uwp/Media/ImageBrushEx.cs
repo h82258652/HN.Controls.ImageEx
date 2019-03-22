@@ -250,7 +250,8 @@ namespace HN.Media
                 return;
             }
 
-            _lastLoadCts = new CancellationTokenSource();
+            var loadCts = new CancellationTokenSource();
+            _lastLoadCts = loadCts;
             try
             {
                 var context = new LoadingContext<ICompositionSurface>(source, null, null);
@@ -261,9 +262,9 @@ namespace HN.Media
                 {
                     context.Reset();
                 });
-                await policy.ExecuteAsync(() => pipeDelegate.Invoke(context, _lastLoadCts.Token));
+                await policy.ExecuteAsync(() => pipeDelegate.Invoke(context, loadCts.Token));
 
-                if (!_lastLoadCts.IsCancellationRequested)
+                if (!loadCts.IsCancellationRequested)
                 {
                     sourceSetter.SetSource(SetBrush, context.Result);
                     ImageOpened?.Invoke(this, EventArgs.Empty);
@@ -271,7 +272,7 @@ namespace HN.Media
             }
             catch (Exception ex)
             {
-                if (!_lastLoadCts.IsCancellationRequested)
+                if (!loadCts.IsCancellationRequested)
                 {
                     sourceSetter.SetSource(SetBrush, null);
                     ImageFailed?.Invoke(this, new ImageBrushExFailedEventArgs(source, ex));
