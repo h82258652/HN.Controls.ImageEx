@@ -42,6 +42,9 @@
     <Compile Include="Controls\IImageExSourceSetter.cs" />
     <Compile Include="Controls\ImageExFailedEventHandler.cs" />
     <Compile Include="Controls\ImageExSourceSetter.cs" />
+    <Compile Include="Extensions\BitmapMetadataExtensions.cs" />
+    <Compile Include="Utils\FrameDisposalMethod.cs" />
+    <Compile Include="Utils\GifFrameMetadata.cs" />
     <Compile Include="Media\IImageBrushExSourceSetter.cs" />
     <Compile Include="Media\ImageBrushExExtension.cs" />
     <Compile Include="Media\ImageBrushExFailedEventArgs.cs" />
