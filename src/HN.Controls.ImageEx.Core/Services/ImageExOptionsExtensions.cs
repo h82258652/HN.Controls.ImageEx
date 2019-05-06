@@ -132,7 +132,8 @@ namespace HN.Services
                 throw new ArgumentNullException(nameof(options));
             }
 
-            options.Services.AddHttpClient("ImageEx").ConfigurePrimaryHttpMessageHandler<THandler>();
+            options.Services.AddTransient<THandler>();
+            options.Services.AddHttpClient("ImageEx").ConfigurePrimaryHttpMessageHandler(serviceProvider => serviceProvider.GetRequiredService<THandler>());
             return options;
         }
 
