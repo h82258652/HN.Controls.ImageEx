@@ -14,7 +14,7 @@
     <dependencies>
         <dependency id="Microsoft.Extensions.DependencyInjection" version="2.2.0" />
         <dependency id="Microsoft.Extensions.Http" version="2.2.0" />
-        <dependency id="Microsoft.VisualStudio.Threading" version="16.0.102" />
+        <dependency id="Nito.AsyncEx" version="5.0.0" />
         <dependency id="Weakly" version="2.8.1" />
     </dependencies>
   </metadata>

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using HN.Cache;
 using HN.Extensions;
 using HN.Services;
-using Microsoft.VisualStudio.Threading;
+using Nito.AsyncEx;
 
 namespace HN.Pipes
 {
@@ -54,7 +54,7 @@ namespace HN.Pipes
                 }
                 catch
                 {
-                    _diskCache.DeleteAsync(cacheKey).Forget();
+                    _diskCache.DeleteAsync(cacheKey).Ignore();
                     throw;
                 }
             }
@@ -65,7 +65,7 @@ namespace HN.Pipes
                 var bytes = context.HttpResponseBytes;
                 if (bytes != null)
                 {
-                    _diskCache.SetAsync(cacheKey, bytes, CancellationToken.None).Forget();
+                    _diskCache.SetAsync(cacheKey, bytes, CancellationToken.None).Ignore();
                 }
             }
         }
