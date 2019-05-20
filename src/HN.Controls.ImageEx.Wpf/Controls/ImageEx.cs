@@ -205,6 +205,11 @@ namespace HN.Controls
         }
 
         /// <summary>
+        /// 获取图像真实显示的源。
+        /// </summary>
+        public ImageSource HostSource => _image?.Source;
+
+        /// <summary>
         /// 获取是否正在加载图像的源。
         /// </summary>
         /// <returns>
