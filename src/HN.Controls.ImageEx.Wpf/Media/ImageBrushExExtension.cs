@@ -108,6 +108,11 @@ namespace HN.Media
         }
 
         /// <summary>
+        /// 获取图像真实显示的源。
+        /// </summary>
+        public ImageSource HostSource => _brush?.ImageSource;
+
+        /// <summary>
         /// 获取或设置此 <see cref="ImageBrush" /> 显示的图像。
         /// </summary>
         /// <returns>

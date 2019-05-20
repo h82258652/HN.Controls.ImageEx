@@ -104,6 +104,11 @@ namespace HN.Media
         }
 
         /// <summary>
+        /// 获取图像真实显示的源。
+        /// </summary>
+        public ICompositionSurface HostSource => (CompositionBrush as CompositionSurfaceBrush)?.Surface;
+
+        /// <summary>
         /// 获取或设置此 <see cref="ImageBrush" /> 显示的图像。
         /// </summary>
         /// <returns>
