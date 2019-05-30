@@ -1,4 +1,6 @@
-﻿namespace HN.Pipes
+﻿using System;
+
+namespace HN.Pipes
 {
     /// <summary>
     /// 加载上下文。
@@ -6,6 +8,11 @@
     /// <typeparam name="TResult">加载目标的类型。</typeparam>
     public interface ILoadingContext<TResult> where TResult : class
     {
+        /// <summary>
+        /// 下载进度发生变化事件。
+        /// </summary>
+        event EventHandler<HttpDownloadProgress> DownloadProgressChanged;
+
         /// <summary>
         /// 设置或获取当前管道的值。
         /// </summary>
@@ -53,5 +60,11 @@
         /// 处理结果。
         /// </returns>
         TResult Result { get; set; }
+
+        /// <summary>
+        /// 发起下载进度发生变化事件。
+        /// </summary>
+        /// <param name="progress">当前下载进度。</param>
+        void RaiseDownloadProgressChanged(HttpDownloadProgress progress);
     }
 }

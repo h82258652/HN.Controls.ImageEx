@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -17,6 +18,7 @@ namespace HN.Pipes
     /// <typeparam name="TResult">加载目标的类型。</typeparam>
     public abstract class UriPipeBase<TResult> : LoadingPipeBase<TResult> where TResult : class
     {
+        private const int BufferSize = 8192;
         private readonly IHttpClientFactory _httpClientFactory;
 
         /// <inheritdoc />
@@ -49,7 +51,7 @@ namespace HN.Pipes
             {
                 try
                 {
-                    var task = GetDownloadTask(uri, cancellationToken);
+                    var task = GetDownloadTask(context, uri, cancellationToken);
                     var (bytes, cacheControl) = await task;
                     context.Current = bytes;
                     await next(context, cancellationToken);
@@ -96,22 +98,43 @@ namespace HN.Pipes
         /// <param name="uri">Uri。</param>
         /// <param name="cancellationToken">要监视取消请求的标记。</param>
         /// <returns>表示异步加载操作的任务。</returns>
-        protected abstract Task InvokeOtherUriSchemeAsync(ILoadingContext<TResult> context,
-            LoadingPipeDelegate<TResult> next,
-            Uri uri,
-            CancellationToken cancellationToken = default(CancellationToken));
+        protected abstract Task InvokeOtherUriSchemeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, Uri uri, CancellationToken cancellationToken = default(CancellationToken));
 
-        private async Task<(byte[], CacheControlHeaderValue)> CreateDownloadTask(Uri uri, CancellationToken cancellationToken)
+        private async Task<(byte[], CacheControlHeaderValue)> CreateDownloadTask(ILoadingContext<TResult> context, Uri uri, CancellationToken cancellationToken)
         {
             var client = _httpClientFactory.CreateClient("ImageEx");
-            var response = await client.GetAsync(uri, cancellationToken);
-            response.EnsureSuccessStatusCode();
-            var bytes = await response.Content.ReadAsByteArrayAsync();
-            var cacheControl = response.Headers.CacheControl;
-            return (bytes, cacheControl);
+            using (var response = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+
+                var cacheControl = response.Headers.CacheControl;
+                var contentLength = response.Content.Headers.ContentLength;
+                using (var stream = await response.Content.ReadAsStreamAsync())
+                {
+                    var buffer = new byte[BufferSize];
+                    int bytesRead;
+                    var bytes = new List<byte>();
+
+                    var downloadProgress = new HttpDownloadProgress();
+                    if (contentLength.HasValue)
+                    {
+                        downloadProgress.TotalBytesToReceive = (ulong)contentLength.Value;
+                    }
+                    context.RaiseDownloadProgressChanged(downloadProgress);
+
+                    while ((bytesRead = await stream.ReadAsync(buffer, 0, BufferSize, cancellationToken)) > 0)
+                    {
+                        bytes.AddRange(buffer.Take(bytesRead));
+                        downloadProgress.BytesReceived += (ulong)bytesRead;
+                        context.RaiseDownloadProgressChanged(downloadProgress);
+                    }
+
+                    return (bytes.ToArray(), cacheControl);
+                }
+            }
         }
 
-        private Task<(byte[], CacheControlHeaderValue)> GetDownloadTask(Uri uri, CancellationToken cancellationToken)
+        private Task<(byte[], CacheControlHeaderValue)> GetDownloadTask(ILoadingContext<TResult> context, Uri uri, CancellationToken cancellationToken)
         {
             lock (UriPipeInternal.DownloadTasks)
             {
@@ -121,7 +144,7 @@ namespace HN.Pipes
                     return task;
                 }
 
-                task = CreateDownloadTask(uri, cancellationToken);
+                task = CreateDownloadTask(context, uri, cancellationToken);
                 UriPipeInternal.DownloadTasks[uri] = task;
                 return task;
             }

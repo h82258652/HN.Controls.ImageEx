@@ -11,7 +11,6 @@ namespace HN.Pipes
     public class LoadingContext<TResult> : ILoadingContext<TResult> where TResult : class
     {
         private byte[] _httpResponseBytes;
-
         private TResult _result;
 
         /// <summary>
@@ -26,6 +25,9 @@ namespace HN.Pipes
             DesiredWidth = desiredWidth;
             DesiredHeight = desiredHeight;
         }
+
+        /// <inheritdoc />
+        public event EventHandler<HttpDownloadProgress> DownloadProgressChanged;
 
         /// <inheritdoc />
         public object Current { get; set; }
@@ -67,6 +69,12 @@ namespace HN.Pipes
 
                 _result = value;
             }
+        }
+
+        /// <inheritdoc />
+        public void RaiseDownloadProgressChanged(HttpDownloadProgress progress)
+        {
+            DownloadProgressChanged?.Invoke(this, progress);
         }
 
         /// <summary>

@@ -154,10 +154,19 @@
                                   RetryDelay="0:0:1">
                     <controls:ImageEx.LoadingTemplate>
                         <DataTemplate>
-                            <TextBlock HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       Foreground="Green"
-                                       Text="Loading" />
+                            <Grid VerticalAlignment="Center">
+                                <ProgressBar VerticalAlignment="Stretch"
+                                             Foreground="LightBlue"
+                                             Maximum="1"
+                                             Value="{Binding ElementName=CustomImage, Path=DownloadProgress.Percentage, Mode=OneWay}" />
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock HorizontalAlignment="Center"
+                                               Foreground="Green"
+                                               Text="Loading" />
+                                    <TextBlock HorizontalAlignment="Center"
+                                               Foreground="Green"><Run Text="{Binding ElementName=CustomImage, Path=DownloadProgress.BytesReceived}" /><Run Text="/" /><Run Text="{Binding ElementName=CustomImage, Path=DownloadProgress.TotalBytesToReceive}" /></TextBlock>
+                                </StackPanel>
+                            </Grid>
                         </DataTemplate>
                     </controls:ImageEx.LoadingTemplate>
                     <controls:ImageEx.FailedTemplate>
@@ -189,7 +198,7 @@
                 <TextBox x:Name="UrlTextBox"
                          Grid.Row="2"
                          Grid.Column="4"
-                         Text="https://www.baidu.com/img/bd_logo1.png" />
+                         Text="https://edmullen.net/test/rc.jpg" />
                 <Button Grid.Row="2"
                         Grid.Column="5"
                         HorizontalAlignment="Stretch"
