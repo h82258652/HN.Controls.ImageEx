@@ -24,6 +24,14 @@ namespace HN.Controls
     public class ImageEx : Control
     {
         /// <summary>
+        /// 标识 <see cref="DownloadProgress" /> 依赖属性。
+        /// </summary>
+        /// <returns>
+        /// <see cref="DownloadProgress" /> 依赖项属性的标识符。
+        /// </returns>
+        public static readonly DependencyProperty DownloadProgressProperty;
+
+        /// <summary>
         /// 标识 <see cref="EnableLazyLoading" /> 依赖属性。
         /// </summary>
         /// <returns>
@@ -135,6 +143,7 @@ namespace HN.Controls
         private const string LoadingContentHostTemplateName = "PART_LoadingContentHost";
         private const string LoadingStateName = "Loading";
         private const string OpenedStateName = "Opened";
+        private static readonly DependencyPropertyKey DownloadProgressPropertyKey = DependencyProperty.RegisterReadOnly(nameof(DownloadProgress), typeof(HttpDownloadProgress), typeof(ImageEx), new PropertyMetadata(default(HttpDownloadProgress)));
         private static readonly DependencyPropertyKey IsLoadingPropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsLoading), typeof(bool), typeof(ImageEx), new PropertyMetadata(default(bool)));
 
         private Image _image;
@@ -145,6 +154,7 @@ namespace HN.Controls
         static ImageEx()
         {
             IsLoadingProperty = IsLoadingPropertyKey.DependencyProperty;
+            DownloadProgressProperty = DownloadProgressPropertyKey.DependencyProperty;
 
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ImageEx), new FrameworkPropertyMetadata(typeof(ImageEx)));
         }
@@ -159,6 +169,11 @@ namespace HN.Controls
         }
 
         /// <summary>
+        /// 在下载进度发生变化时发生。
+        /// </summary>
+        public event EventHandler<HttpDownloadProgress> DownloadProgressChanged;
+
+        /// <summary>
         /// 在无法加载图像源时发生。
         /// </summary>
         public event ImageExFailedEventHandler ImageFailed;
@@ -167,6 +182,18 @@ namespace HN.Controls
         /// 在成功显示图像后发生。
         /// </summary>
         public event EventHandler ImageOpened;
+
+        /// <summary>
+        /// 获取当前图像的下载进度。
+        /// </summary>
+        /// <returns>
+        /// 当前图像的下载进度。
+        /// </returns>
+        public HttpDownloadProgress DownloadProgress
+        {
+            get => (HttpDownloadProgress)GetValue(DownloadProgressProperty);
+            private set => SetValue(DownloadProgressPropertyKey, value);
+        }
 
         /// <summary>
         /// 获取或设置是否启用延迟加载。
@@ -439,6 +466,11 @@ namespace HN.Controls
                 VisualStateManager.GoToState(this, LoadingStateName, true);
 
                 var context = new LoadingContext<ImageSource>(source, ActualWidth, ActualHeight);
+                context.DownloadProgressChanged += (sender, progress) =>
+                {
+                    DownloadProgress = progress;
+                    DownloadProgressChanged?.Invoke(this, progress);
+                };
 
                 var pipeDelegate = ImageExService.GetHandler<ImageSource>();
                 var retryDelay = RetryDelay;
