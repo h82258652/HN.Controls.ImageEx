@@ -2,6 +2,7 @@
   <File Reference="HN.Controls.ImageEx.Uwp.dll">
     <ToolboxItems VSCategory="HN.Controls.ImageEx" BlendCategory="HN.Controls.ImageEx">
       <Item Type="HN.Controls.ImageEx" />
+      <Item Type="HN.Controls.ImageExAssist" />
     </ToolboxItems>
   </File>
 </FileList>

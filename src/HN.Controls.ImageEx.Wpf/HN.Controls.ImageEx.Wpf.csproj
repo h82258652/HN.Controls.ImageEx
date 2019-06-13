@@ -40,6 +40,7 @@
       <Link>SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Controls\IImageExSourceSetter.cs" />
+    <Compile Include="Controls\ImageExAssist.cs" />
     <Compile Include="Controls\ImageExFailedEventHandler.cs" />
     <Compile Include="Controls\ImageExSourceSetter.cs" />
     <Compile Include="Extensions\BitmapMetadataExtensions.cs" />
@@ -54,6 +55,10 @@
     <Compile Include="Services\ImageExOptionsExtensions.cs" />
     <Compile Include="Services\ImageExService.cs" />
     <Page Include="Controls\ImageEx.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ImageExAssist.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

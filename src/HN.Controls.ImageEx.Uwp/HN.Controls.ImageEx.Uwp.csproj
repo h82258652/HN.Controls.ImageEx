@@ -137,6 +137,7 @@
     <Compile Include="Cache\DiskCache.cs" />
     <Compile Include="Controls\IImageExSourceSetter.cs" />
     <Compile Include="Controls\ImageEx.cs" />
+    <Compile Include="Controls\ImageExAssist.cs" />
     <Compile Include="Controls\ImageExFailedEventArgs.cs" />
     <Compile Include="Controls\ImageExFailedEventHandler.cs" />
     <Compile Include="Controls\ImageExSourceSetter.cs" />
@@ -173,6 +174,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Controls\ImageEx.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ImageExAssist.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
