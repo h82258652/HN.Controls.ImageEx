@@ -154,19 +154,21 @@
                                   RetryDelay="0:0:1">
                     <controls:ImageEx.LoadingTemplate>
                         <DataTemplate>
-                            <Grid VerticalAlignment="Center">
-                                <ProgressBar VerticalAlignment="Stretch"
-                                             Foreground="LightBlue"
-                                             Maximum="1"
-                                             Value="{Binding ElementName=CustomImage, Path=DownloadProgress.Percentage, Mode=OneWay}" />
-                                <StackPanel Orientation="Vertical">
-                                    <TextBlock HorizontalAlignment="Center"
-                                               Foreground="Green"
-                                               Text="Loading" />
-                                    <TextBlock HorizontalAlignment="Center"
-                                               Foreground="Green"><Run Text="{Binding ElementName=CustomImage, Path=DownloadProgress.BytesReceived}" /><Run Text="/" /><Run Text="{Binding ElementName=CustomImage, Path=DownloadProgress.TotalBytesToReceive}" /></TextBlock>
-                                </StackPanel>
-                            </Grid>
+                            <controls:ImageExAssist x:Name="ImageExAssist">
+                                <Grid VerticalAlignment="Center">
+                                    <ProgressBar VerticalAlignment="Stretch"
+                                                 Foreground="LightBlue"
+                                                 Maximum="1"
+                                                 Value="{Binding ElementName=ImageExAssist, Path=Source.DownloadProgress.Percentage, Mode=OneWay}" />
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock HorizontalAlignment="Center"
+                                                   Foreground="Green"
+                                                   Text="Loading" />
+                                        <TextBlock HorizontalAlignment="Center"
+                                                   Foreground="Green"><Run Text="{Binding ElementName=ImageExAssist, Path=Source.DownloadProgress.BytesReceived}" /><Run Text="/" /><Run Text="{Binding ElementName=ImageExAssist, Path=Source.DownloadProgress.TotalBytesToReceive}" /></TextBlock>
+                                    </StackPanel>
+                                </Grid>
+                            </controls:ImageExAssist>
                         </DataTemplate>
                     </controls:ImageEx.LoadingTemplate>
                     <controls:ImageEx.FailedTemplate>

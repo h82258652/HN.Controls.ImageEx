@@ -1,5 +1,6 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/HN.Controls.ImageEx.Wpf;component/Controls/ImageEx.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/HN.Controls.ImageEx.Wpf;component/Controls/ImageExAssist.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
