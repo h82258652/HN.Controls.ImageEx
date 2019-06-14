@@ -146,6 +146,7 @@ namespace HN.Controls
         private const string LoadingStateName = "Loading";
         private const string OpenedStateName = "Opened";
 
+        private readonly SynchronizationContext _uiContext = SynchronizationContext.Current;
         private Image _image;
         private bool _isInViewport;
         private CancellationTokenSource _lastLoadCts;
@@ -461,8 +462,11 @@ namespace HN.Controls
                 var context = new LoadingContext<ImageSource>(source, ActualWidth, ActualHeight);
                 context.DownloadProgressChanged += (sender, progress) =>
                 {
-                    DownloadProgress = progress;
-                    DownloadProgressChanged?.Invoke(this, progress);
+                    _uiContext.Post(state =>
+                    {
+                        DownloadProgress = progress;
+                        DownloadProgressChanged?.Invoke(this, progress);
+                    }, null);
                 };
 
                 var pipeDelegate = ImageExService.GetHandler<ImageSource>();

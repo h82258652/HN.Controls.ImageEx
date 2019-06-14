@@ -146,6 +146,7 @@ namespace HN.Controls
         private static readonly DependencyPropertyKey DownloadProgressPropertyKey = DependencyProperty.RegisterReadOnly(nameof(DownloadProgress), typeof(HttpDownloadProgress), typeof(ImageEx), new PropertyMetadata(default(HttpDownloadProgress)));
         private static readonly DependencyPropertyKey IsLoadingPropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsLoading), typeof(bool), typeof(ImageEx), new PropertyMetadata(default(bool)));
 
+        private readonly SynchronizationContext _uiContext = SynchronizationContext.Current;
         private Image _image;
         private bool _isInViewport;
         private CancellationTokenSource _lastLoadCts;
@@ -468,8 +469,11 @@ namespace HN.Controls
                 var context = new LoadingContext<ImageSource>(source, ActualWidth, ActualHeight);
                 context.DownloadProgressChanged += (sender, progress) =>
                 {
-                    DownloadProgress = progress;
-                    DownloadProgressChanged?.Invoke(this, progress);
+                    _uiContext.Post(state =>
+                    {
+                        DownloadProgress = progress;
+                        DownloadProgressChanged?.Invoke(this, progress);
+                    }, null);
                 };
 
                 var pipeDelegate = ImageExService.GetHandler<ImageSource>();
