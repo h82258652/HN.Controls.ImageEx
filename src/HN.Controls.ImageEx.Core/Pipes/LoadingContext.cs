@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using JetBrains.Annotations;
 
 namespace HN.Pipes
@@ -16,11 +17,13 @@ namespace HN.Pipes
         /// <summary>
         /// 初始化 <see cref="LoadingContext{TResult}" /> 类的新实例。
         /// </summary>
+        /// <param name="uiContext">UI 线程上下文。</param>
         /// <param name="source">输入的源。</param>
         /// <param name="desiredWidth">需求的宽度。</param>
         /// <param name="desiredHeight">需求的高度。</param>
-        public LoadingContext([NotNull]object source, double? desiredWidth, double? desiredHeight)
+        public LoadingContext([NotNull]SynchronizationContext uiContext, [NotNull]object source, double? desiredWidth, double? desiredHeight)
         {
+            UIContext = uiContext ?? throw new ArgumentNullException(nameof(uiContext));
             Current = OriginSource = source ?? throw new ArgumentNullException(nameof(source));
             DesiredWidth = desiredWidth;
             DesiredHeight = desiredHeight;
@@ -70,6 +73,9 @@ namespace HN.Pipes
                 _result = value;
             }
         }
+
+        /// <inheritdoc />
+        public SynchronizationContext UIContext { get; }
 
         /// <inheritdoc />
         public void RaiseDownloadProgressChanged(HttpDownloadProgress progress)

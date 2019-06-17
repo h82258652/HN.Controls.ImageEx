@@ -28,6 +28,7 @@ namespace HN.Media
         public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.RegisterAttached(nameof(ImageSource), typeof(object), typeof(ImageBrushExExtension), new PropertyMetadata(default(object)));
 
         private static readonly List<ImageBrushExExtension> Instances = new List<ImageBrushExExtension>();
+        private readonly SynchronizationContext _uiContext = SynchronizationContext.Current;
         private AlignmentX _alignmentX = AlignmentX.Center;
         private AlignmentY _alignmentY = AlignmentY.Center;
         private ImageBrush _brush;
@@ -403,7 +404,7 @@ namespace HN.Media
             _lastLoadCts = loadCts;
             try
             {
-                var context = new LoadingContext<ImageSource>(source, null, null);
+                var context = new LoadingContext<ImageSource>(_uiContext, source, null, null);
 
                 var pipeDelegate = ImageExService.GetHandler<ImageSource>();
                 var retryDelay = RetryDelay;

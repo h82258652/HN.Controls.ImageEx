@@ -64,6 +64,7 @@ namespace HN.Media
         /// </returns>
         public static readonly DependencyProperty StretchProperty = DependencyProperty.Register(nameof(Stretch), typeof(Stretch), typeof(ImageBrushEx), new PropertyMetadata(Stretch.Uniform, OnStretchChanged));
 
+        private readonly SynchronizationContext _uiContext = SynchronizationContext.Current;
         private CancellationTokenSource _lastLoadCts;
         private object _lastLoadSource;
 
@@ -259,7 +260,7 @@ namespace HN.Media
             _lastLoadCts = loadCts;
             try
             {
-                var context = new LoadingContext<ICompositionSurface>(source, null, null);
+                var context = new LoadingContext<ICompositionSurface>(_uiContext, source, null, null);
 
                 var pipeDelegate = ImageExService.GetHandler<ICompositionSurface>();
                 var retryDelay = RetryDelay;

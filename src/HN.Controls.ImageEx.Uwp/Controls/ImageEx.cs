@@ -459,7 +459,7 @@ namespace HN.Controls
 
                 VisualStateManager.GoToState(this, LoadingStateName, true);
 
-                var context = new LoadingContext<ImageSource>(source, ActualWidth, ActualHeight);
+                var context = new LoadingContext<ImageSource>(_uiContext, source, ActualWidth, ActualHeight);
                 context.DownloadProgressChanged += (sender, progress) =>
                 {
                     _uiContext.Post(state =>
