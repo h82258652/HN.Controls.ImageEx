@@ -37,24 +37,37 @@ namespace HN.Pipes
                     stream.Seek(0, SeekOrigin.Begin);
                 }
 
-                if (isStartWithLessThanSign)
+                var tcs = new TaskCompletionSource<object>();
+                context.UIContext.Post(async state =>
                 {
-                    var bitmap = new SvgImageSource();
-                    var svgImageLoadStatus = await bitmap.SetSourceAsync(stream.AsRandomAccessStream());
-                    if (svgImageLoadStatus != SvgImageSourceLoadStatus.Success)
+                    try
                     {
-                        throw new SvgImageFailedStatusException(svgImageLoadStatus);
+                        if (isStartWithLessThanSign)
+                        {
+                            var bitmap = new SvgImageSource();
+                            var svgImageLoadStatus = await bitmap.SetSourceAsync(stream.AsRandomAccessStream());
+                            if (svgImageLoadStatus != SvgImageSourceLoadStatus.Success)
+                            {
+                                throw new SvgImageFailedStatusException(svgImageLoadStatus);
+                            }
+                            cancellationToken.ThrowIfCancellationRequested();
+                            context.Current = bitmap;
+                        }
+                        else
+                        {
+                            var bitmap = new BitmapImage();
+                            await bitmap.SetSourceAsync(stream.AsRandomAccessStream());
+                            cancellationToken.ThrowIfCancellationRequested();
+                            context.Current = bitmap;                            
+                        }
+                        tcs.SetResult(null);
                     }
-                    cancellationToken.ThrowIfCancellationRequested();
-                    context.Current = bitmap;
-                }
-                else
-                {
-                    var bitmap = new BitmapImage();
-                    await bitmap.SetSourceAsync(stream.AsRandomAccessStream());
-                    cancellationToken.ThrowIfCancellationRequested();
-                    context.Current = bitmap;
-                }
+                    catch (Exception ex)
+                    {
+                        tcs.SetException(ex);
+                    }
+                }, null);
+                await tcs.Task;
             }
 
             await next(context, cancellationToken);

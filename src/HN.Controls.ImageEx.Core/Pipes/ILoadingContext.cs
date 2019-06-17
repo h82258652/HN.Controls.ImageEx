@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace HN.Pipes
 {
@@ -60,6 +61,14 @@ namespace HN.Pipes
         /// 处理结果。
         /// </returns>
         TResult Result { get; set; }
+
+        /// <summary>
+        /// 获取 UI 线程上下文。
+        /// </summary>
+        /// <returns>
+        /// UI 线程上下文。
+        /// </returns>
+        SynchronizationContext UIContext { get; }
 
         /// <summary>
         /// 发起下载进度发生变化事件。
