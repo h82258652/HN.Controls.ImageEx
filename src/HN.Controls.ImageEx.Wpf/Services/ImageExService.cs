@@ -13,7 +13,7 @@ namespace HN.Services
     /// </summary>
     public static class ImageExService
     {
-        private static readonly Dictionary<Type, IServiceCollection> Services = new Dictionary<Type, IServiceCollection>();
+        private static readonly IDictionary<Type, IServiceCollection> Services = new Dictionary<Type, IServiceCollection>();
         private static readonly IServiceCollection SourceSetters = new ServiceCollection();
 
         static ImageExService()
