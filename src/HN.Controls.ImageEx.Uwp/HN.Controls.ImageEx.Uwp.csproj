@@ -154,8 +154,10 @@
     <Compile Include="Pipes\UriPipe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\DesignModeService.cs" />
+    <Compile Include="Services\IImageLoader.cs" />
     <Compile Include="Services\ImageExOptionsExtensions.cs" />
     <Compile Include="Services\ImageExService.cs" />
+    <Compile Include="Services\ImageLoader.cs" />
     <EmbeddedResource Include="Properties\HN.Controls.ImageEx.Uwp.rd.xml" />
   </ItemGroup>
   <ItemGroup>

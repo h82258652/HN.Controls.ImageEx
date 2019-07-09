@@ -23,12 +23,30 @@ namespace HN.Services
                 throw new ArgumentNullException(nameof(options));
             }
 
-            options.AddPipe(typeof(DirectPipe<>));
             options.AddPipe(typeof(MemoryCachePipe<>));
             options.AddPipe(typeof(StringPipe<>));
             options.AddPipe(typeof(DiskCachePipe<>));
             options.AddPipe(typeof(UriPipe<>));
             options.AddPipe(typeof(ByteArrayPipe<>));
+            return options;
+        }
+
+        /// <summary>
+        /// 对输出值的类型为字节数组使用默认管道。
+        /// </summary>
+        /// <param name="options">ImageEx 配置项。</param>
+        /// <returns>ImageEx 配置项。</returns>
+        public static IImageExOptions<byte[]> WithDefaultPipes(this IImageExOptions<byte[]> options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            options.AddPipe(typeof(MemoryCachePipe<>));
+            options.AddPipe(typeof(StringPipe<>));
+            options.AddPipe(typeof(DiskCachePipe<>));
+            options.AddPipe(typeof(UriPipe<>));
             return options;
         }
 
