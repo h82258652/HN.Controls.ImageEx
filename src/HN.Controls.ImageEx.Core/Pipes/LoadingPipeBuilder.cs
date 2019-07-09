@@ -46,6 +46,12 @@ namespace HN.Pipes
                 {
                     return (context, cancellationToken) =>
                     {
+                        if (context.Result == null && context.Current is TResult result)
+                        {
+                            context.Result = result;
+                            return Task.CompletedTask;
+                        }
+
                         using (pipe)
                         {
                             return pipe.InvokeAsync(context, next, cancellationToken);

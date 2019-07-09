@@ -14,11 +14,18 @@ namespace HN.Services
     /// </summary>
     public static class ImageExService
     {
-        private static readonly Dictionary<Type, IServiceCollection> Services = new Dictionary<Type, IServiceCollection>();
+        private static readonly IDictionary<Type, IServiceCollection> Services = new Dictionary<Type, IServiceCollection>();
         private static readonly IServiceCollection SourceSetters = new ServiceCollection();
 
         static ImageExService()
         {
+            ConfigureByteArray(options =>
+            {
+                options.WithDefaultServices();
+
+                options.WithDefaultPipes();
+            });
+
             ConfigureImageSource(options =>
             {
                 options.WithDefaultServices();
@@ -54,6 +61,15 @@ namespace HN.Services
             configure(options);
 
             Services[typeof(T)] = options.Services;
+        }
+
+        /// <summary>
+        /// 进行输出值类型为字节数组的配置。
+        /// </summary>
+        /// <param name="configure">执行配置的委托。</param>
+        public static void ConfigureByteArray(Action<IImageExOptions<byte[]>> configure)
+        {
+            Configure(configure);
         }
 
         /// <summary>

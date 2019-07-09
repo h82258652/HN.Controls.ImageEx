@@ -44,6 +44,8 @@
     <Compile Include="Controls\ImageExFailedEventHandler.cs" />
     <Compile Include="Controls\ImageExSourceSetter.cs" />
     <Compile Include="Extensions\BitmapMetadataExtensions.cs" />
+    <Compile Include="Services\IImageLoader.cs" />
+    <Compile Include="Services\ImageLoader.cs" />
     <Compile Include="Utils\FrameDisposalMethod.cs" />
     <Compile Include="Utils\GifFrameMetadata.cs" />
     <Compile Include="Media\IImageBrushExSourceSetter.cs" />
@@ -87,7 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations">
-      <Version>2019.1.1</Version>
+      <Version>2019.1.3</Version>
     </PackageReference>
     <PackageReference Include="Polly">
       <Version>7.1.0</Version>
