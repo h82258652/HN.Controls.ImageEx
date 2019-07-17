@@ -185,7 +185,10 @@ namespace HN.Media
             }
 
             var brush = (CompositionSurfaceBrush)obj.CompositionBrush;
-            brush.HorizontalAlignmentRatio = (float)value * 0.5F;
+            if (brush != null)
+            {
+                brush.HorizontalAlignmentRatio = (float)value * 0.5F;
+            }
         }
 
         private static void OnAlignmentYChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -199,7 +202,10 @@ namespace HN.Media
             }
 
             var brush = (CompositionSurfaceBrush)obj.CompositionBrush;
-            brush.VerticalAlignmentRatio = (float)value * 0.5F;
+            if (brush != null)
+            {
+                brush.VerticalAlignmentRatio = (float)value * 0.5F;
+            }
         }
 
         private static async void OnImageSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -221,7 +227,10 @@ namespace HN.Media
             }
 
             var brush = (CompositionSurfaceBrush)obj.CompositionBrush;
-            brush.Stretch = (CompositionStretch)value;
+            if (brush != null)
+            {
+                brush.Stretch = (CompositionStretch)value;
+            }
         }
 
         private void DisposeCompositionBrush()
@@ -236,6 +245,12 @@ namespace HN.Media
         private void SetBrush(CompositionBrush brush)
         {
             DisposeCompositionBrush();
+            if (brush is CompositionSurfaceBrush surfaceBrush)
+            {
+                surfaceBrush.HorizontalAlignmentRatio = (float)AlignmentX * 0.5F;
+                surfaceBrush.VerticalAlignmentRatio = (float)AlignmentY * 0.5F;
+                surfaceBrush.Stretch = (CompositionStretch)Stretch;
+            }
             CompositionBrush = brush;
         }
 
