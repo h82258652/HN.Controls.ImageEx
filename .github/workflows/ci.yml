@@ -9,6 +9,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@master
 
-    - name: Run build.ps1
+    - name: Run build script
       run: .\build.ps1
       shell: pwsh
