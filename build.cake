@@ -2,11 +2,13 @@
 // TOOLS / ADDINS
 ///////////////////////////////////////////////////////////////////////////////
 
-#tool xunit.runner.console
+#tool vswhere
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
+
+var msBuildPath = GetFiles(VSWhereLatest() + "/**/MSBuild.exe").FirstOrDefault();
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
@@ -24,10 +26,10 @@ var solution = "./HN.Controls.ImageEx.sln";
 //////////////////////////////////////////////////////////////////////
 
 Task("Clean")
+    .ContinueOnError()
     .Does(() => 
 {
     CleanDirectories("./src/*/bin");
-    CleanDirectories("./test/*/bin");
 });
 
 Task("Restore-NuGet-Packages")
@@ -58,9 +60,13 @@ Task("Build")
     if(IsRunningOnWindows())
     {
         // Use MSBuild
-        MSBuild(solution, configurator =>
-            configurator.SetConfiguration(configuration)
-                .SetVerbosity(verbosity));
+        var settings = new MSBuildSettings
+        {
+            ToolPath = msBuildPath
+        }
+        .SetConfiguration(configuration)
+        .SetVerbosity(verbosity);
+        MSBuild(solution, settings);
     }
     else
     {
@@ -71,16 +77,8 @@ Task("Build")
     }
 });
 
-Task("Run-Unit-Tests")
-    .IsDependentOn("Build")
-    .Does(() => 
-{
-    XUnit2("./test/*/bin/*/*.Tests.dll");
-});
-
-
 Task("Package")
-    .IsDependentOn("Run-Unit-Tests")
+    .IsDependentOn("Build")
     .Does(() =>
 {
     var nuGetPackSettings = new NuGetPackSettings
