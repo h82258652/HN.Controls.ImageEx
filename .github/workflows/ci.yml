@@ -10,5 +10,5 @@ jobs:
       uses: actions/checkout@master
 
     - name: Run build.ps1
-      run: build.ps1
+      run: .\build.ps1
       shell: pwsh
