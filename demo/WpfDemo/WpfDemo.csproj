@@ -96,11 +96,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HN.Controls.ImageEx.Core\HN.Controls.ImageEx.Core.csproj">
-      <Project>{3627ca02-c266-4cea-9829-60b0847982f1}</Project>
+    <ProjectReference Include="..\..\src\HN.Controls.ImageEx.Core\HN.Controls.ImageEx.Core.csproj">
+      <Project>{DC802B90-24E2-4285-8577-5BD61ECE78E0}</Project>
       <Name>HN.Controls.ImageEx.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HN.Controls.ImageEx.Wpf\HN.Controls.ImageEx.Wpf.csproj">
+    <ProjectReference Include="..\..\src\HN.Controls.ImageEx.Wpf\HN.Controls.ImageEx.Wpf.csproj">
       <Project>{a796c158-8be8-4cb8-a1fa-da8f7934df25}</Project>
       <Name>HN.Controls.ImageEx.Wpf</Name>
     </ProjectReference>

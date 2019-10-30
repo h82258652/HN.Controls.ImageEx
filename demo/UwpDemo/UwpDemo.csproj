@@ -160,15 +160,15 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.2.8</Version>
+      <Version>6.2.9</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HN.Controls.ImageEx.Core\HN.Controls.ImageEx.Core.csproj">
+    <ProjectReference Include="..\..\src\HN.Controls.ImageEx.Core\HN.Controls.ImageEx.Core.csproj">
       <Project>{dc802b90-24e2-4285-8577-5bd61ece78e0}</Project>
       <Name>HN.Controls.ImageEx.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HN.Controls.ImageEx.Uwp\HN.Controls.ImageEx.Uwp.csproj">
+    <ProjectReference Include="..\..\src\HN.Controls.ImageEx.Uwp\HN.Controls.ImageEx.Uwp.csproj">
       <Project>{cd6aae23-3c9a-45ac-bcc1-32fce5563c9e}</Project>
       <Name>HN.Controls.ImageEx.Uwp</Name>
     </ProjectReference>
