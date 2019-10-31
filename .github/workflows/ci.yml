@@ -16,3 +16,9 @@ jobs:
     - name: Run build script
       run: .\build.ps1
       shell: pwsh
+
+    - name: Upload nupkg
+      uses: actions/upload-artifact@master
+      with:
+        name: HN.Controls.ImageEx.Core
+        path: HN.Controls.ImageEx.Core.*.nupkg
