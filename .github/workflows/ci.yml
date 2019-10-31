@@ -20,5 +20,5 @@ jobs:
     - name: Upload nupkg
       uses: actions/upload-artifact@master
       with:
-        name: HN.Controls.ImageEx.Core
-        path: HN.Controls.ImageEx.Core.*.nupkg
+        name: Nuget Packages
+        path: ./artifacts

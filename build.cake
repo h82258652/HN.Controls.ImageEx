@@ -83,7 +83,8 @@ Task("Package")
 {
     var nuGetPackSettings = new NuGetPackSettings
     {
-        Version = version
+        Version = version,
+        OutputDirectory = "./artifacts"
     };
 
     var nuspecFiles = GetFiles("./src/*/*.nuspec");
