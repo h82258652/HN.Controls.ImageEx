@@ -102,7 +102,7 @@ namespace HN.Pipes
 
         private async Task<(byte[], CacheControlHeaderValue)> CreateDownloadTask(ILoadingContext<TResult> context, Uri uri, CancellationToken cancellationToken)
         {
-            var client = _httpClientFactory.CreateClient("ImageEx");
+            var client = _httpClientFactory.CreateClient(Constants.HttpClientName);
             using (var response = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();

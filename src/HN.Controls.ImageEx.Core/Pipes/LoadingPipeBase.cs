@@ -33,6 +33,6 @@ namespace HN.Pipes
         }
 
         /// <inheritdoc />
-        public abstract Task InvokeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, CancellationToken cancellationToken = default(CancellationToken));
+        public abstract Task InvokeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, CancellationToken cancellationToken = default);
     }
 }

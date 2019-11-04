@@ -133,7 +133,7 @@ namespace HN.Services
             }
 
             options.Services.AddTransient<THandler>();
-            options.Services.AddHttpClient("ImageEx").ConfigurePrimaryHttpMessageHandler(serviceProvider => serviceProvider.GetRequiredService<THandler>());
+            options.Services.AddHttpClient(Constants.HttpClientName).ConfigurePrimaryHttpMessageHandler(serviceProvider => serviceProvider.GetRequiredService<THandler>());
             return options;
         }
 
@@ -150,7 +150,7 @@ namespace HN.Services
                 throw new ArgumentNullException(nameof(options));
             }
 
-            options.Services.AddHttpClient("ImageEx").ConfigurePrimaryHttpMessageHandler(configureHandler);
+            options.Services.AddHttpClient(Constants.HttpClientName).ConfigurePrimaryHttpMessageHandler(configureHandler);
             return options;
         }
 
@@ -167,7 +167,7 @@ namespace HN.Services
                 throw new ArgumentNullException(nameof(options));
             }
 
-            options.Services.AddHttpClient("ImageEx").ConfigurePrimaryHttpMessageHandler(configureHandler);
+            options.Services.AddHttpClient(Constants.HttpClientName).ConfigurePrimaryHttpMessageHandler(configureHandler);
             return options;
         }
     }
