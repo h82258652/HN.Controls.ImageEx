@@ -71,6 +71,7 @@ namespace HN.Pipes
         /// <returns>
         /// UI 线程上下文。
         /// </returns>
+        [NotNull]
         SynchronizationContext UIContext { get; }
 
         /// <summary>
