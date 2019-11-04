@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HN.Pipes
@@ -16,7 +17,8 @@ namespace HN.Pipes
         /// <typeparam name="TResult">加载目标的类型。</typeparam>
         /// <param name="services">服务集合。</param>
         /// <returns>管道调用的委托。</returns>
-        public static LoadingPipeDelegate<TResult> Build<TResult>(IServiceCollection services) where TResult : class
+        [NotNull]
+        public static LoadingPipeDelegate<TResult> Build<TResult>([NotNull] IServiceCollection services) where TResult : class
         {
             if (services == null)
             {
