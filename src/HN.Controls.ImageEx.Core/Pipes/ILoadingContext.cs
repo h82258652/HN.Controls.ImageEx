@@ -13,7 +13,8 @@ namespace HN.Pipes
         /// <summary>
         /// 下载进度发生变化事件。
         /// </summary>
-        event EventHandler<HttpDownloadProgress> DownloadProgressChanged;
+        [CanBeNull]
+        event EventHandler<HttpDownloadProgress>? DownloadProgressChanged;
 
         /// <summary>
         /// 设置或获取当前管道的值。
@@ -21,6 +22,7 @@ namespace HN.Pipes
         /// <returns>
         /// 当前管道的值。
         /// </returns>
+        [NotNull]
         object Current { get; set; }
 
         /// <summary>

@@ -12,7 +12,7 @@ namespace HN.Pipes
     public class LoadingContext<TResult> : ILoadingContext<TResult> where TResult : class
     {
         private byte[]? _httpResponseBytes;
-        private TResult _result;
+        private TResult? _result;
 
         /// <summary>
         /// 初始化 <see cref="LoadingContext{TResult}" /> 类的新实例。
@@ -30,7 +30,7 @@ namespace HN.Pipes
         }
 
         /// <inheritdoc />
-        public event EventHandler<HttpDownloadProgress> DownloadProgressChanged;
+        public event EventHandler<HttpDownloadProgress>? DownloadProgressChanged;
 
         /// <inheritdoc />
         public object Current { get; set; }
