@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace HN.Cache
 {
@@ -11,6 +12,7 @@ namespace HN.Cache
         /// <summary>
         /// 获取缓存文件夹路径。
         /// </summary>
+        [NotNull]
         string CacheFolderPath { get; }
 
         /// <summary>
