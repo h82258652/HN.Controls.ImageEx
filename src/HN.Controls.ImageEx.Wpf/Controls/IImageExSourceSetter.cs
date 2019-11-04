@@ -13,6 +13,6 @@ namespace HN.Controls
         /// </summary>
         /// <param name="host">呈现图像的对象。</param>
         /// <param name="source">图像数据源。</param>
-        void SetSource(Image host, ImageSource source);
+        void SetSource(Image host, ImageSource? source);
     }
 }

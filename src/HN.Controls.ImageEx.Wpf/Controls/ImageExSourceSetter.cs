@@ -16,7 +16,7 @@ namespace HN.Controls
     public class ImageExSourceSetter : IImageExSourceSetter
     {
         /// <inheritdoc />
-        public void SetSource(Image host, ImageSource source)
+        public void SetSource(Image host, ImageSource? source)
         {
             var decoder = GetGifBitmapDecoder(source);
             if (decoder != null)

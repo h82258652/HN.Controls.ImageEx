@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using HN.Pipes;
 using HN.Services;
+using JetBrains.Annotations;
 using Polly;
 
 namespace HN.Controls
@@ -327,6 +328,7 @@ namespace HN.Controls
         /// <returns>
         /// 所绘制图像的源。
         /// </returns>
+        [CanBeNull]
         public object? Source
         {
             get => GetValue(SourceProperty);
@@ -441,7 +443,7 @@ namespace HN.Controls
             }
         }
 
-        private async Task SetSourceAsync(object source)
+        private async Task SetSourceAsync(object? source)
         {
             if (_image == null)
             {
