@@ -22,7 +22,7 @@ namespace HN.Pipes
         }
 
         /// <inheritdoc />
-        public override Task InvokeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task InvokeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, CancellationToken cancellationToken = default)
         {
             if (context.Current is byte[] bytes)
             {

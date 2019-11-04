@@ -29,7 +29,7 @@ namespace HN.Pipes
         }
 
         /// <inheritdoc />
-        public override async Task InvokeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task InvokeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, CancellationToken cancellationToken = default)
         {
             if (IsInDesignMode)
             {
