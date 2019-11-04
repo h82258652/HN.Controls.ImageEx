@@ -11,7 +11,7 @@ namespace HN.Pipes
     /// <typeparam name="TResult">加载目标的类型。</typeparam>
     public class LoadingContext<TResult> : ILoadingContext<TResult> where TResult : class
     {
-        private byte[] _httpResponseBytes;
+        private byte[]? _httpResponseBytes;
         private TResult _result;
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace HN.Pipes
         public double? DesiredWidth { get; }
 
         /// <inheritdoc />
-        public byte[] HttpResponseBytes
+        public byte[]? HttpResponseBytes
         {
             get => _httpResponseBytes;
             set

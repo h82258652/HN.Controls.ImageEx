@@ -44,7 +44,7 @@ namespace HN.Pipes
         /// <returns>
         /// 若管道处理过程中涉及 HTTP 传输，则有值。
         /// </returns>
-        byte[] HttpResponseBytes { get; set; }
+        byte[]? HttpResponseBytes { get; set; }
 
         /// <summary>
         /// 获取原始输入的数据源。
