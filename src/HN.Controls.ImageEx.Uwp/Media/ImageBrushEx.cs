@@ -7,6 +7,7 @@ using Polly;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
+using JetBrains.Annotations;
 
 namespace HN.Media
 {
@@ -38,7 +39,7 @@ namespace HN.Media
         /// <returns>
         /// <see cref="ImageSource" /> 依赖项属性的标识符。
         /// </returns>
-        public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.Register(nameof(ImageSource), typeof(object), typeof(ImageBrushEx), new PropertyMetadata(default(object), OnImageSourceChanged));
+        public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.Register(nameof(ImageSource), typeof(object), typeof(ImageBrushEx), new PropertyMetadata(default, OnImageSourceChanged));
 
         /// <summary>
         /// 标识 <see cref="RetryCount" /> 依赖属性。
@@ -65,8 +66,8 @@ namespace HN.Media
         public static readonly DependencyProperty StretchProperty = DependencyProperty.Register(nameof(Stretch), typeof(Stretch), typeof(ImageBrushEx), new PropertyMetadata(Stretch.Uniform, OnStretchChanged));
 
         private readonly SynchronizationContext _uiContext = SynchronizationContext.Current;
-        private CancellationTokenSource _lastLoadCts;
-        private object _lastLoadSource;
+        private CancellationTokenSource? _lastLoadCts;
+        private object? _lastLoadSource;
 
         /// <summary>
         /// 在无法加载图像源时发生。
@@ -115,7 +116,8 @@ namespace HN.Media
         /// <returns>
         /// 此 <see cref="ImageBrush" /> 显示的图像。
         /// </returns>
-        public object ImageSource
+        [CanBeNull]
+        public object? ImageSource
         {
             get => GetValue(ImageSourceProperty);
             set => SetValue(ImageSourceProperty, value);
@@ -254,7 +256,7 @@ namespace HN.Media
             CompositionBrush = brush;
         }
 
-        private async Task SetSourceAsync(object source)
+        private async Task SetSourceAsync(object? source)
         {
             if (_lastLoadSource == source)
             {

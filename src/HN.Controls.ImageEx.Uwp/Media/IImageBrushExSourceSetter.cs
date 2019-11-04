@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.UI.Composition;
+using JetBrains.Annotations;
 
 namespace HN.Media
 {
@@ -13,6 +14,6 @@ namespace HN.Media
         /// </summary>
         /// <param name="host">呈现图像的对象。</param>
         /// <param name="source">图像数据源。</param>
-        void SetSource(Action<CompositionBrush> host, ICompositionSurface source);
+        void SetSource([NotNull] Action<CompositionBrush> host, [CanBeNull] ICompositionSurface? source);
     }
 }

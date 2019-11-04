@@ -8,7 +8,7 @@ namespace HN.Media
     public class ImageBrushExSourceSetter : IImageBrushExSourceSetter
     {
         /// <inheritdoc />
-        public void SetSource(Action<CompositionBrush> host, ICompositionSurface source)
+        public void SetSource(Action<CompositionBrush> host, ICompositionSurface? source)
         {
             CompositionBrush brush = null;
             if (source != null)
