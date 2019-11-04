@@ -62,7 +62,7 @@ namespace HN.Pipes
         /// <returns>
         /// 处理结果。
         /// </returns>
-        TResult Result { get; set; }
+        TResult? Result { get; set; }
 
         /// <summary>
         /// 获取 UI 线程上下文。

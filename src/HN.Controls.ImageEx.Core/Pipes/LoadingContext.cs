@@ -60,7 +60,7 @@ namespace HN.Pipes
         public object OriginSource { get; }
 
         /// <inheritdoc />
-        public TResult Result
+        public TResult? Result
         {
             get => _result;
             set
