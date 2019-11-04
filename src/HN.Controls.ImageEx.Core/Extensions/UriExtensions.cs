@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace HN.Extensions
 {
@@ -13,7 +14,7 @@ namespace HN.Extensions
         /// <param name="uri"><see cref="Uri" /> 实例。</param>
         /// <returns><see cref="Uri" /> 实例是否是 Http 协议。</returns>
         /// <exception cref="ArgumentNullException">uri 为 <see langword="null"/>。</exception>
-        public static bool IsHttp(this Uri uri)
+        public static bool IsHttp([NotNull] this Uri uri)
         {
             if (uri == null)
             {
