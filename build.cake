@@ -81,14 +81,14 @@ Task("Package")
     .IsDependentOn("Build")
     .Does(() =>
 {
-    var nuGetPackSettings = new NuGetPackSettings
+    var nugetPackSettings = new NuGetPackSettings
     {
         Version = version,
         OutputDirectory = "./artifacts"
     };
 
     var nuspecFiles = GetFiles("./src/*/*.nuspec");
-    NuGetPack(nuspecFiles, nuGetPackSettings);
+    NuGetPack(nuspecFiles, nugetPackSettings);
 });
 
 //////////////////////////////////////////////////////////////////////
