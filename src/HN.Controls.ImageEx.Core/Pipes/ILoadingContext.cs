@@ -63,6 +63,7 @@ namespace HN.Pipes
         /// <returns>
         /// 处理结果。
         /// </returns>
+        [CanBeNull]
         TResult? Result { get; set; }
 
         /// <summary>
