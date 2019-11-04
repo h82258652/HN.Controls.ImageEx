@@ -14,6 +14,6 @@ namespace HN.Services
         /// <param name="source">图像的源。</param>
         /// <param name="cancellationToken">要监视取消请求的标记。</param>
         /// <returns>图像字节数组形式的数据。</returns>
-        Task<byte[]> GetByteArrayAsync(object source, CancellationToken cancellationToken = default(CancellationToken));
+        Task<byte[]> GetByteArrayAsync(object source, CancellationToken cancellationToken = default);
     }
 }
