@@ -20,7 +20,7 @@ namespace HN.Cache
         /// </summary>
         /// <param name="cacheFolderPath">缓存文件夹路径。</param>
         /// <exception cref="ArgumentNullException">缓存文件夹路径为 <see langword="null" />。</exception>
-        protected DiskCacheBase([NotNull]string cacheFolderPath)
+        protected DiskCacheBase([NotNull] string cacheFolderPath)
         {
             CacheFolderPath = cacheFolderPath ?? throw new ArgumentNullException(nameof(cacheFolderPath));
         }
@@ -88,12 +88,10 @@ namespace HN.Cache
             }
 
             var cacheFilePath = GetCacheFilePath(key);
-            using (var fileStream = File.OpenRead(cacheFilePath))
-            {
-                var buffer = new byte[fileStream.Length];
-                await fileStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
-                return buffer;
-            }
+            using var fileStream = File.OpenRead(cacheFilePath);
+            var buffer = new byte[fileStream.Length];
+            await fileStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+            return buffer;
         }
 
         /// <inheritdoc />
@@ -123,10 +121,8 @@ namespace HN.Cache
 
             var cacheFilePath = GetCacheFilePath(key);
             Directory.CreateDirectory(CacheFolderPath);
-            using (var fileStream = File.Create(cacheFilePath))
-            {
-                await fileStream.WriteAsync(data, 0, data.Length, cancellationToken);
-            }
+            using var fileStream = File.Create(cacheFilePath);
+            await fileStream.WriteAsync(data, 0, data.Length, cancellationToken);
         }
 
         private string GetCacheFilePath(string key)
@@ -138,13 +134,11 @@ namespace HN.Cache
                 extension = extension.Substring(0, invalidCharIndex);
             }
 
-            using (var md5 = MD5.Create())
-            {
-                var buffer = Encoding.UTF8.GetBytes(key);
-                var hashResult = md5.ComputeHash(buffer);
-                var cacheFileName = BitConverter.ToString(hashResult).Replace("-", string.Empty) + extension;
-                return Path.Combine(CacheFolderPath, cacheFileName);
-            }
+            using var md5 = MD5.Create();
+            var buffer = Encoding.UTF8.GetBytes(key);
+            var hashResult = md5.ComputeHash(buffer);
+            var cacheFileName = BitConverter.ToString(hashResult).Replace("-", string.Empty) + extension;
+            return Path.Combine(CacheFolderPath, cacheFileName);
         }
     }
 }

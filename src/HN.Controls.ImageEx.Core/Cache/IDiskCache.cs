@@ -26,7 +26,7 @@ namespace HN.Cache
         /// </summary>
         /// <param name="key">缓存的键。</param>
         /// <returns>某个缓存的大小。单位：字节。</returns>
-        Task<long> CalculateSizeAsync(string key);
+        Task<long> CalculateSizeAsync([NotNull] string key);
 
         /// <summary>
         /// 删除所有缓存。
@@ -39,7 +39,7 @@ namespace HN.Cache
         /// </summary>
         /// <param name="key">缓存的键。</param>
         /// <returns>表示异步删除操作的任务。</returns>
-        Task DeleteAsync(string key);
+        Task DeleteAsync([NotNull] string key);
 
         /// <summary>
         /// 获取缓存。
@@ -47,14 +47,14 @@ namespace HN.Cache
         /// <param name="key">缓存的键。</param>
         /// <param name="cancellationToken">要监视取消请求的标记。</param>
         /// <returns>缓存的值。</returns>
-        Task<byte[]> GetAsync(string key, CancellationToken cancellationToken = default);
+        Task<byte[]> GetAsync([NotNull] string key, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// 获取某个缓存是否存在。
         /// </summary>
         /// <param name="key">缓存的键。</param>
         /// <returns>某个缓存是否存在。</returns>
-        Task<bool> IsExistAsync(string key);
+        Task<bool> IsExistAsync([NotNull] string key);
 
         /// <summary>
         /// 设置缓存。
@@ -63,6 +63,6 @@ namespace HN.Cache
         /// <param name="data">缓存的值。</param>
         /// <param name="cancellationToken">要监视取消请求的标记。</param>
         /// <returns>表示异步设置操作的任务。</returns>
-        Task SetAsync(string key, byte[] data, CancellationToken cancellationToken = default);
+        Task SetAsync([NotNull] string key, [NotNull] byte[] data, CancellationToken cancellationToken = default);
     }
 }
