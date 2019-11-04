@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using JetBrains.Annotations;
 
 namespace HN.Pipes
 {
@@ -44,6 +45,7 @@ namespace HN.Pipes
         /// <returns>
         /// 若管道处理过程中涉及 HTTP 传输，则有值。
         /// </returns>
+        [CanBeNull]
         byte[]? HttpResponseBytes { get; set; }
 
         /// <summary>
