@@ -80,7 +80,7 @@ namespace HN.Cache
         }
 
         /// <inheritdoc />
-        public async Task<byte[]> GetAsync(string key, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<byte[]> GetAsync(string key, CancellationToken cancellationToken = default)
         {
             if (key == null)
             {
@@ -109,7 +109,7 @@ namespace HN.Cache
         }
 
         /// <inheritdoc />
-        public async Task SetAsync(string key, byte[] data, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task SetAsync(string key, byte[] data, CancellationToken cancellationToken = default)
         {
             if (key == null)
             {

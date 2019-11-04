@@ -45,7 +45,7 @@ namespace HN.Cache
         /// <param name="key">缓存的键。</param>
         /// <param name="cancellationToken">要监视取消请求的标记。</param>
         /// <returns>缓存的值。</returns>
-        Task<byte[]> GetAsync(string key, CancellationToken cancellationToken = default(CancellationToken));
+        Task<byte[]> GetAsync(string key, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// 获取某个缓存是否存在。
@@ -61,6 +61,6 @@ namespace HN.Cache
         /// <param name="data">缓存的值。</param>
         /// <param name="cancellationToken">要监视取消请求的标记。</param>
         /// <returns>表示异步设置操作的任务。</returns>
-        Task SetAsync(string key, byte[] data, CancellationToken cancellationToken = default(CancellationToken));
+        Task SetAsync(string key, byte[] data, CancellationToken cancellationToken = default);
     }
 }
