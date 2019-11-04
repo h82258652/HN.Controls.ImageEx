@@ -24,6 +24,6 @@ namespace HN.Pipes
         /// <param name="next">下一个加载管道的调用委托。</param>
         /// <param name="cancellationToken">要监视取消请求的标记。</param>
         /// <returns>表示异步加载操作的任务。</returns>
-        Task InvokeAsync([NotNull]ILoadingContext<TResult> context, [NotNull]LoadingPipeDelegate<TResult> next, CancellationToken cancellationToken = default(CancellationToken));
+        Task InvokeAsync([NotNull]ILoadingContext<TResult> context, [NotNull]LoadingPipeDelegate<TResult> next, CancellationToken cancellationToken = default);
     }
 }
