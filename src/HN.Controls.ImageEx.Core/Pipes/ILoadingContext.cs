@@ -54,6 +54,7 @@ namespace HN.Pipes
         /// <returns>
         /// 原始输入的数据源。
         /// </returns>
+        [NotNull]
         object OriginSource { get; }
 
         /// <summary>
