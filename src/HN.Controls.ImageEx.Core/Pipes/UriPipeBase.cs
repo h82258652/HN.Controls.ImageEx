@@ -38,7 +38,7 @@ namespace HN.Pipes
         }
 
         /// <inheritdoc />
-        public sealed override async Task InvokeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, CancellationToken cancellationToken = default(CancellationToken))
+        public sealed override async Task InvokeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, CancellationToken cancellationToken = default)
         {
             var uri = context.Current as Uri;
             if (uri == null)
@@ -98,7 +98,7 @@ namespace HN.Pipes
         /// <param name="uri">Uri。</param>
         /// <param name="cancellationToken">要监视取消请求的标记。</param>
         /// <returns>表示异步加载操作的任务。</returns>
-        protected abstract Task InvokeOtherUriSchemeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, Uri uri, CancellationToken cancellationToken = default(CancellationToken));
+        protected abstract Task InvokeOtherUriSchemeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, Uri uri, CancellationToken cancellationToken = default);
 
         private async Task<(byte[], CacheControlHeaderValue)> CreateDownloadTask(ILoadingContext<TResult> context, Uri uri, CancellationToken cancellationToken)
         {
