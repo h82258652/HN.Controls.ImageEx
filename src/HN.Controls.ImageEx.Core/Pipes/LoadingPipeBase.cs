@@ -19,7 +19,7 @@ namespace HN.Pipes
         /// 初始化 <see cref="LoadingPipeBase{TResult}" /> 类的新实例。
         /// </summary>
         /// <param name="designModeService">设计模式服务。</param>
-        protected LoadingPipeBase([NotNull]IDesignModeService designModeService)
+        protected LoadingPipeBase([NotNull] IDesignModeService designModeService)
         {
             _designModeService = designModeService ?? throw new ArgumentNullException(nameof(designModeService));
         }
