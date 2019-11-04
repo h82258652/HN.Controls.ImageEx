@@ -327,7 +327,7 @@ namespace HN.Controls
         /// <returns>
         /// 所绘制图像的源。
         /// </returns>
-        public object Source
+        public object? Source
         {
             get => GetValue(SourceProperty);
             set => SetValue(SourceProperty, value);
