@@ -11,5 +11,5 @@ namespace HN.Pipes
     /// <param name="context">加载上下文。</param>
     /// <param name="cancellationToken">要监视取消请求的标记。</param>
     /// <returns>表示异步加载操作的任务。</returns>
-    public delegate Task LoadingPipeDelegate<TResult>([NotNull] ILoadingContext<TResult> context, CancellationToken cancellationToken = default(CancellationToken)) where TResult : class;
+    public delegate Task LoadingPipeDelegate<TResult>([NotNull] ILoadingContext<TResult> context, CancellationToken cancellationToken = default) where TResult : class;
 }
