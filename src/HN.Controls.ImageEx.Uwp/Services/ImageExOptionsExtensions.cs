@@ -4,6 +4,7 @@ using HN.Cache;
 using HN.Pipes;
 using Windows.UI.Composition;
 using Windows.UI.Xaml.Media;
+using JetBrains.Annotations;
 
 namespace HN.Services
 {
@@ -17,7 +18,7 @@ namespace HN.Services
         /// </summary>
         /// <param name="options">ImageEx 配置项。</param>
         /// <returns>ImageEx 配置项。</returns>
-        public static IImageExOptions WithDefaultPipes(this IImageExOptions options)
+        public static IImageExOptions WithDefaultPipes([NotNull] this IImageExOptions options)
         {
             if (options == null)
             {
@@ -37,7 +38,7 @@ namespace HN.Services
         /// </summary>
         /// <param name="options">ImageEx 配置项。</param>
         /// <returns>ImageEx 配置项。</returns>
-        public static IImageExOptions<byte[]> WithDefaultPipes(this IImageExOptions<byte[]> options)
+        public static IImageExOptions<byte[]> WithDefaultPipes([NotNull] this IImageExOptions<byte[]> options)
         {
             if (options == null)
             {
@@ -56,7 +57,7 @@ namespace HN.Services
         /// </summary>
         /// <param name="options">ImageEx 配置项。</param>
         /// <returns>ImageEx 配置项。</returns>
-        public static IImageExOptions<ImageSource> WithDefaultPipes(this IImageExOptions<ImageSource> options)
+        public static IImageExOptions<ImageSource> WithDefaultPipes([NotNull] this IImageExOptions<ImageSource> options)
         {
             if (options == null)
             {
@@ -73,7 +74,7 @@ namespace HN.Services
         /// </summary>
         /// <param name="options">ImageEx 配置项。</param>
         /// <returns>ImageEx 配置项。</returns>
-        public static IImageExOptions<ICompositionSurface> WithDefaultPipes(this IImageExOptions<ICompositionSurface> options)
+        public static IImageExOptions<ICompositionSurface> WithDefaultPipes([NotNull] this IImageExOptions<ICompositionSurface> options)
         {
             if (options == null)
             {
@@ -90,7 +91,7 @@ namespace HN.Services
         /// </summary>
         /// <param name="options">ImageEx 配置项。</param>
         /// <returns>ImageEx 配置项。</returns>
-        public static IImageExOptions WithDefaultServices(this IImageExOptions options)
+        public static IImageExOptions WithDefaultServices([NotNull] this IImageExOptions options)
         {
             if (options == null)
             {

@@ -9,7 +9,7 @@ namespace HN.Services
     public class ImageLoader : IImageLoader
     {
         /// <inheritdoc />
-        public async Task<byte[]> GetByteArrayAsync(object source, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<byte[]> GetByteArrayAsync(object source, CancellationToken cancellationToken = default)
         {
             if (source == null)
             {
