@@ -112,10 +112,8 @@ namespace HN.Services
         /// <returns>设置器。</returns>
         public static TSetter GetSourceSetter<TSetter>()
         {
-            using (var serviceProvider = SourceSetters.BuildServiceProvider())
-            {
-                return serviceProvider.GetService<TSetter>();
-            }
+            using var serviceProvider = SourceSetters.BuildServiceProvider();
+            return serviceProvider.GetService<TSetter>();
         }
 
         /// <summary>
