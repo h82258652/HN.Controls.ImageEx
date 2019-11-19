@@ -12,8 +12,8 @@
     <description>HN.Controls.ImageEx.Core</description>
     <tags></tags>
     <dependencies>
-        <dependency id="Microsoft.Extensions.DependencyInjection" version="3.0.0" />
-        <dependency id="Microsoft.Extensions.Http" version="3.0.0" />
+        <dependency id="Microsoft.Extensions.DependencyInjection" version="3.0.1" />
+        <dependency id="Microsoft.Extensions.Http" version="3.0.1" />
         <dependency id="Nito.AsyncEx" version="5.0.0" />
         <dependency id="Weakly" version="2.8.1" />
     </dependencies>
