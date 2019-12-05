@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using HN.Services;
+using ImageProcessor.Common.Exceptions;
+using ImageProcessor.Plugins.WebP.Imaging.Formats;
 
 namespace HN.Pipes
 {
@@ -31,6 +35,23 @@ namespace HN.Pipes
                 var tcs = new TaskCompletionSource<ImageSource>();
                 await Task.Run(() =>
                 {
+                    Image webpImage = null;
+                    try
+                    {
+                        var webPFormat = new WebPFormat();
+                        webpImage = webPFormat.Load(stream);
+                    }
+                    catch (ImageFormatException)
+                    {
+                    }
+
+                    if (webpImage != null)
+                    {
+                        var webpMemoryStream = new MemoryStream();
+                        webpImage.Save(webpMemoryStream, ImageFormat.Png);
+                        stream = webpMemoryStream;
+                    }
+
                     try
                     {
                         var bitmap = new BitmapImage();
