@@ -1,5 +1,5 @@
 ﻿# HN.Controls.ImageEx
-[![Build status](https://ci.appveyor.com/api/projects/status/0wuo19nat54dv354?svg=true)](https://ci.appveyor.com/project/h82258652/hn-controls-imageex)
+[![Build status](https://github.com/h82258652/HN.Controls.ImageEx/workflows/CI/badge.svg)](https://github.com/h82258652/HN.Controls.ImageEx/workflows/CI/badge.svg)
 
 | Package | Nuget |
 | - | - |
