@@ -14,6 +14,8 @@
     <dependencies>
       <dependency id="HN.Controls.ImageEx.Core" version="$version$" />
       <dependency id="Polly" version="7.2.0" />
+      <dependency id="ImageProcessor" version="2.7.0.100" />
+      <dependency id="ImageProcessor.Plugins.WebP" version="1.2.0.100" />
     </dependencies>
   </metadata>
   <files>
