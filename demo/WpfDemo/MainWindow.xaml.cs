@@ -10,7 +10,7 @@ namespace WpfDemo
         public MainWindow()
         {
             InitializeComponent();
-            var diskImageSource =  Path.Combine(AppContext.BaseDirectory, "disk_image.png");
+            var diskImageSource = Path.Combine(AppContext.BaseDirectory, "disk_image.png");
             DiskImage.Source = diskImageSource;
             DiskImageBrush.ImageSource = diskImageSource;
         }
