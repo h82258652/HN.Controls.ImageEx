@@ -32,6 +32,14 @@ namespace HN.Pipes
         {
             if (context.Current is Stream stream)
             {
+                if (!stream.CanSeek)
+                {
+                    var memoryStream = new MemoryStream();
+                    await stream.CopyToAsync(memoryStream);
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    stream = memoryStream;
+                }
+
                 var tcs = new TaskCompletionSource<ImageSource>();
                 await Task.Run(() =>
                 {
@@ -51,6 +59,8 @@ namespace HN.Pipes
                         webpImage.Save(webpMemoryStream, ImageFormat.Png);
                         stream = webpMemoryStream;
                     }
+
+                    stream.Seek(0, SeekOrigin.Begin);
 
                     try
                     {
