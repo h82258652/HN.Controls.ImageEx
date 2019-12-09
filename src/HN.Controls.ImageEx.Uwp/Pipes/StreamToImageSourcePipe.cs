@@ -29,13 +29,17 @@ namespace HN.Pipes
         {
             if (context.Current is Stream stream)
             {
-                var isStartWithLessThanSign = false;
-                if (stream.CanSeek)
+                if (!stream.CanSeek)
                 {
-                    stream.Seek(0, SeekOrigin.Begin);
-                    isStartWithLessThanSign = stream.ReadByte() == '<'; // svg start with <
-                    stream.Seek(0, SeekOrigin.Begin);
+                    var memoryStream = new MemoryStream();
+                    await stream.CopyToAsync(memoryStream);
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    stream = memoryStream;
                 }
+
+                stream.Seek(0, SeekOrigin.Begin);
+                var isStartWithLessThanSign = stream.ReadByte() == '<'; // svg start with <
+                stream.Seek(0, SeekOrigin.Begin);
 
                 var tcs = new TaskCompletionSource<object>();
                 context.UIContext.Post(async state =>
@@ -58,7 +62,7 @@ namespace HN.Pipes
                             var bitmap = new BitmapImage();
                             await bitmap.SetSourceAsync(stream.AsRandomAccessStream());
                             cancellationToken.ThrowIfCancellationRequested();
-                            context.Current = bitmap;                            
+                            context.Current = bitmap;
                         }
                         tcs.SetResult(null);
                     }
