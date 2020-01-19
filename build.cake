@@ -13,7 +13,7 @@ var msBuildPath = GetFiles(VSWhereLatest() + "/**/MSBuild.exe").FirstOrDefault()
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 var verbosity = Argument("verbosity", Verbosity.Minimal);
-var version = Argument("version", "1.0.24");
+var version = Argument("version", "1.0.25");
 
 //////////////////////////////////////////////////////////////////////
 // PREPARATION
