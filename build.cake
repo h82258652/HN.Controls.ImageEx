@@ -84,7 +84,12 @@ Task("Package")
     var nugetPackSettings = new NuGetPackSettings
     {
         Version = version,
-        OutputDirectory = "./artifacts"
+        OutputDirectory = "./artifacts",
+        Repository = new NuGetRepository
+        {
+            Type = "git",
+            Url = "https://github.com/h82258652/HN.Controls.ImageEx"
+        }
     };
 
     var nuspecFiles = GetFiles("./src/*/*.nuspec");
