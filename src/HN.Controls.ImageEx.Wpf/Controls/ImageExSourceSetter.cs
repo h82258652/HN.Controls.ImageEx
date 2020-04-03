@@ -111,7 +111,7 @@ namespace HN.Controls
             }
         }
 
-        private static GifBitmapDecoder GetGifBitmapDecoder(ImageSource source)
+        private static GifBitmapDecoder? GetGifBitmapDecoder(ImageSource source)
         {
             GifBitmapDecoder decoder = null;
             if (source is BitmapFrame bitmapFrame)

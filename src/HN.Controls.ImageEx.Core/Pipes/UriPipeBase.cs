@@ -103,35 +103,31 @@ namespace HN.Pipes
         private async Task<(byte[], CacheControlHeaderValue)> CreateDownloadTask(ILoadingContext<TResult> context, Uri uri, CancellationToken cancellationToken)
         {
             var client = _httpClientFactory.CreateClient(Constants.HttpClientName);
-            using (var response = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
+            using var response = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            response.EnsureSuccessStatusCode();
+
+            var cacheControl = response.Headers.CacheControl;
+            var contentLength = response.Content.Headers.ContentLength;
+            using var stream = await response.Content.ReadAsStreamAsync();
+            var buffer = new byte[BufferSize];
+            int bytesRead;
+            var bytes = new List<byte>();
+
+            var downloadProgress = new HttpDownloadProgress();
+            if (contentLength.HasValue)
             {
-                response.EnsureSuccessStatusCode();
-
-                var cacheControl = response.Headers.CacheControl;
-                var contentLength = response.Content.Headers.ContentLength;
-                using (var stream = await response.Content.ReadAsStreamAsync())
-                {
-                    var buffer = new byte[BufferSize];
-                    int bytesRead;
-                    var bytes = new List<byte>();
-
-                    var downloadProgress = new HttpDownloadProgress();
-                    if (contentLength.HasValue)
-                    {
-                        downloadProgress.TotalBytesToReceive = (ulong)contentLength.Value;
-                    }
-                    context.RaiseDownloadProgressChanged(downloadProgress);
-
-                    while ((bytesRead = await stream.ReadAsync(buffer, 0, BufferSize, cancellationToken)) > 0)
-                    {
-                        bytes.AddRange(buffer.Take(bytesRead));
-                        downloadProgress.BytesReceived += (ulong)bytesRead;
-                        context.RaiseDownloadProgressChanged(downloadProgress);
-                    }
-
-                    return (bytes.ToArray(), cacheControl);
-                }
+                downloadProgress.TotalBytesToReceive = (ulong)contentLength.Value;
             }
+            context.RaiseDownloadProgressChanged(downloadProgress);
+
+            while ((bytesRead = await stream.ReadAsync(buffer, 0, BufferSize, cancellationToken)) > 0)
+            {
+                bytes.AddRange(buffer.Take(bytesRead));
+                downloadProgress.BytesReceived += (ulong)bytesRead;
+                context.RaiseDownloadProgressChanged(downloadProgress);
+            }
+
+            return (bytes.ToArray(), cacheControl);
         }
 
         private Task<(byte[], CacheControlHeaderValue)> GetDownloadTask(ILoadingContext<TResult> context, Uri uri, CancellationToken cancellationToken)

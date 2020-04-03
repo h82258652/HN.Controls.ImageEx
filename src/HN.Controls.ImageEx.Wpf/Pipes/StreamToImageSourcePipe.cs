@@ -28,7 +28,7 @@ namespace HN.Pipes
         }
 
         /// <inheritdoc />
-        public override async Task InvokeAsync(ILoadingContext<ImageSource> context, LoadingPipeDelegate<ImageSource> next, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task InvokeAsync(ILoadingContext<ImageSource> context, LoadingPipeDelegate<ImageSource> next, CancellationToken cancellationToken = default)
         {
             if (context.Current is Stream stream)
             {

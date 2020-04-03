@@ -127,7 +127,7 @@ namespace HN.Controls
         /// <returns>
         /// <see cref="Source" /> 依赖项属性的标识符。
         /// </returns>
-        public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(nameof(Source), typeof(object), typeof(ImageEx), new PropertyMetadata(default(object), OnSourceChanged));
+        public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(nameof(Source), typeof(object), typeof(ImageEx), new PropertyMetadata(default, OnSourceChanged));
 
         /// <summary>
         /// 标识 <see cref="Stretch" /> 依赖属性。
@@ -147,7 +147,7 @@ namespace HN.Controls
         private const string OpenedStateName = "Opened";
 
         private readonly SynchronizationContext _uiContext = SynchronizationContext.Current;
-        private Image _image;
+        private Image? _image;
         private bool _isInViewport;
         private CancellationTokenSource _lastLoadCts;
         private object _lazyLoadingSource;

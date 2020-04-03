@@ -118,7 +118,7 @@ namespace HN.Controls
         /// <returns>
         /// <see cref="Source" /> 依赖项属性的标识符。
         /// </returns>
-        public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(nameof(Source), typeof(object), typeof(ImageEx), new PropertyMetadata(default(object), OnSourceChanged));
+        public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(nameof(Source), typeof(object), typeof(ImageEx), new PropertyMetadata(default, OnSourceChanged));
 
         /// <summary>
         /// 标识 <see cref="StretchDirection" /> 依赖属性。
@@ -148,7 +148,7 @@ namespace HN.Controls
         private static readonly DependencyPropertyKey IsLoadingPropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsLoading), typeof(bool), typeof(ImageEx), new PropertyMetadata(default(bool)));
 
         private readonly SynchronizationContext _uiContext = SynchronizationContext.Current;
-        private Image _image;
+        private Image? _image;
         private bool _isInViewport;
         private CancellationTokenSource _lastLoadCts;
         private object _lazyLoadingSource;

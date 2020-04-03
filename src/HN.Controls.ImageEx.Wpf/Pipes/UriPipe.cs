@@ -16,7 +16,7 @@ namespace HN.Pipes
         }
 
         /// <inheritdoc />
-        protected override async Task InvokeOtherUriSchemeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, Uri uri, CancellationToken cancellationToken = default(CancellationToken))
+        protected override async Task InvokeOtherUriSchemeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, Uri uri, CancellationToken cancellationToken = default)
         {
             // pack://application:,,,/
             var streamResourceInfo = System.Windows.Application.GetResourceStream(uri);

@@ -17,7 +17,7 @@ namespace HN.Pipes
         }
 
         /// <inheritdoc />
-        protected override async Task InvokeOtherUriSchemeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, Uri uri, CancellationToken cancellationToken = default(CancellationToken))
+        protected override async Task InvokeOtherUriSchemeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, Uri uri, CancellationToken cancellationToken = default)
         {
             // ms-appx:/ or ms-appdata:/
             var file = await StorageFile.GetFileFromApplicationUriAsync(uri);

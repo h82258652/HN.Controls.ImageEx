@@ -31,7 +31,7 @@ namespace HN.Media
         private readonly SynchronizationContext _uiContext = SynchronizationContext.Current;
         private AlignmentX _alignmentX = AlignmentX.Center;
         private AlignmentY _alignmentY = AlignmentY.Center;
-        private ImageBrush _brush;
+        private ImageBrush? _brush;
         private object _imageSource;
         private CancellationTokenSource _lastLoadCts;
         private object _lastLoadSource;
@@ -111,7 +111,7 @@ namespace HN.Media
         /// <summary>
         /// 获取图像真实显示的源。
         /// </summary>
-        public ImageSource HostSource => _brush?.ImageSource;
+        public ImageSource? HostSource => _brush?.ImageSource;
 
         /// <summary>
         /// 获取或设置此 <see cref="ImageBrush" /> 显示的图像。
@@ -432,9 +432,9 @@ namespace HN.Media
 
         private static class ImageSourceBindingHelper
         {
-            internal static readonly DependencyProperty ImageSourceBindingProperty = DependencyProperty.RegisterAttached("ImageSourceBinding", typeof(object), typeof(DependencyObject), new PropertyMetadata(default(object), OnImageSourceBindingChagned));
+            internal static readonly DependencyProperty ImageSourceBindingProperty = DependencyProperty.RegisterAttached("ImageSourceBinding", typeof(object), typeof(DependencyObject), new PropertyMetadata(default, OnImageSourceBindingChanged));
 
-            private static void OnImageSourceBindingChagned(DependencyObject d, DependencyPropertyChangedEventArgs e)
+            private static void OnImageSourceBindingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
             {
                 var binding = BindingOperations.GetBinding(d, e.Property);
                 foreach (var imageBrushExExtension in Instances.Where(temp => temp.ImageSource == binding))

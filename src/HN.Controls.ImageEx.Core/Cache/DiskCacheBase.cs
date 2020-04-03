@@ -125,9 +125,9 @@ namespace HN.Cache
             await fileStream.WriteAsync(data, 0, data.Length, cancellationToken);
         }
 
-        private string GetCacheFilePath(string key)
+        private string GetCacheFilePath([NotNull] string key)
         {
-            var extension = Path.GetExtension(key) ?? string.Empty;
+            var extension = Path.GetExtension(key);
             var invalidCharIndex = extension.IndexOfAny(Path.GetInvalidFileNameChars());
             if (invalidCharIndex > -1)
             {

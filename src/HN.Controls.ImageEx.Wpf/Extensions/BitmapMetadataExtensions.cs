@@ -22,7 +22,7 @@ namespace HN.Extensions
                 return (T)Convert.ChangeType(metadata.GetQuery(query), typeof(T));
             }
 
-            return default(T);
+            return default;
         }
     }
 }
