@@ -59,6 +59,10 @@ namespace HN.Pipes
                         }
                         else
                         {
+                            // TODO
+                            // https://docs.microsoft.com/en-us/windows/uwp/debug-test-perf/optimize-animations-and-media?redirectedfrom=MSDN#right-sized-decoding
+                            // Set source after attached to the XAML tree
+
                             var bitmap = new BitmapImage();
                             await bitmap.SetSourceAsync(stream.AsRandomAccessStream());
                             cancellationToken.ThrowIfCancellationRequested();
