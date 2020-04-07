@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using JetBrains.Annotations;
 
 namespace HN.Controls
 {
@@ -43,7 +44,8 @@ namespace HN.Controls
         /// <returns>
         /// 上级的 <see cref="ImageEx" /> 对象。
         /// </returns>
-        public ImageEx Source
+        [CanBeNull]
+        public ImageEx? Source
         {
             get => (ImageEx)GetValue(SourceProperty);
             private set => SetValue(SourcePropertyKey, value);
