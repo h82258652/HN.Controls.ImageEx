@@ -38,6 +38,7 @@ namespace UwpDemo
             var fileOpenPicker = new FileOpenPicker();
             fileOpenPicker.FileTypeFilter.Add(".jpg");
             fileOpenPicker.FileTypeFilter.Add(".png");
+            fileOpenPicker.FileTypeFilter.Add(".gif");
             var file = await fileOpenPicker.PickSingleFileAsync();
             if (file != null)
             {
