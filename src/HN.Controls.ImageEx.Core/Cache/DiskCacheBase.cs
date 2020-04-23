@@ -125,7 +125,7 @@ namespace HN.Cache
             await fileStream.WriteAsync(data, 0, data.Length, cancellationToken);
         }
 
-        private string GetCacheFilePath([NotNull] string key)
+        private string GetCacheFileName([NotNull] string key)
         {
             var extension = Path.GetExtension(key);
             var invalidCharIndex = extension.IndexOfAny(Path.GetInvalidFileNameChars());
@@ -138,6 +138,12 @@ namespace HN.Cache
             var buffer = Encoding.UTF8.GetBytes(key);
             var hashResult = md5.ComputeHash(buffer);
             var cacheFileName = BitConverter.ToString(hashResult).Replace("-", string.Empty) + extension;
+            return cacheFileName;
+        }
+
+        private string GetCacheFilePath([NotNull] string key)
+        {
+            var cacheFileName = GetCacheFileName(key);
             return Path.Combine(CacheFolderPath, cacheFileName);
         }
     }
