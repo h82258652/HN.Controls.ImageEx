@@ -159,9 +159,7 @@ namespace HN.Cache
             var cacheFolder = item as StorageFolder;
             if (cacheFolder == null)
             {
-                cacheFolder =
-                    await ApplicationData.Current.LocalCacheFolder.CreateFolderAsync(CacheFolderName,
-                        CreationCollisionOption.OpenIfExists);
+                cacheFolder = await ApplicationData.Current.LocalCacheFolder.CreateFolderAsync(CacheFolderName, CreationCollisionOption.OpenIfExists);
             }
 
             return cacheFolder;
