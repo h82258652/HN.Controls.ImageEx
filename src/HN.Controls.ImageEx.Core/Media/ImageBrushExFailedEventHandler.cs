@@ -1,11 +1,9 @@
-﻿using System.Runtime.InteropServices;
-
-namespace HN.Controls
+﻿namespace HN.Media
 {
     /// <summary>
     /// 表示将处理无法加载图像源的事件的方法。
     /// </summary>
     /// <param name="sender">事件源。</param>
     /// <param name="e">事件数据。</param>
-    public delegate void ImageExFailedEventHandler([In] object sender, [In] ImageExFailedEventArgs e);
+    public delegate void ImageBrushExFailedEventHandler(in object sender, in ImageBrushExFailedEventArgs e);
 }

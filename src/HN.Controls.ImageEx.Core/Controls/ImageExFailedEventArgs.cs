@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace HN.Controls
 {
@@ -26,6 +27,7 @@ namespace HN.Controls
         /// <returns>
         /// 说明加载失败原因的异常。
         /// </returns>
+        [NotNull]
         public Exception Exception { get; }
 
         /// <summary>
@@ -34,6 +36,7 @@ namespace HN.Controls
         /// <returns>
         /// 引起加载失败的源。
         /// </returns>
+        [NotNull]
         public object Source { get; }
     }
 }
