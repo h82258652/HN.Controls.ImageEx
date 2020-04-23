@@ -25,7 +25,7 @@ namespace HN.Pipes
         }
 
         /// <inheritdoc />
-        public override async Task InvokeAsync(ILoadingContext<ImageSource> context, LoadingPipeDelegate<ImageSource> next, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task InvokeAsync(ILoadingContext<ImageSource> context, LoadingPipeDelegate<ImageSource> next, CancellationToken cancellationToken = default)
         {
             if (context.Current is Stream stream)
             {
@@ -37,18 +37,17 @@ namespace HN.Pipes
                     stream = memoryStream;
                 }
 
-                stream.Seek(0, SeekOrigin.Begin);
-                var isStartWithLessThanSign = stream.ReadByte() == '<'; // svg start with <
-                stream.Seek(0, SeekOrigin.Begin);
+                var isSvg = IsSvg(stream);
 
                 var tcs = new TaskCompletionSource<object>();
                 context.UIContext.Post(async state =>
                 {
                     try
                     {
-                        if (isStartWithLessThanSign)
+                        if (isSvg)
                         {
                             var bitmap = new SvgImageSource();
+                            context.AttachSource(bitmap);
                             var svgImageLoadStatus = await bitmap.SetSourceAsync(stream.AsRandomAccessStream());
                             if (svgImageLoadStatus != SvgImageSourceLoadStatus.Success)
                             {
@@ -60,6 +59,7 @@ namespace HN.Pipes
                         else
                         {
                             var bitmap = new BitmapImage();
+                            context.AttachSource(bitmap);
                             await bitmap.SetSourceAsync(stream.AsRandomAccessStream());
                             cancellationToken.ThrowIfCancellationRequested();
                             context.Current = bitmap;
@@ -75,6 +75,14 @@ namespace HN.Pipes
             }
 
             await next(context, cancellationToken);
+        }
+
+        private static bool IsSvg(Stream stream)
+        {
+            stream.Seek(0, SeekOrigin.Begin);
+            var isSvg = stream.ReadByte() == '<';
+            stream.Seek(0, SeekOrigin.Begin);
+            return isSvg;
         }
     }
 }

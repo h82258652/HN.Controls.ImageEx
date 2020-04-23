@@ -25,12 +25,14 @@ namespace HN.Pipes
         }
 
         /// <inheritdoc />
-        public override async Task InvokeAsync(ILoadingContext<ICompositionSurface> context, LoadingPipeDelegate<ICompositionSurface> next, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task InvokeAsync(ILoadingContext<ICompositionSurface> context, LoadingPipeDelegate<ICompositionSurface> next, CancellationToken cancellationToken = default)
         {
             if (context.Current is Stream stream)
             {
                 var tcs = new TaskCompletionSource<LoadedImageSurface>();
                 var imageSurface = LoadedImageSurface.StartLoadFromStream(stream.AsRandomAccessStream());
+
+                context.AttachSource(imageSurface);
 
                 TypedEventHandler<LoadedImageSurface, LoadedImageSourceLoadCompletedEventArgs> handler = null;
                 handler = (sender, args) =>
