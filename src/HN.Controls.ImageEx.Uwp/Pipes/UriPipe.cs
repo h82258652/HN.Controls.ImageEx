@@ -9,7 +9,7 @@ using Windows.Storage;
 namespace HN.Pipes
 {
     /// <inheritdoc />
-    public class UriPipe<TResult> : UriPipeBase<TResult> where TResult : class
+    public class UriPipe<TSource> : UriPipeBase<TSource> where TSource : class
     {
         /// <inheritdoc />
         public UriPipe(IDesignModeService designModeService, IHttpClientFactory httpClientFactory) : base(designModeService, httpClientFactory)
@@ -17,7 +17,7 @@ namespace HN.Pipes
         }
 
         /// <inheritdoc />
-        protected override async Task InvokeOtherUriSchemeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, Uri uri, CancellationToken cancellationToken = default)
+        protected override async Task InvokeOtherUriSchemeAsync(ILoadingContext<TSource> context, LoadingPipeDelegate<TSource> next, Uri uri, CancellationToken cancellationToken = default)
         {
             // ms-appx:/ or ms-appdata:/
             var file = await StorageFile.GetFileFromApplicationUriAsync(uri);

@@ -7,7 +7,9 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using HN.Extensions;
+using HN.Http;
 using HN.Services;
+using JetBrains.Annotations;
 
 namespace HN.Pipes
 {
@@ -15,30 +17,25 @@ namespace HN.Pipes
     /// <summary>
     /// 若当前的值是 <see cref="T:System.Uri" /> 类型，则该管道会进行处理。
     /// </summary>
-    /// <typeparam name="TResult">加载目标的类型。</typeparam>
-    public abstract class UriPipeBase<TResult> : LoadingPipeBase<TResult> where TResult : class
+    /// <typeparam name="TSource">加载源目标的类型。</typeparam>
+    public abstract class UriPipeBase<TSource> : LoadingPipeBase<TSource> where TSource : class
     {
         private const int BufferSize = 8192;
         private readonly IHttpClientFactory _httpClientFactory;
 
         /// <inheritdoc />
         /// <summary>
-        /// 初始化 <see cref="UriPipeBase{TResult}" /> 类的新实例。
+        /// 初始化 <see cref="UriPipeBase{TSource}" /> 类的新实例。
         /// </summary>
         /// <param name="designModeService">设计模式服务。</param>
         /// <param name="httpClientFactory">HttpClient 工厂。</param>
-        protected UriPipeBase(IDesignModeService designModeService, IHttpClientFactory httpClientFactory) : base(designModeService)
+        protected UriPipeBase(IDesignModeService designModeService, [NotNull] IHttpClientFactory httpClientFactory) : base(designModeService)
         {
-            if (httpClientFactory == null)
-            {
-                throw new ArgumentNullException(nameof(httpClientFactory));
-            }
-
-            _httpClientFactory = httpClientFactory;
+            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
         /// <inheritdoc />
-        public sealed override async Task InvokeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, CancellationToken cancellationToken = default)
+        public sealed override async Task InvokeAsync(ILoadingContext<TSource> context, LoadingPipeDelegate<TSource> next, CancellationToken cancellationToken = default)
         {
             var uri = context.Current as Uri;
             if (uri == null)
@@ -98,9 +95,9 @@ namespace HN.Pipes
         /// <param name="uri">Uri。</param>
         /// <param name="cancellationToken">要监视取消请求的标记。</param>
         /// <returns>表示异步加载操作的任务。</returns>
-        protected abstract Task InvokeOtherUriSchemeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, Uri uri, CancellationToken cancellationToken = default);
+        protected abstract Task InvokeOtherUriSchemeAsync(ILoadingContext<TSource> context, LoadingPipeDelegate<TSource> next, Uri uri, CancellationToken cancellationToken = default);
 
-        private async Task<(byte[], CacheControlHeaderValue)> CreateDownloadTask(ILoadingContext<TResult> context, Uri uri, CancellationToken cancellationToken)
+        private async Task<(byte[], CacheControlHeaderValue)> CreateDownloadTask(ILoadingContext<TSource> context, Uri uri, CancellationToken cancellationToken)
         {
             var client = _httpClientFactory.CreateClient(Constants.HttpClientName);
             using var response = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
@@ -118,6 +115,7 @@ namespace HN.Pipes
             {
                 downloadProgress.TotalBytesToReceive = (ulong)contentLength.Value;
             }
+
             context.RaiseDownloadProgressChanged(downloadProgress);
 
             while ((bytesRead = await stream.ReadAsync(buffer, 0, BufferSize, cancellationToken)) > 0)
@@ -130,18 +128,19 @@ namespace HN.Pipes
             return (bytes.ToArray(), cacheControl);
         }
 
-        private Task<(byte[], CacheControlHeaderValue)> GetDownloadTask(ILoadingContext<TResult> context, Uri uri, CancellationToken cancellationToken)
+        private Task<(byte[], CacheControlHeaderValue)> GetDownloadTask(ILoadingContext<TSource> context, Uri uri, CancellationToken cancellationToken)
         {
-            lock (UriPipeInternal.DownloadTasks)
+            var downloadTasks = UriPipeInternal.DownloadTasks;
+            lock (downloadTasks)
             {
                 Task<(byte[], CacheControlHeaderValue)> task;
-                if (UriPipeInternal.DownloadTasks.TryGetValue(uri, out task))
+                if (downloadTasks.TryGetValue(uri, out task))
                 {
                     return task;
                 }
 
                 task = CreateDownloadTask(context, uri, cancellationToken);
-                UriPipeInternal.DownloadTasks[uri] = task;
+                downloadTasks[uri] = task;
                 return task;
             }
         }

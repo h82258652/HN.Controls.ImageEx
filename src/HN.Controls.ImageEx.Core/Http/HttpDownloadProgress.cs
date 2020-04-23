@@ -1,4 +1,4 @@
-﻿namespace HN.Pipes
+﻿namespace HN.Http
 {
     /// <summary>
     /// Http 下载进度。

@@ -14,14 +14,19 @@ namespace HN.Services
         /// 管道执行过程中使用到的服务集合。
         /// </returns>
         IServiceCollection Services { get; }
+
+        /// <summary>
+        /// 获取或设置同时进行的 Http 下载
+        /// </summary>
+        int MaxHttpDownloadCount { get; set; }
     }
 
     /// <inheritdoc />
     /// <summary>
     /// ImageEx 配置项。
     /// </summary>
-    /// <typeparam name="T">输出值的类型。</typeparam>
-    public interface IImageExOptions<T> : IImageExOptions where T : class
+    /// <typeparam name="TSource">数据源目标类型。</typeparam>
+    public interface IImageExOptions<TSource> : IImageExOptions where TSource : class
     {
     }
 }

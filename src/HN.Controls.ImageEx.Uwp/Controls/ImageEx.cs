@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using HN.Http;
 using HN.Pipes;
 using HN.Services;
 using Polly;
@@ -149,8 +150,8 @@ namespace HN.Controls
         private readonly SynchronizationContext _uiContext = SynchronizationContext.Current;
         private Image? _image;
         private bool _isInViewport;
-        private CancellationTokenSource _lastLoadCts;
-        private object _lazyLoadingSource;
+        private CancellationTokenSource? _lastLoadCts;
+        private object? _lazyLoadingSource;
 
         /// <inheritdoc />
         /// <summary>
@@ -208,9 +209,9 @@ namespace HN.Controls
         /// <returns>
         /// 用于显示加载失败时的内容的数据模板。
         /// </returns>
-        public DataTemplate FailedTemplate
+        public DataTemplate? FailedTemplate
         {
-            get => (DataTemplate)GetValue(FailedTemplateProperty);
+            get => (DataTemplate?)GetValue(FailedTemplateProperty);
             set => SetValue(FailedTemplateProperty, value);
         }
 
@@ -220,16 +221,16 @@ namespace HN.Controls
         /// <returns>
         /// 用于显示加载失败时的内容的数据模板选择器。
         /// </returns>
-        public DataTemplateSelector FailedTemplateSelector
+        public DataTemplateSelector? FailedTemplateSelector
         {
-            get => (DataTemplateSelector)GetValue(FailedTemplateSelectorProperty);
+            get => (DataTemplateSelector?)GetValue(FailedTemplateSelectorProperty);
             set => SetValue(FailedTemplateSelectorProperty, value);
         }
 
         /// <summary>
         /// 获取图像真实显示的源。
         /// </summary>
-        public ImageSource HostSource => _image?.Source;
+        public ImageSource? HostSource => _image?.Source;
 
         /// <summary>
         /// 获取是否正在加载图像的源。
@@ -249,9 +250,9 @@ namespace HN.Controls
         /// <returns>
         /// 用于显示加载中的内容的数据模板。
         /// </returns>
-        public DataTemplate LoadingTemplate
+        public DataTemplate? LoadingTemplate
         {
-            get => (DataTemplate)GetValue(LoadingTemplateProperty);
+            get => (DataTemplate?)GetValue(LoadingTemplateProperty);
             set => SetValue(LoadingTemplateProperty, value);
         }
 
@@ -261,9 +262,9 @@ namespace HN.Controls
         /// <returns>
         /// 用于显示加载中的内容的数据模板选择器。
         /// </returns>
-        public DataTemplateSelector LoadingTemplateSelector
+        public DataTemplateSelector? LoadingTemplateSelector
         {
-            get => (DataTemplateSelector)GetValue(LoadingTemplateSelectorProperty);
+            get => (DataTemplateSelector?)GetValue(LoadingTemplateSelectorProperty);
             set => SetValue(LoadingTemplateSelectorProperty, value);
         }
 
@@ -285,9 +286,9 @@ namespace HN.Controls
         /// <returns>
         /// 用于显示占位的内容的数据模板。
         /// </returns>
-        public DataTemplate PlaceholderTemplate
+        public DataTemplate? PlaceholderTemplate
         {
-            get => (DataTemplate)GetValue(PlaceholderTemplateProperty);
+            get => (DataTemplate?)GetValue(PlaceholderTemplateProperty);
             set => SetValue(PlaceholderTemplateProperty, value);
         }
 
@@ -297,9 +298,9 @@ namespace HN.Controls
         /// <returns>
         /// 用于显示占位的内容的数据模板选择器。
         /// </returns>
-        public DataTemplateSelector PlaceholderTemplateSelector
+        public DataTemplateSelector? PlaceholderTemplateSelector
         {
-            get => (DataTemplateSelector)GetValue(PlaceholderTemplateSelectorProperty);
+            get => (DataTemplateSelector?)GetValue(PlaceholderTemplateSelectorProperty);
             set => SetValue(PlaceholderTemplateSelectorProperty, value);
         }
 
@@ -358,7 +359,7 @@ namespace HN.Controls
         /// <returns>
         /// 表示图像的 alpha 通道的掩码。
         /// </returns>
-        public CompositionBrush GetAlphaMask()
+        public CompositionBrush? GetAlphaMask()
         {
             ApplyTemplate();
             return _image?.GetAlphaMask();
@@ -370,7 +371,7 @@ namespace HN.Controls
         /// <returns>
         /// 图像作为 <see cref="CastingSource" />。
         /// </returns>
-        public CastingSource GetAsCastingSource()
+        public CastingSource? GetAsCastingSource()
         {
             ApplyTemplate();
             return _image?.GetAsCastingSource();
@@ -409,6 +410,14 @@ namespace HN.Controls
             }
         }
 
+        private void AttachSource(ImageSource? source)
+        {
+            if (_image != null)
+            {
+                _image.Source = source;
+            }
+        }
+
         private async void ImageEx_EffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
         {
             var bringIntoViewDistanceX = args.BringIntoViewDistanceX;
@@ -434,19 +443,17 @@ namespace HN.Controls
             }
         }
 
-        private async Task SetSourceAsync(object source)
+        private async Task SetSourceAsync(object? source)
         {
             if (_image == null)
             {
                 return;
             }
 
-            var sourceSetter = ImageExService.GetSourceSetter<IImageExSourceSetter>();
-
             _lastLoadCts?.Cancel();
             if (source == null)
             {
-                sourceSetter.SetSource(_image, null);
+                AttachSource(null);
                 VisualStateManager.GoToState(this, EmptyStateName, true);
                 return;
             }
@@ -459,7 +466,7 @@ namespace HN.Controls
 
                 VisualStateManager.GoToState(this, LoadingStateName, true);
 
-                var context = new LoadingContext<ImageSource>(_uiContext, source, ActualWidth, ActualHeight);
+                var context = new LoadingContext<ImageSource>(_uiContext, source, AttachSource, ActualWidth, ActualHeight);
                 context.DownloadProgressChanged += (sender, progress) =>
                 {
                     _uiContext.Post(state =>
@@ -470,9 +477,10 @@ namespace HN.Controls
                 };
 
                 var pipeDelegate = ImageExService.GetHandler<ImageSource>();
+                var retryCount = RetryCount;
                 var retryDelay = RetryDelay;
                 var policy = Policy.Handle<Exception>()
-                    .WaitAndRetryAsync(RetryCount, count => retryDelay, (ex, delay) =>
+                    .WaitAndRetryAsync(retryCount, count => retryDelay, (ex, delay) =>
                     {
                         context.Reset();
                     });
@@ -480,7 +488,6 @@ namespace HN.Controls
 
                 if (!loadCts.IsCancellationRequested)
                 {
-                    sourceSetter.SetSource(_image, context.Result);
                     VisualStateManager.GoToState(this, OpenedStateName, true);
                     ImageOpened?.Invoke(this, EventArgs.Empty);
                 }
@@ -489,7 +496,7 @@ namespace HN.Controls
             {
                 if (!loadCts.IsCancellationRequested)
                 {
-                    sourceSetter.SetSource(_image, null);
+                    AttachSource(null);
                     VisualStateManager.GoToState(this, FailedStateName, true);
                     ImageFailed?.Invoke(this, new ImageExFailedEventArgs(source, ex));
                 }

@@ -32,6 +32,8 @@ namespace HN.Pipes
                 var tcs = new TaskCompletionSource<LoadedImageSurface>();
                 var imageSurface = LoadedImageSurface.StartLoadFromStream(stream.AsRandomAccessStream());
 
+                context.AttachSource(imageSurface);
+
                 TypedEventHandler<LoadedImageSurface, LoadedImageSourceLoadCompletedEventArgs> handler = null;
                 handler = (sender, args) =>
                 {

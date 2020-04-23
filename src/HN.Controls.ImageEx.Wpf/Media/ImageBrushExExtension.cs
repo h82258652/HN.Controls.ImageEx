@@ -32,7 +32,7 @@ namespace HN.Media
         private AlignmentX _alignmentX = AlignmentX.Center;
         private AlignmentY _alignmentY = AlignmentY.Center;
         private ImageBrush? _brush;
-        private object _imageSource;
+        private object? _imageSource;
         private CancellationTokenSource _lastLoadCts;
         private object _lastLoadSource;
         private Stretch _stretch = Stretch.Fill;
@@ -119,7 +119,7 @@ namespace HN.Media
         /// <returns>
         /// 此 <see cref="ImageBrush" /> 显示的图像。
         /// </returns>
-        public object ImageSource
+        public object? ImageSource
         {
             get => _imageSource;
             set
@@ -359,6 +359,11 @@ namespace HN.Media
             return _brush;
         }
 
+        private void AttachSource(ImageSource source)
+        {
+            _brush.ImageSource = source;
+        }
+
         private void CreateImageBrush()
         {
             _brush = new ImageBrush
@@ -391,12 +396,10 @@ namespace HN.Media
             }
             _lastLoadSource = source;
 
-            var sourceSetter = ImageExService.GetSourceSetter<IImageBrushExSourceSetter>();
-
             _lastLoadCts?.Cancel();
             if (source == null)
             {
-                sourceSetter.SetSource(_brush, null);
+                AttachSource(null);
                 return;
             }
 
@@ -404,11 +407,12 @@ namespace HN.Media
             _lastLoadCts = loadCts;
             try
             {
-                var context = new LoadingContext<ImageSource>(_uiContext, source, null, null);
+                var context = new LoadingContext<ImageSource>(_uiContext, source, AttachSource, null, null);
 
                 var pipeDelegate = ImageExService.GetHandler<ImageSource>();
+                var retryCount = RetryCount;
                 var retryDelay = RetryDelay;
-                var policy = Policy.Handle<Exception>().WaitAndRetryAsync(RetryCount, count => retryDelay, (ex, delay) =>
+                var policy = Policy.Handle<Exception>().WaitAndRetryAsync(retryCount, count => retryDelay, (ex, delay) =>
                 {
                     context.Reset();
                 });
@@ -416,7 +420,6 @@ namespace HN.Media
 
                 if (!loadCts.IsCancellationRequested)
                 {
-                    sourceSetter.SetSource(_brush, context.Result);
                     ImageOpened?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -424,7 +427,7 @@ namespace HN.Media
             {
                 if (!loadCts.IsCancellationRequested)
                 {
-                    sourceSetter.SetSource(_brush, null);
+                    AttachSource(null);
                     ImageFailed?.Invoke(this, new ImageBrushExFailedEventArgs(source, ex));
                 }
             }
@@ -432,9 +435,9 @@ namespace HN.Media
 
         private static class ImageSourceBindingHelper
         {
-            internal static readonly DependencyProperty ImageSourceBindingProperty = DependencyProperty.RegisterAttached("ImageSourceBinding", typeof(object), typeof(DependencyObject), new PropertyMetadata(default, OnImageSourceBindingChanged));
+            internal static readonly DependencyProperty ImageSourceBindingProperty = DependencyProperty.RegisterAttached("ImageSourceBinding", typeof(object), typeof(DependencyObject), new PropertyMetadata(default(object), OnImageSourceBindingChagned));
 
-            private static void OnImageSourceBindingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+            private static void OnImageSourceBindingChagned(DependencyObject d, DependencyPropertyChangedEventArgs e)
             {
                 var binding = BindingOperations.GetBinding(d, e.Property);
                 foreach (var imageBrushExExtension in Instances.Where(temp => temp.ImageSource == binding))

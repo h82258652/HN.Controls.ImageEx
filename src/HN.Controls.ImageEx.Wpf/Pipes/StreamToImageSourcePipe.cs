@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using HN.Services;
-using ImageProcessor.Common.Exceptions;
 using ImageProcessor.Plugins.WebP.Imaging.Formats;
 
 namespace HN.Pipes
@@ -40,24 +39,23 @@ namespace HN.Pipes
                     stream = memoryStream;
                 }
 
+                var isWebP = IsWebP(stream);
+
                 var tcs = new TaskCompletionSource<ImageSource>();
                 await Task.Run(() =>
                 {
-                    Image webpImage = null;
-                    try
+                    Image webPImage = null;
+                    if (isWebP)
                     {
                         var webPFormat = new WebPFormat();
-                        webpImage = webPFormat.Load(stream);
-                    }
-                    catch (ImageFormatException)
-                    {
+                        webPImage = webPFormat.Load(stream);
                     }
 
-                    if (webpImage != null)
+                    if (webPImage != null)
                     {
-                        var webpMemoryStream = new MemoryStream();
-                        webpImage.Save(webpMemoryStream, ImageFormat.Png);
-                        stream = webpMemoryStream;
+                        var webPMemoryStream = new MemoryStream();
+                        webPImage.Save(webPMemoryStream, ImageFormat.Png);
+                        stream = webPMemoryStream;
                     }
 
                     stream.Seek(0, SeekOrigin.Begin);
@@ -69,6 +67,10 @@ namespace HN.Pipes
                         bitmap.StreamSource = stream;
                         bitmap.EndInit();
                         bitmap.Freeze();
+                        context.UIContext.Send(state =>
+                        {
+                            context.AttachSource(bitmap);
+                        }, null);
                         tcs.SetResult(bitmap);
                     }
                     catch (Exception ex)
@@ -80,6 +82,18 @@ namespace HN.Pipes
             }
 
             await next(context, cancellationToken);
+        }
+
+        private static bool IsWebP(Stream stream)
+        {
+            stream.Seek(0, SeekOrigin.Begin);
+            var b1 = stream.ReadByte();
+            var b2 = stream.ReadByte();
+            var b3 = stream.ReadByte();
+            var b4 = stream.ReadByte();
+            var isWebP = b1 == 'R' && b2 == 'I' && b3 == 'F' && b4 == 'F';
+            stream.Seek(0, SeekOrigin.Begin);
+            return isWebP;
         }
     }
 }

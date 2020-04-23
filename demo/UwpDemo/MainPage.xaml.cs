@@ -38,6 +38,7 @@ namespace UwpDemo
             var fileOpenPicker = new FileOpenPicker();
             fileOpenPicker.FileTypeFilter.Add(".jpg");
             fileOpenPicker.FileTypeFilter.Add(".png");
+            fileOpenPicker.FileTypeFilter.Add(".gif");
             var file = await fileOpenPicker.PickSingleFileAsync();
             if (file != null)
             {
@@ -49,6 +50,11 @@ namespace UwpDemo
                     ImageSource = bytes
                 };
             }
+        }
+
+        private void MemoryUsageButton_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(MemoryUsagePage));
         }
 
         private async void RefreshButton_Click(object sender, RoutedEventArgs e)

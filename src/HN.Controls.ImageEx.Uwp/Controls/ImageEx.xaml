@@ -11,41 +11,27 @@
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="ImageStates">
                                 <VisualState x:Name="Empty">
-                                    <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_PlaceholderContentHost"
-                                                                       Storyboard.TargetProperty="Visibility">
-                                            <DiscreteObjectKeyFrame KeyTime="0:0:0">
-                                                <DiscreteObjectKeyFrame.Value>
-                                                    <Visibility>Visible</Visibility>
-                                                </DiscreteObjectKeyFrame.Value>
-                                            </DiscreteObjectKeyFrame>
-                                        </ObjectAnimationUsingKeyFrames>
-                                    </Storyboard>
+                                    <VisualState.Setters>
+                                        <Setter Target="PART_PlaceholderContentHost.Visibility"
+                                                Value="Visible" />
+                                    </VisualState.Setters>
                                 </VisualState>
                                 <VisualState x:Name="Opened" />
                                 <VisualState x:Name="Failed">
-                                    <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_FailedContentHost"
-                                                                       Storyboard.TargetProperty="Visibility">
-                                            <DiscreteObjectKeyFrame KeyTime="0:0:0">
-                                                <DiscreteObjectKeyFrame.Value>
-                                                    <Visibility>Visible</Visibility>
-                                                </DiscreteObjectKeyFrame.Value>
-                                            </DiscreteObjectKeyFrame>
-                                        </ObjectAnimationUsingKeyFrames>
-                                    </Storyboard>
+                                    <VisualState.Setters>
+                                        <Setter Target="PART_FailedContentHost.Visibility"
+                                                Value="Visible" />
+                                    </VisualState.Setters>
                                 </VisualState>
                                 <VisualState x:Name="Loading">
-                                    <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_LoadingContentHost"
-                                                                       Storyboard.TargetProperty="Visibility">
-                                            <DiscreteObjectKeyFrame KeyTime="0:0:0">
-                                                <DiscreteObjectKeyFrame.Value>
-                                                    <Visibility>Visible</Visibility>
-                                                </DiscreteObjectKeyFrame.Value>
-                                            </DiscreteObjectKeyFrame>
-                                        </ObjectAnimationUsingKeyFrames>
-                                    </Storyboard>
+                                    <VisualState.Setters>
+                                        <Setter Target="PART_LoadingContentHost.Visibility"
+                                                Value="Visible" />
+                                        <Setter Target="PART_Image.Opacity"
+                                                Value="0" />
+                                        <Setter Target="PART_Image.IsHitTestVisible"
+                                                Value="False" />
+                                    </VisualState.Setters>
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>

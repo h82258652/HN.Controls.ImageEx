@@ -10,14 +10,14 @@ namespace HN.Pipes
     /// <summary>
     /// 内存缓存加载管道。
     /// </summary>
-    /// <typeparam name="TResult">加载目标的类型。</typeparam>
-    public class MemoryCachePipe<TResult> : LoadingPipeBase<TResult> where TResult : class
+    /// <typeparam name="TSource">加载源目标的类型。</typeparam>
+    public class MemoryCachePipe<TSource> : LoadingPipeBase<TSource> where TSource : class
     {
-        private static readonly WeakValueDictionary<object, TResult> MemoryCache = new WeakValueDictionary<object, TResult>();
+        private static readonly WeakValueDictionary<object, TSource> MemoryCache = new WeakValueDictionary<object, TSource>();
 
         /// <inheritdoc />
         /// <summary>
-        /// 初始化 <see cref="MemoryCachePipe{TResult}" /> 类的新实例。
+        /// 初始化 <see cref="MemoryCachePipe{TSource}" /> 类的新实例。
         /// </summary>
         /// <param name="designModeService">设计模式服务。</param>
         public MemoryCachePipe(IDesignModeService designModeService) : base(designModeService)
@@ -25,7 +25,7 @@ namespace HN.Pipes
         }
 
         /// <inheritdoc />
-        public override async Task InvokeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, CancellationToken cancellationToken = default)
+        public override async Task InvokeAsync(ILoadingContext<TSource> context, LoadingPipeDelegate<TSource> next, CancellationToken cancellationToken = default)
         {
             if (IsInDesignMode)
             {
@@ -33,21 +33,21 @@ namespace HN.Pipes
                 return;
             }
 
-            var source = context.Current;
-            if (source is string || source is Uri)
+            var cacheKey = context.Current;
+            if (cacheKey is string || cacheKey is Uri)
             {
-                if (MemoryCache.TryGetValue(source, out var cache))
+                if (MemoryCache.TryGetValue(cacheKey, out var cacheValue))
                 {
-                    context.Result = cache;
+                    context.Current = cacheValue;
+                    context.AttachSource(cacheValue);
                     return;
                 }
 
                 await next(context, cancellationToken);
 
-                var result = context.Result;
-                if (result != null)
+                if (context.Current is TSource finalValue)
                 {
-                    MemoryCache[source] = result;
+                    MemoryCache[cacheKey] = finalValue;
                 }
 
                 return;

@@ -44,7 +44,7 @@ namespace HN.Services
             {
                 throw new ArgumentNullException(nameof(options));
             }
-            
+
             options.AddPipe(typeof(MemoryCachePipe<>));
             options.AddPipe(typeof(StringPipe<>));
             options.AddPipe(typeof(DiskCachePipe<>));

@@ -14,25 +14,20 @@ namespace HN.Pipes
         /// <summary>
         /// 构建加载管道。
         /// </summary>
-        /// <typeparam name="TResult">加载目标的类型。</typeparam>
+        /// <typeparam name="TSource">加载源目标的类型。</typeparam>
         /// <param name="services">服务集合。</param>
         /// <returns>管道调用的委托。</returns>
         [NotNull]
-        public static LoadingPipeDelegate<TResult> Build<TResult>([NotNull] IServiceCollection services) where TResult : class
+        public static LoadingPipeDelegate<TSource> Build<TSource>([NotNull] IServiceCollection services) where TSource : class
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            LoadingPipeDelegate<TResult> end = (context, cancellationToken) =>
+            LoadingPipeDelegate<TSource> end = (context, cancellationToken) =>
             {
-                if (context.Result == null)
-                {
-                    context.Result = context.Current as TResult;
-                }
-
-                if (context.Result == null)
+                if (!(context.Current is TSource))
                 {
                     throw new NotSupportedException();
                 }
@@ -41,19 +36,13 @@ namespace HN.Pipes
             };
 
             var serviceProvider = services.BuildServiceProvider();
-            var pipes = serviceProvider.GetServices<ILoadingPipe<TResult>>();
+            var pipes = serviceProvider.GetServices<ILoadingPipe<TSource>>();
             foreach (var pipe in pipes.Reverse())
             {
-                Func<LoadingPipeDelegate<TResult>, LoadingPipeDelegate<TResult>> handler = next =>
+                Func<LoadingPipeDelegate<TSource>, LoadingPipeDelegate<TSource>> handler = next =>
                 {
                     return (context, cancellationToken) =>
                     {
-                        if (context.Result == null && context.Current is TResult result)
-                        {
-                            context.Result = result;
-                            return Task.CompletedTask;
-                        }
-
                         using (pipe)
                         {
                             return pipe.InvokeAsync(context, next, cancellationToken);

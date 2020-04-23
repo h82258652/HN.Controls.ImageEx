@@ -47,6 +47,16 @@
                                                 </DiscreteObjectKeyFrame.Value>
                                             </DiscreteObjectKeyFrame>
                                         </ObjectAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_Image"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                            <DiscreteDoubleKeyFrame KeyTime="0:0:0"
+                                                                    Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <BooleanAnimationUsingKeyFrames Storyboard.TargetName="PART_Image"
+                                                                        Storyboard.TargetProperty="IsHitTestVisible">
+                                            <DiscreteBooleanKeyFrame KeyTime="0:0:0"
+                                                                     Value="False" />
+                                        </BooleanAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>

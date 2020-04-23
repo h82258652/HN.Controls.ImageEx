@@ -244,16 +244,18 @@ namespace HN.Media
             }
         }
 
-        private void SetBrush(CompositionBrush brush)
+        private void AttachSource(ICompositionSurface? source)
         {
             DisposeCompositionBrush();
-            if (brush is CompositionSurfaceBrush surfaceBrush)
+            if (source != null)
             {
-                surfaceBrush.HorizontalAlignmentRatio = (float)AlignmentX * 0.5F;
-                surfaceBrush.VerticalAlignmentRatio = (float)AlignmentY * 0.5F;
-                surfaceBrush.Stretch = (CompositionStretch)Stretch;
+                var compositor = Window.Current.Compositor;
+                var brush = compositor.CreateSurfaceBrush(source);
+                brush.HorizontalAlignmentRatio = (float)AlignmentX * 0.5f;
+                brush.VerticalAlignmentRatio = (float)AlignmentY * 0.5f;
+                brush.Stretch = (CompositionStretch)Stretch;
+                CompositionBrush = brush;
             }
-            CompositionBrush = brush;
         }
 
         private async Task SetSourceAsync(object? source)
@@ -263,13 +265,11 @@ namespace HN.Media
                 return;
             }
             _lastLoadSource = source;
-
-            var sourceSetter = ImageExService.GetSourceSetter<IImageBrushExSourceSetter>();
-
+            
             _lastLoadCts?.Cancel();
             if (source == null)
             {
-                sourceSetter.SetSource(SetBrush, null);
+                AttachSource(null);
                 return;
             }
 
@@ -277,11 +277,12 @@ namespace HN.Media
             _lastLoadCts = loadCts;
             try
             {
-                var context = new LoadingContext<ICompositionSurface>(_uiContext, source, null, null);
+                var context = new LoadingContext<ICompositionSurface>(_uiContext, source, AttachSource, null, null);
 
                 var pipeDelegate = ImageExService.GetHandler<ICompositionSurface>();
+                var retryCount = RetryCount;
                 var retryDelay = RetryDelay;
-                var policy = Policy.Handle<Exception>().WaitAndRetryAsync(RetryCount, count => retryDelay, (ex, delay) =>
+                var policy = Policy.Handle<Exception>().WaitAndRetryAsync(retryCount, count => retryDelay, (ex, delay) =>
                 {
                     context.Reset();
                 });
@@ -289,7 +290,6 @@ namespace HN.Media
 
                 if (!loadCts.IsCancellationRequested)
                 {
-                    sourceSetter.SetSource(SetBrush, context.Result);
                     ImageOpened?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -297,7 +297,7 @@ namespace HN.Media
             {
                 if (!loadCts.IsCancellationRequested)
                 {
-                    sourceSetter.SetSource(SetBrush, null);
+                    AttachSource(null);
                     ImageFailed?.Invoke(this, new ImageBrushExFailedEventArgs(source, ex));
                 }
             }
