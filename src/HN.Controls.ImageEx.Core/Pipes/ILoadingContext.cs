@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using HN.Http;
 using JetBrains.Annotations;
 
 namespace HN.Pipes
@@ -7,8 +8,8 @@ namespace HN.Pipes
     /// <summary>
     /// 加载上下文。
     /// </summary>
-    /// <typeparam name="TResult">加载目标的类型。</typeparam>
-    public interface ILoadingContext<TResult> where TResult : class
+    /// <typeparam name="TSource">加载源目标的类型。</typeparam>
+    public interface ILoadingContext<in TSource> where TSource : class
     {
         /// <summary>
         /// 下载进度发生变化事件。
@@ -60,15 +61,6 @@ namespace HN.Pipes
         object OriginSource { get; }
 
         /// <summary>
-        /// 获取或设置处理结果。
-        /// </summary>
-        /// <returns>
-        /// 处理结果。
-        /// </returns>
-        [CanBeNull]
-        TResult? Result { get; set; }
-
-        /// <summary>
         /// 获取 UI 线程上下文。
         /// </summary>
         /// <returns>
@@ -78,9 +70,20 @@ namespace HN.Pipes
         SynchronizationContext UIContext { get; }
 
         /// <summary>
+        /// 附加目标源到可视树上。
+        /// </summary>
+        /// <param name="source">目标源对象。</param>
+        void AttachSource([NotNull] TSource source);
+
+        /// <summary>
         /// 发起下载进度发生变化事件。
         /// </summary>
         /// <param name="progress">当前下载进度。</param>
         void RaiseDownloadProgressChanged(HttpDownloadProgress progress);
+
+        /// <summary>
+        /// 重置该上下文为初始状态。
+        /// </summary>
+        void Reset();
     }
 }

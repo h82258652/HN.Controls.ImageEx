@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using HN.Http;
 using JetBrains.Annotations;
 
 namespace HN.Pipes
@@ -8,23 +9,32 @@ namespace HN.Pipes
     /// <summary>
     /// 加载上下文。
     /// </summary>
-    /// <typeparam name="TResult">加载目标的类型。</typeparam>
-    public class LoadingContext<TResult> : ILoadingContext<TResult> where TResult : class
+    /// <typeparam name="TSource">加载源目标的类型。</typeparam>
+    public class LoadingContext<TSource> : ILoadingContext<TSource> where TSource : class
     {
+        private readonly Action<TSource>? _attachSource;
+        private object _current;
         private byte[]? _httpResponseBytes;
-        private TResult? _result;
 
         /// <summary>
-        /// 初始化 <see cref="LoadingContext{TResult}" /> 类的新实例。
+        /// 初始化 <see cref="LoadingContext{TSource}" /> 类的新实例。
         /// </summary>
         /// <param name="uiContext">UI 线程上下文。</param>
         /// <param name="source">输入的源。</param>
+        /// <param name="attachSource"></param>
         /// <param name="desiredWidth">需求的宽度。</param>
         /// <param name="desiredHeight">需求的高度。</param>
-        public LoadingContext([NotNull]SynchronizationContext uiContext, [NotNull]object source, double? desiredWidth, double? desiredHeight)
+        public LoadingContext(
+            [NotNull] SynchronizationContext uiContext,
+            [NotNull]object source,
+            [CanBeNull] Action<TSource>? attachSource,
+            double? desiredWidth,
+            double? desiredHeight)
         {
             UIContext = uiContext ?? throw new ArgumentNullException(nameof(uiContext));
-            Current = OriginSource = source ?? throw new ArgumentNullException(nameof(source));
+            OriginSource = source ?? throw new ArgumentNullException(nameof(source));
+            _current = source;
+            _attachSource = attachSource;
             DesiredWidth = desiredWidth;
             DesiredHeight = desiredHeight;
         }
@@ -33,7 +43,11 @@ namespace HN.Pipes
         public event EventHandler<HttpDownloadProgress>? DownloadProgressChanged;
 
         /// <inheritdoc />
-        public object Current { get; set; }
+        public object Current
+        {
+            get => _current;
+            set => _current = value ?? throw new InvalidOperationException("can't set Current to null.");
+        }
 
         /// <inheritdoc />
         public double? DesiredHeight { get; }
@@ -60,22 +74,13 @@ namespace HN.Pipes
         public object OriginSource { get; }
 
         /// <inheritdoc />
-        public TResult? Result
-        {
-            get => _result;
-            set
-            {
-                if (_result != null)
-                {
-                    throw new InvalidOperationException("value has been set.");
-                }
-
-                _result = value;
-            }
-        }
+        public SynchronizationContext UIContext { get; }
 
         /// <inheritdoc />
-        public SynchronizationContext UIContext { get; }
+        public void AttachSource(TSource source)
+        {
+            _attachSource?.Invoke(source);
+        }
 
         /// <inheritdoc />
         public void RaiseDownloadProgressChanged(HttpDownloadProgress progress)
@@ -83,13 +88,10 @@ namespace HN.Pipes
             DownloadProgressChanged?.Invoke(this, progress);
         }
 
-        /// <summary>
-        /// 重置加载上下文。
-        /// </summary>
-        public void Reset()
+        /// <inheritdoc />
+        public virtual void Reset()
         {
             Current = OriginSource;
-            Result = null;
             _httpResponseBytes = null;
         }
     }

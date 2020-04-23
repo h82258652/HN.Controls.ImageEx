@@ -10,13 +10,13 @@ namespace HN.Pipes
     /// <summary>
     /// 加载管道的基本实现。
     /// </summary>
-    /// <typeparam name="TResult">加载目标的类型。</typeparam>
-    public abstract class LoadingPipeBase<TResult> : ILoadingPipe<TResult> where TResult : class
+    /// <typeparam name="TSource">加载源目标的类型。</typeparam>
+    public abstract class LoadingPipeBase<TSource> : ILoadingPipe<TSource> where TSource : class
     {
         private readonly IDesignModeService _designModeService;
 
         /// <summary>
-        /// 初始化 <see cref="LoadingPipeBase{TResult}" /> 类的新实例。
+        /// 初始化 <see cref="LoadingPipeBase{TSource}" /> 类的新实例。
         /// </summary>
         /// <param name="designModeService">设计模式服务。</param>
         protected LoadingPipeBase([NotNull] IDesignModeService designModeService)
@@ -33,6 +33,6 @@ namespace HN.Pipes
         }
 
         /// <inheritdoc />
-        public abstract Task InvokeAsync(ILoadingContext<TResult> context, LoadingPipeDelegate<TResult> next, CancellationToken cancellationToken = default);
+        public abstract Task InvokeAsync(ILoadingContext<TSource> context, LoadingPipeDelegate<TSource> next, CancellationToken cancellationToken = default);
     }
 }
