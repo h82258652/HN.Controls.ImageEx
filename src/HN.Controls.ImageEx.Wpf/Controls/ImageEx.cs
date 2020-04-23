@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using HN.Http;
 using HN.Pipes;
 using HN.Services;
 using JetBrains.Annotations;
@@ -22,7 +23,7 @@ namespace HN.Controls
     [TemplateVisualState(GroupName = ImageStateGroupName, Name = OpenedStateName)]
     [TemplateVisualState(GroupName = ImageStateGroupName, Name = FailedStateName)]
     [TemplateVisualState(GroupName = ImageStateGroupName, Name = LoadingStateName)]
-    public class ImageEx : Control
+    public partial class ImageEx : Control
     {
         /// <summary>
         /// 标识 <see cref="DownloadProgress" /> 依赖属性。
@@ -118,7 +119,7 @@ namespace HN.Controls
         /// <returns>
         /// <see cref="Source" /> 依赖项属性的标识符。
         /// </returns>
-        public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(nameof(Source), typeof(object), typeof(ImageEx), new PropertyMetadata(default(object), OnSourceChanged));
+        public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(nameof(Source), typeof(object), typeof(ImageEx), new PropertyMetadata(default, OnSourceChanged));
 
         /// <summary>
         /// 标识 <see cref="StretchDirection" /> 依赖属性。
@@ -148,9 +149,9 @@ namespace HN.Controls
         private static readonly DependencyPropertyKey IsLoadingPropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsLoading), typeof(bool), typeof(ImageEx), new PropertyMetadata(default(bool)));
 
         private readonly SynchronizationContext _uiContext = SynchronizationContext.Current;
-        private Image _image;
+        private Image? _image;
         private bool _isInViewport;
-        private CancellationTokenSource _lastLoadCts;
+        private CancellationTokenSource? _lastLoadCts;
         private object _lazyLoadingSource;
 
         static ImageEx()
@@ -215,7 +216,7 @@ namespace HN.Controls
         /// <returns>
         /// 用于显示加载失败时的内容的数据模板。
         /// </returns>
-        public DataTemplate FailedTemplate
+        public DataTemplate? FailedTemplate
         {
             get => (DataTemplate)GetValue(FailedTemplateProperty);
             set => SetValue(FailedTemplateProperty, value);
@@ -227,7 +228,7 @@ namespace HN.Controls
         /// <returns>
         /// 用于显示加载失败时的内容的数据模板选择器。
         /// </returns>
-        public DataTemplateSelector FailedTemplateSelector
+        public DataTemplateSelector? FailedTemplateSelector
         {
             get => (DataTemplateSelector)GetValue(FailedTemplateSelectorProperty);
             set => SetValue(FailedTemplateSelectorProperty, value);
@@ -236,7 +237,7 @@ namespace HN.Controls
         /// <summary>
         /// 获取图像真实显示的源。
         /// </summary>
-        public ImageSource HostSource => _image?.Source;
+        public ImageSource? HostSource => _image?.Source;
 
         /// <summary>
         /// 获取是否正在加载图像的源。
@@ -394,6 +395,12 @@ namespace HN.Controls
             }
         }
 
+        private void AttachSource(ImageSource source)
+        {
+            _image.BeginAnimation(Image.SourceProperty, null);
+            _image.Source = source;
+        }
+
         private async void ImageEx_LayoutUpdated(object sender, EventArgs e)
         {
             if (!IsLoaded)
@@ -450,12 +457,10 @@ namespace HN.Controls
                 return;
             }
 
-            var sourceSetter = ImageExService.GetSourceSetter<IImageExSourceSetter>();
-
             _lastLoadCts?.Cancel();
             if (source == null)
             {
-                sourceSetter.SetSource(_image, null);
+                AttachSource(null);
                 VisualStateManager.GoToState(this, EmptyStateName, true);
                 return;
             }
@@ -468,7 +473,7 @@ namespace HN.Controls
 
                 VisualStateManager.GoToState(this, LoadingStateName, true);
 
-                var context = new LoadingContext<ImageSource>(_uiContext, source, ActualWidth, ActualHeight);
+                var context = new LoadingContext<ImageSource>(_uiContext, source, AttachSource, ActualWidth, ActualHeight);
                 context.DownloadProgressChanged += (sender, progress) =>
                 {
                     _uiContext.Post(state =>
@@ -479,9 +484,10 @@ namespace HN.Controls
                 };
 
                 var pipeDelegate = ImageExService.GetHandler<ImageSource>();
+                var retryCount = RetryCount;
                 var retryDelay = RetryDelay;
                 var policy = Policy.Handle<Exception>()
-                    .WaitAndRetryAsync(RetryCount, count => retryDelay, (ex, delay) =>
+                    .WaitAndRetryAsync(retryCount, count => retryDelay, (ex, delay) =>
                     {
                         context.Reset();
                     });
@@ -489,16 +495,17 @@ namespace HN.Controls
 
                 if (!loadCts.IsCancellationRequested)
                 {
-                    sourceSetter.SetSource(_image, context.Result);
                     VisualStateManager.GoToState(this, OpenedStateName, true);
                     ImageOpened?.Invoke(this, EventArgs.Empty);
+
+                    AnimateSource();
                 }
             }
             catch (Exception ex)
             {
                 if (!loadCts.IsCancellationRequested)
                 {
-                    sourceSetter.SetSource(_image, null);
+                    AttachSource(null);
                     VisualStateManager.GoToState(this, FailedStateName, true);
                     ImageFailed?.Invoke(this, new ImageExFailedEventArgs(source, ex));
                 }
