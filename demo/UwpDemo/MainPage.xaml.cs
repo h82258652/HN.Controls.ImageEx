@@ -52,6 +52,11 @@ namespace UwpDemo
             }
         }
 
+        private void MemoryUsageButton_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(MemoryUsagePage));
+        }
+
         private async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             var diskCache = new DiskCache();

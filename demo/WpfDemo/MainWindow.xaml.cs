@@ -32,6 +32,11 @@ namespace WpfDemo
             CustomImage.Source = UrlTextBox.Text;
         }
 
+        private void MemoryUsageButton_Click(object sender, RoutedEventArgs e)
+        {
+            new MemoryUsageWindow().ShowDialog();
+        }
+
         private async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             var diskCache = new DiskCache();
