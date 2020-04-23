@@ -16,11 +16,11 @@ namespace HN.Services
                 throw new ArgumentNullException(nameof(source));
             }
 
-            var context = new LoadingContext<byte[]>(SynchronizationContext.Current, source, null, null);
+            var context = new LoadingContext<byte[]>(SynchronizationContext.Current, source, null, null, null);
             var pipeDelegate = ImageExService.GetHandler<byte[]>();
             await pipeDelegate.Invoke(context, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
-            return context.Result;
+            return context.Current as byte[];
         }
     }
 }
