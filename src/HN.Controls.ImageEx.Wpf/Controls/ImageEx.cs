@@ -145,7 +145,7 @@ namespace HN.Controls
         private const string LoadingContentHostTemplateName = "PART_LoadingContentHost";
         private const string LoadingStateName = "Loading";
         private const string OpenedStateName = "Opened";
-        private static readonly DependencyPropertyKey DownloadProgressPropertyKey = DependencyProperty.RegisterReadOnly(nameof(DownloadProgress), typeof(HttpDownloadProgress), typeof(ImageEx), new PropertyMetadata(default(HttpDownloadProgress)));
+        private static readonly DependencyPropertyKey DownloadProgressPropertyKey = DependencyProperty.RegisterReadOnly(nameof(DownloadProgress), typeof(HttpDownloadProgress), typeof(ImageEx), new PropertyMetadata(default(HttpDownloadProgress), OnDownloadProgressChanged));
         private static readonly DependencyPropertyKey IsLoadingPropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsLoading), typeof(bool), typeof(ImageEx), new PropertyMetadata(default(bool)));
 
         private readonly SynchronizationContext _uiContext = SynchronizationContext.Current;
@@ -379,6 +379,13 @@ namespace HN.Controls
             }
         }
 
+        private static void OnDownloadProgressChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var obj = (ImageEx)d;
+            var value = (HttpDownloadProgress)e.NewValue;
+            obj.DownloadProgressChanged?.Invoke(obj, value);
+        }
+
         private static async void OnSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var obj = (ImageEx)d;
@@ -473,13 +480,15 @@ namespace HN.Controls
 
                 VisualStateManager.GoToState(this, LoadingStateName, true);
 
+                // 开始 Loading，重置 DownloadProgress
+                DownloadProgress = default;
+
                 var context = new LoadingContext<ImageSource>(_uiContext, source, AttachSource, ActualWidth, ActualHeight);
                 context.DownloadProgressChanged += (sender, progress) =>
                 {
                     _uiContext.Post(state =>
                     {
                         DownloadProgress = progress;
-                        DownloadProgressChanged?.Invoke(this, progress);
                     }, null);
                 };
 
