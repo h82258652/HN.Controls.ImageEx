@@ -152,7 +152,7 @@ namespace HN.Controls
         private Image? _image;
         private bool _isInViewport;
         private CancellationTokenSource? _lastLoadCts;
-        private object _lazyLoadingSource;
+        private object? _lazyLoadingSource;
 
         static ImageEx()
         {
@@ -174,17 +174,17 @@ namespace HN.Controls
         /// <summary>
         /// 在下载进度发生变化时发生。
         /// </summary>
-        public event EventHandler<HttpDownloadProgress> DownloadProgressChanged;
+        public event EventHandler<HttpDownloadProgress>? DownloadProgressChanged;
 
         /// <summary>
         /// 在无法加载图像源时发生。
         /// </summary>
-        public event ImageExFailedEventHandler ImageFailed;
+        public event ImageExFailedEventHandler? ImageFailed;
 
         /// <summary>
         /// 在成功显示图像后发生。
         /// </summary>
-        public event EventHandler ImageOpened;
+        public event EventHandler? ImageOpened;
 
         /// <summary>
         /// 获取当前图像的下载进度。
@@ -402,10 +402,13 @@ namespace HN.Controls
             }
         }
 
-        private void AttachSource(ImageSource source)
+        private void AttachSource(ImageSource? source)
         {
-            _image.BeginAnimation(Image.SourceProperty, null);
-            _image.Source = source;
+            if (_image != null)
+            {
+                _image.BeginAnimation(Image.SourceProperty, null);
+                _image.Source = source;
+            }
         }
 
         private async void ImageEx_LayoutUpdated(object sender, EventArgs e)
