@@ -14,7 +14,7 @@ namespace HN.Services
     {
         private static readonly IDictionary<Type, IServiceCollection> Services = new Dictionary<Type, IServiceCollection>();
 
-        private static SemaphoreSlim _throttler;
+        private static SemaphoreSlim? _throttler;
         private static int _throttlerInitialCount;
 
         static ImageExService()
