@@ -36,7 +36,7 @@ Task("Restore-NuGet-Packages")
     .IsDependentOn("Clean")
     .Does(() =>
 {
-    NuGetRestore(solution);
+    NuGetRestore(solution, new NuGetRestoreSettings { NoCache = true });
 });
 
 Task("Version")
