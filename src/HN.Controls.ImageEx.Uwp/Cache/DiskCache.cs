@@ -153,7 +153,7 @@ namespace HN.Cache
             return cacheFileName;
         }
 
-        private async Task<StorageFolder?> GetCacheFolderAsync()
+        private async Task<StorageFolder> GetCacheFolderAsync()
         {
             var item = await ApplicationData.Current.LocalCacheFolder.TryGetItemAsync(CacheFolderName);
             var cacheFolder = item as StorageFolder;
