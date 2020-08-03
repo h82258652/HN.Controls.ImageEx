@@ -96,12 +96,29 @@ Task("Package")
     NuGetPack(nuspecFiles, nugetPackSettings);
 });
 
+Task("Publish")
+    .IsDependentOn("Package")
+    .Does(() =>
+{
+    if(BuildSystem.IsRunningOnGitHubActions)
+    {
+        var packages = GetFiles("./artifacts/*.nupkg");
+        var nugetApiKey = EnvironmentVariable("NUGET_APIKEY");
+        NuGetPush(packages, new NuGetPushSettings
+        {
+            Source = "https://www.nuget.org",
+            ApiKey = nugetApiKey,
+            SkipDuplicate = true
+        });
+    }
+});
+
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Package");
+    .IsDependentOn("Publish");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
