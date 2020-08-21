@@ -12,4 +12,12 @@ WPF version for .net framework 4.6.1
 UWP version for 17763  
 But both you can downgrade, the source code is here.😀
 
-Usage please see the Demo project.
+Usage please see the Demo project.  
+
+### Next plan: 
+- [ ] Update the lazy loading, support set the distance.  
+- [ ] Use ```SkiaSharp``` to resolve the image.  
+- [ ] Target .net 5.  
+- [ ] Built-in shadow, same API for WPF and UWP.  
+- [ ] ```CornerRadius``` support.  
+- [ ] Built-in fade in animation while loaded image success.  
