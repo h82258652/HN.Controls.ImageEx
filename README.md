@@ -15,9 +15,11 @@ But both you can downgrade, the source code is here.😀
 Usage please see the Demo project.  
 
 ### Next plan: 
-- [ ] Update the lazy loading, support set the distance.  
+- [ ] Update the lazy loading, support set the thresholds and give a default value.  
 - [ ] Use ```SkiaSharp``` to resolve the image.  
 - [ ] Target .net 5.  
 - [ ] Built-in shadow, same API for WPF and UWP.  
 - [ ] ```CornerRadius``` support.  
 - [ ] Built-in fade in animation while loaded image success.  
+- [ ] Same API for WPF and UWP ,such as ```StretchDirection```(exist in WPF but not UWP), ```NineGrid```(exist in UWP but not WPF).  
+- [ ] Add ```IImageEx``` interface for ```ImageEx```.  
