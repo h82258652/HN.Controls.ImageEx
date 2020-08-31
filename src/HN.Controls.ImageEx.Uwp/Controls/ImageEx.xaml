@@ -2,6 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="using:HN.Controls">
     <Style TargetType="controls:ImageEx">
+        <Setter Property="LazyLoadingThreshold"
+                Value="300" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:ImageEx">

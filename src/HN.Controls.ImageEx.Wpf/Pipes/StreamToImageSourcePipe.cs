@@ -44,7 +44,7 @@ namespace HN.Pipes
                 var tcs = new TaskCompletionSource<ImageSource>();
                 await Task.Run(() =>
                 {
-                    Image webPImage = null;
+                    Image? webPImage = null;
                     if (isWebP)
                     {
                         var webPFormat = new WebPFormat();

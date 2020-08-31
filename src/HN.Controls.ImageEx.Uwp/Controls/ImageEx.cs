@@ -24,7 +24,7 @@ namespace HN.Controls
     [TemplateVisualState(GroupName = ImageStateGroupName, Name = OpenedStateName)]
     [TemplateVisualState(GroupName = ImageStateGroupName, Name = FailedStateName)]
     [TemplateVisualState(GroupName = ImageStateGroupName, Name = LoadingStateName)]
-    public class ImageEx : Control
+    public partial class ImageEx : Control
     {
         /// <summary>
         /// 标识 <see cref="DownloadProgress" /> 依赖属性。
@@ -33,14 +33,6 @@ namespace HN.Controls
         /// <see cref="DownloadProgress" /> 依赖项属性的标识符。
         /// </returns>
         public static readonly DependencyProperty DownloadProgressProperty = DependencyProperty.Register(nameof(DownloadProgress), typeof(HttpDownloadProgress), typeof(ImageEx), new PropertyMetadata(default(HttpDownloadProgress), OnDownloadProgressChanged));
-
-        /// <summary>
-        /// 标识 <see cref="EnableLazyLoading" /> 依赖属性。
-        /// </summary>
-        /// <returns>
-        /// <see cref="EnableLazyLoading" /> 依赖项属性的标识符。
-        /// </returns>
-        public static readonly DependencyProperty EnableLazyLoadingProperty = DependencyProperty.Register(nameof(EnableLazyLoading), typeof(bool), typeof(ImageEx), new PropertyMetadata(default(bool)));
 
         /// <summary>
         /// 标识 <see cref="FailedTemplate" /> 依赖属性。
@@ -149,7 +141,6 @@ namespace HN.Controls
 
         private readonly SynchronizationContext _uiContext = SynchronizationContext.Current;
         private Image? _image;
-        private bool _isInViewport;
         private CancellationTokenSource? _lastLoadCts;
         private object? _lazyLoadingSource;
 
@@ -161,7 +152,7 @@ namespace HN.Controls
         {
             DefaultStyleKey = typeof(ImageEx);
 
-            EffectiveViewportChanged += ImageEx_EffectiveViewportChanged;
+            LayoutUpdated += ImageEx_LayoutUpdated;
         }
 
         /// <summary>
@@ -189,18 +180,6 @@ namespace HN.Controls
         {
             get => (HttpDownloadProgress)GetValue(DownloadProgressProperty);
             private set => SetValue(DownloadProgressProperty, value);
-        }
-
-        /// <summary>
-        /// 获取或设置是否启用延迟加载。
-        /// </summary>
-        /// <returns>
-        /// 是否启用延迟加载。
-        /// </returns>
-        public bool EnableLazyLoading
-        {
-            get => (bool)GetValue(EnableLazyLoadingProperty);
-            set => SetValue(EnableLazyLoadingProperty, value);
         }
 
         /// <summary>
@@ -383,7 +362,7 @@ namespace HN.Controls
             base.OnApplyTemplate();
 
             _image = (Image)GetTemplateChild(ImageTemplateName);
-            if (Source == null || !EnableLazyLoading || _isInViewport)
+            if (Source == null || !LazyLoadingEnabled || _isInViewport)
             {
                 _lazyLoadingSource = null;
                 await SetSourceAsync(Source);
@@ -406,7 +385,7 @@ namespace HN.Controls
             var obj = (ImageEx)d;
             var value = e.NewValue;
 
-            if (obj.Source == null || !obj.EnableLazyLoading || obj._isInViewport)
+            if (obj.Source == null || !obj.LazyLoadingEnabled || obj._isInViewport)
             {
                 obj._lazyLoadingSource = null;
                 await obj.SetSourceAsync(value);
@@ -425,29 +404,9 @@ namespace HN.Controls
             }
         }
 
-        private async void ImageEx_EffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
+        private void ImageEx_LayoutUpdated(object sender, object e)
         {
-            var bringIntoViewDistanceX = args.BringIntoViewDistanceX;
-            var bringIntoViewDistanceY = args.BringIntoViewDistanceY;
-
-            var width = ActualWidth;
-            var height = ActualHeight;
-
-            if (bringIntoViewDistanceX <= width && bringIntoViewDistanceY <= height)
-            {
-                _isInViewport = true;
-
-                if (_lazyLoadingSource != null)
-                {
-                    var source = _lazyLoadingSource;
-                    _lazyLoadingSource = null;
-                    await SetSourceAsync(source);
-                }
-            }
-            else
-            {
-                _isInViewport = false;
-            }
+            InvalidateLazyLoading();
         }
 
         private async Task SetSourceAsync(object? source)
