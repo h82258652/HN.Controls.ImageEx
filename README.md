@@ -8,7 +8,7 @@
 | HN.Controls.ImageEx.Uwp  | [![Nuget](https://img.shields.io/nuget/v/HN.Controls.ImageEx.Uwp.svg)](https://www.nuget.org/packages/HN.Controls.ImageEx.Uwp)   |
 
 A cached Image control for WPF and UWP.  
-WPF version for .net framework 4.6.1  
+WPF version for .net framework 4.6.1 and .net core 3.1  
 UWP version for 17763  
 But both you can downgrade, the source code is here.😀
 
