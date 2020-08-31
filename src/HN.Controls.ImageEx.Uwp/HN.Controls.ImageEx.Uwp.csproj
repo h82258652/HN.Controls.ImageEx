@@ -141,6 +141,7 @@
     </Compile>
     <Compile Include="Cache\DiskCache.cs" />
     <Compile Include="Controls\ImageEx.cs" />
+    <Compile Include="Controls\ImageEx.LazyLoading.cs" />
     <Compile Include="Controls\ImageExAssist.cs" />
     <Compile Include="Media\ImageBrushEx.cs" />
     <Compile Include="Media\ImageSurfaceFailedStatusException.cs" />

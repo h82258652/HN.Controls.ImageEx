@@ -34,14 +34,6 @@ namespace HN.Controls
         public static readonly DependencyProperty DownloadProgressProperty;
 
         /// <summary>
-        /// 标识 <see cref="EnableLazyLoading" /> 依赖属性。
-        /// </summary>
-        /// <returns>
-        /// <see cref="EnableLazyLoading" /> 依赖项属性的标识符。
-        /// </returns>
-        public static readonly DependencyProperty EnableLazyLoadingProperty = DependencyProperty.Register(nameof(EnableLazyLoading), typeof(bool), typeof(ImageEx), new PropertyMetadata(default(bool)));
-
-        /// <summary>
         /// 标识 <see cref="FailedTemplate" /> 依赖属性。
         /// </summary>
         /// <returns>
@@ -150,7 +142,6 @@ namespace HN.Controls
 
         private readonly SynchronizationContext _uiContext = SynchronizationContext.Current;
         private Image? _image;
-        private bool _isInViewport;
         private CancellationTokenSource? _lastLoadCts;
         private object? _lazyLoadingSource;
 
@@ -198,17 +189,6 @@ namespace HN.Controls
             private set => SetValue(DownloadProgressPropertyKey, value);
         }
 
-        /// <summary>
-        /// 获取或设置是否启用延迟加载。
-        /// </summary>
-        /// <returns>
-        /// 是否启用延迟加载。
-        /// </returns>
-        public bool EnableLazyLoading
-        {
-            get => (bool)GetValue(EnableLazyLoadingProperty);
-            set => SetValue(EnableLazyLoadingProperty, value);
-        }
 
         /// <summary>
         /// 获取或设置用于显示加载失败时的内容的数据模板。
@@ -368,7 +348,7 @@ namespace HN.Controls
             base.OnApplyTemplate();
 
             _image = (Image)GetTemplateChild(ImageTemplateName);
-            if (Source == null || !EnableLazyLoading || _isInViewport)
+            if (Source == null || !LazyLoadingEnabled || _isInViewport)
             {
                 _lazyLoadingSource = null;
                 await SetSourceAsync(Source);
@@ -391,7 +371,7 @@ namespace HN.Controls
             var obj = (ImageEx)d;
             var value = e.NewValue;
 
-            if (obj.Source == null || !obj.EnableLazyLoading || obj._isInViewport)
+            if (obj.Source == null || !obj.LazyLoadingEnabled || obj._isInViewport)
             {
                 obj._lazyLoadingSource = null;
                 await obj.SetSourceAsync(value);
@@ -411,53 +391,9 @@ namespace HN.Controls
             }
         }
 
-        private async void ImageEx_LayoutUpdated(object sender, EventArgs e)
+        private void ImageEx_LayoutUpdated(object sender, EventArgs e)
         {
-            if (!IsLoaded)
-            {
-                return;
-            }
-
-            FrameworkElement hostElement = this;
-            while (true)
-            {
-                var parent = VisualTreeHelper.GetParent(hostElement) as FrameworkElement;
-                if (parent == null)
-                {
-                    break;
-                }
-
-                if (parent is ScrollViewer)
-                {
-                    hostElement = parent;
-                    break;
-                }
-
-                hostElement = parent;
-            }
-
-            if (!ReferenceEquals(hostElement, this))
-            {
-                var controlRect = TransformToVisual(hostElement)
-                    .TransformBounds(new Rect(0, 0, ActualWidth, ActualHeight));
-                var hostRect = new Rect(0, 0, hostElement.ActualWidth, hostElement.ActualHeight);
-
-                if (controlRect.IntersectsWith(hostRect))
-                {
-                    _isInViewport = true;
-
-                    if (_lazyLoadingSource != null)
-                    {
-                        var source = _lazyLoadingSource;
-                        _lazyLoadingSource = null;
-                        await SetSourceAsync(source);
-                    }
-                }
-                else
-                {
-                    _isInViewport = false;
-                }
-            }
+            InvalidateLazyLoading();
         }
 
         private async Task SetSourceAsync(object? source)

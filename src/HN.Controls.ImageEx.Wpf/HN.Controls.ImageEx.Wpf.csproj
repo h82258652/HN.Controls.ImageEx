@@ -45,6 +45,7 @@
       <Link>SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Controls\ImageEx.Animate.cs" />
+    <Compile Include="Controls\ImageEx.LazyLoading.cs" />
     <Compile Include="Controls\ImageExAssist.cs" />
     <Compile Include="Extensions\BitmapMetadataExtensions.cs" />
     <Compile Include="Services\ImageLoader.cs" />
