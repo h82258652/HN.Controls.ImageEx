@@ -21,5 +21,5 @@ Usage please see the Demo project.
 - [ ] Built-in shadow, same API for WPF and UWP.  
 - [ ] ```CornerRadius``` support.  
 - [ ] Built-in fade in animation while loaded image success.  
-- [ ] Same API for WPF and UWP ,such as ```StretchDirection```(exist in WPF but not UWP), ```NineGrid```(exist in UWP but not WPF).  
+- [ ] Same API for WPF and UWP, such as ```StretchDirection```(exist in WPF but not UWP), ```NineGrid```(exist in UWP but not WPF).  
 - [ ] Add ```IImageEx``` interface for ```ImageEx```.  
