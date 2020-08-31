@@ -25,6 +25,7 @@ namespace HN.Controls
         public static readonly DependencyProperty LazyLoadingThresholdProperty = DependencyProperty.Register(nameof(LazyLoadingThreshold), typeof(double), typeof(ImageEx), new PropertyMetadata(default(double), OnLazyLoadingThresholdChanged));
 
         private bool _isInViewport;
+        private object? _lazyLoadingSource;
 
         /// <summary>
         /// 获取或设置是否启用延迟加载。

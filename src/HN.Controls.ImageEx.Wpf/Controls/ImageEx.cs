@@ -143,7 +143,6 @@ namespace HN.Controls
         private readonly SynchronizationContext _uiContext = SynchronizationContext.Current;
         private Image? _image;
         private CancellationTokenSource? _lastLoadCts;
-        private object? _lazyLoadingSource;
 
         static ImageEx()
         {
