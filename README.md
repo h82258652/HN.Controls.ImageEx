@@ -15,7 +15,7 @@ But both you can downgrade, the source code is here.😀
 Usage please see the Demo project.  
 
 ### Next plan: 
-- [ ] Update the lazy loading, support set the thresholds and give a default value.  
+- [x] Update the lazy loading, support set the thresholds and give a default value.  
 - [ ] Use ```SkiaSharp``` to resolve the image.  
 - [ ] Target .net 5.  
 - [ ] Built-in shadow, same API for WPF and UWP.  
