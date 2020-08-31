@@ -4,6 +4,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
 using HN.Services;
+using Windows.ApplicationModel.Resources.Core;
 using Windows.Storage;
 
 namespace HN.Pipes
@@ -19,11 +20,31 @@ namespace HN.Pipes
         /// <inheritdoc />
         protected override async Task InvokeOtherUriSchemeAsync(ILoadingContext<TSource> context, LoadingPipeDelegate<TSource> next, Uri uri, CancellationToken cancellationToken = default)
         {
-            // ms-appx:/ or ms-appdata:/
-            var file = await StorageFile.GetFileFromApplicationUriAsync(uri);
-            var buffer = (await FileIO.ReadBufferAsync(file)).ToArray();
-            context.Current = buffer;
-            await next(context, cancellationToken);
+            if (string.Equals(uri.Scheme, "ms-appx", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(uri.Scheme, "ms-appdata", StringComparison.OrdinalIgnoreCase))
+            {
+                var file = await StorageFile.GetFileFromApplicationUriAsync(uri);
+                var buffer = (await FileIO.ReadBufferAsync(file)).ToArray();
+                context.Current = buffer;
+                await next(context, cancellationToken);
+            }
+            else if (string.Equals(uri.Scheme, "ms-resource", StringComparison.OrdinalIgnoreCase))
+            {
+                var resourceManager = ResourceManager.Current;
+                var resourceContext = ResourceContext.GetForCurrentView();
+                var candidate = resourceManager.MainResourceMap.GetValue(uri.LocalPath, resourceContext);
+                if (candidate != null && candidate.IsMatch)
+                {
+                    var file = await candidate.GetValueAsFileAsync();
+                    var buffer = (await FileIO.ReadBufferAsync(file)).ToArray();
+                    context.Current = buffer;
+                    await next(context, cancellationToken);
+                }
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
     }
 }
