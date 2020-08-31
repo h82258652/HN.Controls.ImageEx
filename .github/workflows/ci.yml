@@ -17,7 +17,7 @@ jobs:
       run: .\build.ps1
       shell: pwsh
       env:
-        NUGET_APIKEY: ${{ NUGET_APIKEY }}
+        NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
 
     - name: Upload nupkg
       uses: actions/upload-artifact@master
