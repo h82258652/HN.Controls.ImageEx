@@ -443,7 +443,10 @@ namespace HN.Controls
                 if (!loadCts.IsCancellationRequested)
                 {
                     VisualStateManager.GoToState(this, OpenedStateName, true);
-                    ImageOpened?.Invoke(this, EventArgs.Empty);
+                    _uiContext.Post(state =>
+                    {
+                        ImageOpened?.Invoke(this, EventArgs.Empty);
+                    }, null);
 
                     AnimateSource();
                 }
@@ -454,7 +457,10 @@ namespace HN.Controls
                 {
                     AttachSource(null);
                     VisualStateManager.GoToState(this, FailedStateName, true);
-                    ImageFailed?.Invoke(this, new ImageExFailedEventArgs(source, ex));
+                    _uiContext.Post(state =>
+                    {
+                        ImageFailed?.Invoke(this, new ImageExFailedEventArgs(source, ex));
+                    }, null);
                 }
             }
             finally

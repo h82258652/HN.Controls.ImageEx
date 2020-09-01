@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace WpfDemo
@@ -11,10 +10,8 @@ namespace WpfDemo
             InitializeComponent();
         }
 
-        private async void ImageEx_ImageOpened(object sender, EventArgs e)
+        private void ImageEx_ImageOpened(object sender, EventArgs e)
         {
-            // if you disable lazy loading, you should add this code.
-            // await Task.Yield();
             MessageBox.Show("Image Opened");
         }
     }
