@@ -12,8 +12,10 @@
     <description>HN.Controls.ImageEx.Uwp</description>
     <tags></tags>
     <dependencies>
-      <dependency id="HN.Controls.ImageEx.Core" version="$version$" />
-      <dependency id="Polly" version="7.2.1" />
+      <group targetFramework="uap10.0.17763">
+        <dependency id="HN.Controls.ImageEx.Core" version="$version$" />
+        <dependency id="Polly" version="7.2.1" />
+      </group>
     </dependencies>
   </metadata>
   <files>
