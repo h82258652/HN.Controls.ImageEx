@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HN.Controls.ImageEx.Core", "src\HN.Controls.ImageEx.Core\HN.Controls.ImageEx.Core.csproj", "{DC802B90-24E2-4285-8577-5BD61ECE78E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HN.Controls.ImageEx.Wpf", "src\HN.Controls.ImageEx.Wpf\HN.Controls.ImageEx.Wpf.csproj", "{A796C158-8BE8-4CB8-A1FA-DA8F7934DF25}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HN.Controls.ImageEx.Wpf", "src\HN.Controls.ImageEx.Wpf\HN.Controls.ImageEx.Wpf.csproj", "{A796C158-8BE8-4CB8-A1FA-DA8F7934DF25}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B066A827-1A17-43D5-8C57-1DDBE6965B23}"
 	ProjectSection(SolutionItems) = preProject
@@ -86,8 +86,8 @@ Global
 		{CD6AAE23-3C9A-45AC-BCC1-32FCE5563C9E}.Debug|ARM64.Build.0 = Debug|ARM64
 		{CD6AAE23-3C9A-45AC-BCC1-32FCE5563C9E}.Debug|x64.ActiveCfg = Debug|x64
 		{CD6AAE23-3C9A-45AC-BCC1-32FCE5563C9E}.Debug|x64.Build.0 = Debug|x64
-		{CD6AAE23-3C9A-45AC-BCC1-32FCE5563C9E}.Debug|x86.ActiveCfg = Debug|x86
-		{CD6AAE23-3C9A-45AC-BCC1-32FCE5563C9E}.Debug|x86.Build.0 = Debug|x86
+		{CD6AAE23-3C9A-45AC-BCC1-32FCE5563C9E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CD6AAE23-3C9A-45AC-BCC1-32FCE5563C9E}.Debug|x86.Build.0 = Debug|Any CPU
 		{CD6AAE23-3C9A-45AC-BCC1-32FCE5563C9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD6AAE23-3C9A-45AC-BCC1-32FCE5563C9E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CD6AAE23-3C9A-45AC-BCC1-32FCE5563C9E}.Release|ARM.ActiveCfg = Release|ARM

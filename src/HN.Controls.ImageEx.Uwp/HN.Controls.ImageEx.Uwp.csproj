@@ -1,215 +1,75 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="MSBuild.Sdk.Extras/2.1.2">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CD6AAE23-3C9A-45AC-BCC1-32FCE5563C9E}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworks>uap10.0.17763</TargetFrameworks>
     <RootNamespace>HN</RootNamespace>
-    <AssemblyName>HN.Controls.ImageEx.Uwp</AssemblyName>
-    <DefaultLanguage>zh-CN</DefaultLanguage>
-    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.17763.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
-    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <GenerateLibraryLayout>true</GenerateLibraryLayout>
+    <PackageId>HN.Controls.ImageEx.Uwp</PackageId>
+    <Version>1.0.0</Version>
+    <Title>HN.Controls.ImageEx.Uwp</Title>
+    <Authors>h82258652</Authors>
+    <PackageLicenseUrl>https://licenses.nuget.org/MIT</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/h82258652/HN.Controls.ImageEx</PackageProjectUrl>
+    <Description>HN.Controls.ImageEx.Uwp</Description>
+    <PackageTags></PackageTags>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\HN.Controls.ImageEx.Uwp.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\HN.Controls.ImageEx.Uwp.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>full</DebugType>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <DocumentationFile>bin\x86\Debug\HN.Controls.ImageEx.Uwp.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <Optimize>true</Optimize>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>pdbonly</DebugType>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <DocumentationFile>bin\x86\Release\HN.Controls.ImageEx.Uwp.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
-    <PlatformTarget>ARM</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\ARM\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>full</DebugType>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <DocumentationFile>bin\ARM\Debug\HN.Controls.ImageEx.Uwp.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
-    <PlatformTarget>ARM</PlatformTarget>
-    <OutputPath>bin\ARM\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <Optimize>true</Optimize>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>pdbonly</DebugType>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <DocumentationFile>bin\ARM\Release\HN.Controls.ImageEx.Uwp.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM64'">
-    <PlatformTarget>ARM64</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\ARM64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>full</DebugType>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <DocumentationFile>bin\ARM64\Debug\HN.Controls.ImageEx.Uwp.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM64'">
-    <PlatformTarget>ARM64</PlatformTarget>
-    <OutputPath>bin\ARM64\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <Optimize>true</Optimize>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>pdbonly</DebugType>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <DocumentationFile>bin\ARM64\Release\HN.Controls.ImageEx.Uwp.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>full</DebugType>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <DocumentationFile>bin\x64\Debug\HN.Controls.ImageEx.Uwp.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <Optimize>true</Optimize>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>pdbonly</DebugType>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <DocumentationFile>bin\x64\Release\HN.Controls.ImageEx.Uwp.XML</DocumentationFile>
-  </PropertyGroup>
+
   <PropertyGroup>
-    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+    <Configurations>Debug;Release</Configurations>
+    <Platforms>AnyCPU;x86;x64;ARM;ARM64</Platforms>
   </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="..\SolutionInfo.cs">
-      <Link>SolutionInfo.cs</Link>
-    </Compile>
-    <Compile Include="Cache\DiskCache.cs" />
-    <Compile Include="Controls\ImageEx.cs" />
-    <Compile Include="Controls\ImageEx.LazyLoading.cs" />
-    <Compile Include="Controls\ImageExAssist.cs" />
-    <Compile Include="Media\ImageBrushEx.cs" />
-    <Compile Include="Media\ImageSurfaceFailedStatusException.cs" />
-    <Compile Include="Media\SvgImageFailedStatusException.cs" />
-    <Compile Include="Pipes\StreamToCompositionSurfacePipe.cs" />
-    <Compile Include="Pipes\StreamToImageSourcePipe.cs" />
-    <Compile Include="Pipes\StringPipe.cs" />
-    <Compile Include="Pipes\UriPipe.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\DesignModeService.cs" />
-    <Compile Include="Services\ImageExOptionsExtensions.cs" />
-    <Compile Include="Services\ImageExService.cs" />
-    <Compile Include="Services\ImageLoader.cs" />
-    <EmbeddedResource Include="Properties\HN.Controls.ImageEx.Uwp.rd.xml" />
+    <None Remove="HN.Controls.ImageEx.Uwp.nuspec" />
   </ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations">
-      <Version>2020.1.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.2.10</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.GitHub">
-      <Version>1.0.0</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    <Compile Include="..\SolutionInfo.cs" Link="SolutionInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Polly">
-      <Version>7.2.1</Version>
-    </PackageReference>
-    <PackageReference Include="Weakly">
-      <Version>2.8.1</Version>
-    </PackageReference>
+    <PackageReference Include="Polly" Version="7.2.1" />
   </ItemGroup>
+
   <ItemGroup>
+    <None Remove="Properties\HN.Controls.ImageEx.Uwp.rd.xml" />
+    <EmbeddedResource Include="Properties\HN.Controls.ImageEx.Uwp.rd.xml" />
+    <None Remove="Controls\ImageEx.xaml" />
     <Page Include="Controls\ImageEx.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <None Remove="Controls\ImageExAssist.xaml" />
     <Page Include="Controls\ImageExAssist.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <None Remove="Themes\Generic.xaml" />
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\HN.Controls.ImageEx.Core\HN.Controls.ImageEx.Core.csproj">
-      <Project>{3627ca02-c266-4cea-9829-60b0847982f1}</Project>
-      <Name>HN.Controls.ImageEx.Core</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\HN.Controls.ImageEx.Core\HN.Controls.ImageEx.Core.csproj" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="VisualStudioToolsManifest.xml">
+    <None Update="VisualStudioToolsManifest.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
-    <VisualStudioVersion>14.0</VisualStudioVersion>
-  </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>
