@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -100,8 +99,10 @@ namespace HN.Cache
             var cacheFolder = await GetCacheFolderAsync();
             var cacheFileName = GetCacheFileName(key);
             var cacheFile = await cacheFolder.GetFileAsync(cacheFileName);
-            var buffer = await FileIO.ReadBufferAsync(cacheFile);
-            return buffer.ToArray();
+            using var stream = await cacheFile.OpenStreamForReadAsync();
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            return memoryStream.ToArray();
         }
 
         /// <inheritdoc />
