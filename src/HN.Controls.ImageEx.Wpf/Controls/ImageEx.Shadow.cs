@@ -11,12 +11,12 @@ namespace HN.Controls
     public partial class ImageEx
     {
         /// <summary>
-        /// 标识 <see cref="Shadow" /> 依赖属性。
+        /// 标识 <see cref="DropShadow" /> 依赖属性。
         /// </summary>
         /// <returns>
-        /// <see cref="Shadow" /> 依赖项属性的标识符。
+        /// <see cref="DropShadow" /> 依赖项属性的标识符。
         /// </returns>
-        public static readonly DependencyProperty ShadowProperty = DependencyProperty.Register(nameof(Shadow), typeof(ImageExShadow), typeof(ImageEx), new PropertyMetadata(default(ImageExShadow), OnShadowChanged));
+        public static readonly DependencyProperty DropShadowProperty = DependencyProperty.Register(nameof(DropShadow), typeof(ImageExShadow), typeof(ImageEx), new PropertyMetadata(default(ImageExShadow), OnShadowChanged));
 
         private const string ShadowExpandBorderTemplateName = "PART_ShadowExpandBorder";
         private Border? _shadowExpandBorder;
@@ -30,10 +30,10 @@ namespace HN.Controls
         /// 阴影。
         /// </returns>
         [CanBeNull]
-        public ImageExShadow? Shadow
+        public ImageExShadow? DropShadow
         {
-            get => (ImageExShadow?)GetValue(ShadowProperty);
-            set => SetValue(ShadowProperty, value);
+            get => (ImageExShadow?)GetValue(DropShadowProperty);
+            set => SetValue(DropShadowProperty, value);
         }
 
         internal void UpdateShadowExpandBorder()
@@ -43,7 +43,7 @@ namespace HN.Controls
                 return;
             }
 
-            var shadow = Shadow;
+            var shadow = DropShadow;
             if (shadow == null)
             {
                 _shadowXExpand = 0;
@@ -93,7 +93,7 @@ namespace HN.Controls
 
         private void SetPaintShadow(SKPaint paint)
         {
-            var shadow = Shadow;
+            var shadow = DropShadow;
             if (shadow == null)
             {
                 return;

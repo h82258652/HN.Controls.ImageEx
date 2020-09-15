@@ -12,12 +12,12 @@ namespace UwpDemo.Views
 
         private void IsShadowEnabledCheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            ImageEx.Shadow = (ImageExShadow)Resources["ImageExShadow"];
+            ImageEx.DropShadow = (ImageExShadow)Resources["ImageExShadow"];
         }
 
         private void IsShadowEnabledCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            ImageEx.Shadow = null;
+            ImageEx.DropShadow = null;
         }
     }
 }
