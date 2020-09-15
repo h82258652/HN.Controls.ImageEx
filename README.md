@@ -19,7 +19,7 @@ The usage please see the demo project.
 | Placeholder       | :heavy_check_mark: |                    |
 | Loading Template  | :heavy_check_mark: |                    |
 | Failed Template   | :heavy_check_mark: |                    |
-| Retry             | :heavy_check_mark: |                    |
+| Retry             | :heavy_check_mark: | :heavy_check_mark: |
 | Lazy Loading      | :heavy_check_mark: |                    |
 | CornerRadius      | :heavy_check_mark: |                    |
 | Shadow            | :heavy_check_mark: |                    |
@@ -34,7 +34,7 @@ The usage please see the demo project.
 | Placeholder       | :heavy_check_mark: |                    |
 | Loading Template  | :heavy_check_mark: |                    |
 | Failed Template   | :heavy_check_mark: |                    |
-| Retry             | :heavy_check_mark: |                    |
+| Retry             | :heavy_check_mark: | :heavy_check_mark: |
 | Lazy Loading      | :heavy_check_mark: |                    |
 | CornerRadius      | :heavy_check_mark: |                    |
 | Shadow            | :heavy_check_mark: |                    |
