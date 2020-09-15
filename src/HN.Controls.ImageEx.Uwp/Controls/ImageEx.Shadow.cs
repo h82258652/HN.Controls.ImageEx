@@ -16,7 +16,7 @@ namespace HN.Controls
         /// <returns>
         /// <see cref="Shadow" /> 依赖项属性的标识符。
         /// </returns>
-        public static readonly DependencyProperty ShadowProperty = DependencyProperty.Register(nameof(Shadow), typeof(ImageExShadow), typeof(ImageExShadow), new PropertyMetadata(default(ImageExShadow), OnShadowChanged));
+        public static readonly DependencyProperty ShadowProperty = DependencyProperty.Register(nameof(Shadow), typeof(ImageExShadow), typeof(ImageEx), new PropertyMetadata(default(ImageExShadow), OnShadowChanged));
 
         private const string ShadowExpandBorderTemplateName = "PART_ShadowExpandBorder";
         private Border? _shadowExpandBorder;
