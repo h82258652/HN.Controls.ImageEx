@@ -12,7 +12,7 @@
     <description>HN.Controls.ImageEx.Wpf</description>
     <tags></tags>
     <dependencies>
-      <group targetFramework="net461">
+      <group targetFramework="net462">
         <dependency id="HN.Controls.ImageEx.Core" version="$version$" />
         <dependency id="Polly" version="7.2.1" />
         <dependency id="SkiaSharp.Views.WPF" version="2.80.2" />
@@ -25,9 +25,9 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Release\net461\HN.Controls.ImageEx.Wpf.dll" target="lib\net461" />
-    <file src="bin\Release\net461\HN.Controls.ImageEx.Wpf.xml" target="lib\net461" />
-    <file src="bin\Release\net461\HN.Controls.ImageEx.Wpf.pdb" target="lib\net461" />
+    <file src="bin\Release\net462\HN.Controls.ImageEx.Wpf.dll" target="lib\net462" />
+    <file src="bin\Release\net462\HN.Controls.ImageEx.Wpf.xml" target="lib\net462" />
+    <file src="bin\Release\net462\HN.Controls.ImageEx.Wpf.pdb" target="lib\net462" />
     <file src="bin\Release\netcoreapp3.1\HN.Controls.ImageEx.Wpf.dll" target="lib\netcoreapp3.1" />
     <file src="bin\Release\netcoreapp3.1\HN.Controls.ImageEx.Wpf.xml" target="lib\netcoreapp3.1" />
     <file src="bin\Release\netcoreapp3.1\HN.Controls.ImageEx.Wpf.pdb" target="lib\netcoreapp3.1" />
