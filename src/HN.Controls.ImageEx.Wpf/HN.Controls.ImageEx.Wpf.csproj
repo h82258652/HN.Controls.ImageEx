@@ -45,7 +45,7 @@
     </PackageReference>
     <PackageReference Include="Polly" Version="7.2.1" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
-    <PackageReference Include="SkiaSharp.Views.WPF" Version="2.80.1" />
+    <PackageReference Include="SkiaSharp.Views.WPF" Version="2.80.2" />
   </ItemGroup>
 
   <ItemGroup>
