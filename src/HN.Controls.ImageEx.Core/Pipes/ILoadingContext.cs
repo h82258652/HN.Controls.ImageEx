@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading;
+using System.Threading.Tasks;
 using HN.Http;
 using JetBrains.Annotations;
 
@@ -61,19 +61,23 @@ namespace HN.Pipes
         object OriginSource { get; }
 
         /// <summary>
-        /// 获取 UI 线程上下文。
-        /// </summary>
-        /// <returns>
-        /// UI 线程上下文。
-        /// </returns>
-        [NotNull]
-        SynchronizationContext UIContext { get; }
-
-        /// <summary>
         /// 附加目标源到可视树上。
         /// </summary>
         /// <param name="source">目标源对象。</param>
         void AttachSource([NotNull] TSource source);
+
+        /// <summary>
+        /// 在 UI 线程上执行同步操作。
+        /// </summary>
+        /// <param name="callback">同步操作。</param>
+        void InvokeOnUIThread(Action callback);
+
+        /// <summary>
+        /// 在 UI 线程上执行异步操作。
+        /// </summary>
+        /// <param name="callback">异步操作。</param>
+        /// <returns>异步操作任务。</returns>
+        Task InvokeOnUIThreadAsync(Func<Task> callback);
 
         /// <summary>
         /// 发起下载进度发生变化事件。

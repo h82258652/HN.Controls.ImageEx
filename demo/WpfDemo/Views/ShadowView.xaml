@@ -1,0 +1,56 @@
+﻿<Window x:Class="WpfDemo.Views.ShadowView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:HN.Controls;assembly=HN.Controls.ImageEx.Wpf"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        Title="ShadowView"
+        Width="800"
+        Height="450"
+        mc:Ignorable="d">
+    <Window.Resources>
+        <ResourceDictionary>
+            <controls:ImageExShadow x:Key="ImageExShadow" />
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="300" />
+        </Grid.ColumnDefinitions>
+        <controls:ImageEx x:Name="ImageEx"
+                          Grid.Column="0"
+                          Source="/Images/unicorn.png"
+                          Stretch="None" />
+        <StackPanel Grid.Column="1">
+            <CheckBox Checked="IsShadowEnabledCheckBox_Checked"
+                      Content="Enable Shadow"
+                      IsChecked="True"
+                      Unchecked="IsShadowEnabledCheckBox_Unchecked" />
+            <TextBlock Text="Offset X" />
+            <Slider Maximum="10"
+                    Minimum="-10"
+                    Value="{Binding Source={StaticResource ImageExShadow}, Path=OffsetX, Mode=TwoWay}" />
+            <TextBlock Text="Offset Y" />
+            <Slider Maximum="10"
+                    Minimum="-10"
+                    Value="{Binding Source={StaticResource ImageExShadow}, Path=OffsetY, Mode=TwoWay}" />
+            <TextBlock Text="Depth" />
+            <Slider Maximum="15"
+                    Minimum="0"
+                    Value="{Binding Source={StaticResource ImageExShadow}, Path=ShadowDepth, Mode=TwoWay}" />
+            <TextBlock Text="Direction" />
+            <Slider Maximum="720"
+                    Minimum="-720"
+                    Value="{Binding Source={StaticResource ImageExShadow}, Path=Direction, Mode=TwoWay}" />
+            <TextBlock Text="Blur Radius" />
+            <Slider Maximum="20"
+                    Minimum="0"
+                    Value="{Binding Source={StaticResource ImageExShadow}, Path=BlurRadius, Mode=TwoWay}" />
+            <TextBlock Text="Opacity" />
+            <Slider Maximum="1"
+                    Minimum="0"
+                    Value="{Binding Source={StaticResource ImageExShadow}, Path=Opacity, Mode=TwoWay}" />
+        </StackPanel>
+    </Grid>
+</Window>

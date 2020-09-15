@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Windows.Media;
 using HN.Cache;
+using HN.Models;
 using HN.Pipes;
 using JetBrains.Annotations;
 
@@ -65,6 +66,23 @@ namespace HN.Services
 
             ((IImageExOptions)options).WithDefaultPipes();
             options.AddPipe<ImageSource, StreamToImageSourcePipe>();
+            return options;
+        }
+
+        /// <summary>
+        /// 对输出值的类型为 <see cref="ImageExSource" /> 使用默认管道。
+        /// </summary>
+        /// <param name="options">ImageEx 配置项。</param>
+        /// <returns>ImageEx 配置项。</returns>
+        public static IImageExOptions<ImageExSource> WithDefaultPipes([NotNull] this IImageExOptions<ImageExSource> options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            ((IImageExOptions)options).WithDefaultPipes();
+            options.AddPipe<ImageExSource, StreamToImageExSourcePipe>();
             return options;
         }
 

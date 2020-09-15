@@ -20,7 +20,7 @@ namespace HN.Services
             var pipeDelegate = ImageExService.GetHandler<byte[]>();
             await pipeDelegate.Invoke(context, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
-            return context.Current as byte[];
+            return (context.Current as byte[])!;
         }
     }
 }

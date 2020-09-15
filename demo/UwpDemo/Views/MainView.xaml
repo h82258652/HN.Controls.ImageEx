@@ -1,0 +1,32 @@
+﻿<Page x:Class="UwpDemo.Views.MainView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+      mc:Ignorable="d">
+    <Grid>
+        <StackPanel HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Orientation="Vertical">
+            <Button HorizontalAlignment="Stretch"
+                    Click="AnimationButton_Click"
+                    Content="Animation" />
+            <Button HorizontalAlignment="Stretch"
+                    Click="CornerRadiusButton_Click"
+                    Content="CornerRadius" />
+            <Button HorizontalAlignment="Stretch"
+                    Click="ShadowButton_Click"
+                    Content="Shadow" />
+            <Button HorizontalAlignment="Stretch"
+                    Click="ProgressButton_Click"
+                    Content="Progress" />
+            <Button HorizontalAlignment="Stretch"
+                    Click="LazyLoadingButton_Click"
+                    Content="Lazy Loading" />
+            <Button HorizontalAlignment="Stretch"
+                    Click="MemoryUsageButton_Click"
+                    Content="Memory Usage" />
+        </StackPanel>
+    </Grid>
+</Page>

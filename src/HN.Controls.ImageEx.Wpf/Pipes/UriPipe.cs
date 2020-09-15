@@ -22,7 +22,11 @@ namespace HN.Pipes
             var streamResourceInfo = System.Windows.Application.GetResourceStream(uri);
             if (streamResourceInfo != null)
             {
+#if NETCOREAPP3_1
+                await using (var memoryStream = new MemoryStream())
+#else
                 using (var memoryStream = new MemoryStream())
+#endif
                 {
                     await streamResourceInfo.Stream.CopyToAsync(memoryStream, 81920, cancellationToken);
                     context.Current = memoryStream.ToArray();

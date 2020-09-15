@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using HN.Models;
 using HN.Pipes;
 using Microsoft.Extensions.DependencyInjection;
 using Windows.UI.Composition;
@@ -15,7 +16,7 @@ namespace HN.Services
     {
         private static readonly IDictionary<Type, IServiceCollection> Services = new Dictionary<Type, IServiceCollection>();
 
-        private static SemaphoreSlim _throttler;
+        private static SemaphoreSlim? _throttler;
         private static int _throttlerInitialCount;
 
         static ImageExService()
@@ -28,6 +29,13 @@ namespace HN.Services
             });
 
             ConfigureImageSource(options =>
+            {
+                options.WithDefaultServices();
+
+                options.WithDefaultPipes();
+            });
+
+            ConfigureImageExSource(options =>
             {
                 options.WithDefaultServices();
 
@@ -63,7 +71,7 @@ namespace HN.Services
                 _throttler = new SemaphoreSlim(options.MaxHttpDownloadCount);
                 _throttlerInitialCount = options.MaxHttpDownloadCount;
             }
-            
+
             options.Services.AddSingleton(_throttler);
             Services[typeof(TSource)] = options.Services;
         }
@@ -82,6 +90,15 @@ namespace HN.Services
         /// </summary>
         /// <param name="configure">执行配置的委托。</param>
         public static void ConfigureCompositionSurface(Action<IImageExOptions<ICompositionSurface>> configure)
+        {
+            Configure(configure);
+        }
+
+        /// <summary>
+        /// 进行输出值类型为 <see cref="ImageExSource" /> 的配置。
+        /// </summary>
+        /// <param name="configure">执行配置的委托。</param>
+        public static void ConfigureImageExSource(Action<IImageExOptions<ImageExSource>> configure)
         {
             Configure(configure);
         }

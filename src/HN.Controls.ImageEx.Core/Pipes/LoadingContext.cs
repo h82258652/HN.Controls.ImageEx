@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using HN.Http;
 using JetBrains.Annotations;
+using Nito.AsyncEx;
 
 namespace HN.Pipes
 {
@@ -13,6 +15,7 @@ namespace HN.Pipes
     public class LoadingContext<TSource> : ILoadingContext<TSource> where TSource : class
     {
         private readonly Action<TSource>? _attachSource;
+        private readonly SynchronizationContext? _uiContext;
         private object _current;
         private byte[]? _httpResponseBytes;
 
@@ -25,13 +28,13 @@ namespace HN.Pipes
         /// <param name="desiredWidth">需求的宽度。</param>
         /// <param name="desiredHeight">需求的高度。</param>
         public LoadingContext(
-            [NotNull] SynchronizationContext uiContext,
-            [NotNull]object source,
+            [CanBeNull] SynchronizationContext? uiContext,
+            [NotNull] object source,
             [CanBeNull] Action<TSource>? attachSource,
             double? desiredWidth,
             double? desiredHeight)
         {
-            UIContext = uiContext ?? throw new ArgumentNullException(nameof(uiContext));
+            _uiContext = uiContext;
             OriginSource = source ?? throw new ArgumentNullException(nameof(source));
             _current = source;
             _attachSource = attachSource;
@@ -74,12 +77,45 @@ namespace HN.Pipes
         public object OriginSource { get; }
 
         /// <inheritdoc />
-        public SynchronizationContext UIContext { get; }
-
-        /// <inheritdoc />
         public void AttachSource(TSource source)
         {
             _attachSource?.Invoke(source);
+        }
+
+        /// <inheritdoc />
+        public void InvokeOnUIThread(Action callback)
+        {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
+            if (_uiContext != null)
+            {
+                _uiContext.PostAsync(callback).GetAwaiter().GetResult();
+            }
+            else
+            {
+                callback();
+            }
+        }
+
+        /// <inheritdoc />
+        public Task InvokeOnUIThreadAsync(Func<Task> callback)
+        {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
+            if (_uiContext != null)
+            {
+                return _uiContext.PostAsync(callback);
+            }
+            else
+            {
+                return callback();
+            }
         }
 
         /// <inheritdoc />

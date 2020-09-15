@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace HN.Media
     /// <summary>
     /// 使用图像绘制区域。
     /// </summary>
-    public class ImageBrushExExtension : MarkupExtension
+    public partial class ImageBrushExExtension : MarkupExtension
     {
         /// <summary>
         /// 标识 <see cref="ImageSource" /> 依赖属性。
@@ -28,15 +29,15 @@ namespace HN.Media
         public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.RegisterAttached(nameof(ImageSource), typeof(object), typeof(ImageBrushExExtension), new PropertyMetadata(default(object)));
 
         private static readonly List<ImageBrushExExtension> Instances = new List<ImageBrushExExtension>();
-        private readonly SynchronizationContext _uiContext = SynchronizationContext.Current;
+        private readonly SynchronizationContext? _uiContext = SynchronizationContext.Current;
         private AlignmentX _alignmentX = AlignmentX.Center;
         private AlignmentY _alignmentY = AlignmentY.Center;
         private ImageBrush? _brush;
         private object? _imageSource;
-        private CancellationTokenSource _lastLoadCts;
-        private object _lastLoadSource;
+        private CancellationTokenSource? _lastLoadCts;
+        private object? _lastLoadSource;
         private Stretch _stretch = Stretch.Fill;
-        private DependencyObject _targetObject;
+        private DependencyObject? _targetObject;
         private TileMode _tileMode = TileMode.None;
         private Rect _viewbox = new Rect(0.0, 0.0, 1.0, 1.0);
         private BrushMappingMode _viewboxUnits = BrushMappingMode.RelativeToBoundingBox;
@@ -55,12 +56,12 @@ namespace HN.Media
         /// <summary>
         /// 在无法加载图像源时发生。
         /// </summary>
-        public event ImageBrushExFailedEventHandler ImageFailed;
+        public event ImageBrushExFailedEventHandler? ImageFailed;
 
         /// <summary>
         /// 在成功显示图像后发生。
         /// </summary>
-        public event EventHandler ImageOpened;
+        public event EventHandler? ImageOpened;
 
         /// <summary>
         /// 获取或设置 <see cref="TileBrush" /> 基本磁贴中内容的水平对齐方式。
@@ -150,22 +151,6 @@ namespace HN.Media
                 }
             }
         }
-
-        /// <summary>
-        /// 获取或设置加载失败时的重试次数。
-        /// </summary>
-        /// <returns>
-        /// 加载失败时的重试次数。
-        /// </returns>
-        public int RetryCount { get; set; }
-
-        /// <summary>
-        /// 获取或设置加载失败时的重试间隔。
-        /// </summary>
-        /// <returns>
-        /// 加载失败时的重试间隔。
-        /// </returns>
-        public TimeSpan RetryDelay { get; set; } = TimeSpan.Zero;
 
         /// <summary>
         /// 获取或设置一个值，它指定此 <see cref="TileBrush" /> 的内容如何拉伸才适合其磁贴。
@@ -319,7 +304,9 @@ namespace HN.Media
                 CreateImageBrush();
             }
 
-            return _brush.Clone();
+            Debug.Assert(_brush != null);
+
+            return _brush!.Clone();
         }
 
         /// <summary>
@@ -336,7 +323,9 @@ namespace HN.Media
                 CreateImageBrush();
             }
 
-            return _brush.CloneCurrentValue();
+            Debug.Assert(_brush != null);
+
+            return _brush!.CloneCurrentValue();
         }
 
         /// <inheritdoc />
@@ -356,12 +345,17 @@ namespace HN.Media
                 CreateImageBrush();
             }
 
-            return _brush;
+            Debug.Assert(_brush != null);
+
+            return _brush!;
         }
 
-        private void AttachSource(ImageSource source)
+        private void AttachSource(ImageSource? source)
         {
-            _brush.ImageSource = source;
+            if (_brush != null)
+            {
+                _brush.ImageSource = source;
+            }
         }
 
         private void CreateImageBrush()
@@ -377,18 +371,19 @@ namespace HN.Media
                 AlignmentX = AlignmentX,
                 AlignmentY = AlignmentY
             };
+
             if (!(ImageSource is Binding))
             {
                 SetSource(ImageSource);
             }
         }
 
-        private async void SetSource(object source)
+        private async void SetSource(object? source)
         {
             await SetSourceAsync(source);
         }
 
-        private async Task SetSourceAsync(object source)
+        private async Task SetSourceAsync(object? source)
         {
             if (_lastLoadSource == source)
             {
@@ -435,9 +430,9 @@ namespace HN.Media
 
         private static class ImageSourceBindingHelper
         {
-            internal static readonly DependencyProperty ImageSourceBindingProperty = DependencyProperty.RegisterAttached("ImageSourceBinding", typeof(object), typeof(DependencyObject), new PropertyMetadata(default(object), OnImageSourceBindingChagned));
+            internal static readonly DependencyProperty ImageSourceBindingProperty = DependencyProperty.RegisterAttached("ImageSourceBinding", typeof(object), typeof(DependencyObject), new PropertyMetadata(default(object), OnImageSourceBindingChanged));
 
-            private static void OnImageSourceBindingChagned(DependencyObject d, DependencyPropertyChangedEventArgs e)
+            private static void OnImageSourceBindingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
             {
                 var binding = BindingOperations.GetBinding(d, e.Property);
                 foreach (var imageBrushExExtension in Instances.Where(temp => temp.ImageSource == binding))

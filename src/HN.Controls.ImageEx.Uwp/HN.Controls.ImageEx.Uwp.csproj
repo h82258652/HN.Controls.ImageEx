@@ -40,6 +40,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Polly" Version="7.2.1" />
+    <PackageReference Include="SkiaSharp.Views" Version="2.80.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,6 +51,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <None Remove="Controls\ImageEx.Design.xaml" />
+    <Page Include="Controls\ImageEx.Design.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <None Remove="Controls\ImageExAssist.xaml" />
     <Page Include="Controls\ImageExAssist.xaml">
       <SubType>Designer</SubType>
@@ -57,8 +63,8 @@
     </Page>
     <None Remove="Themes\Generic.xaml" />
     <Page Include="Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
+        <Generator>MSBuild:Compile</Generator>
+        <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
 

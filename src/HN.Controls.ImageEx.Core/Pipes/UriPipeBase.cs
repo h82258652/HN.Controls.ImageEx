@@ -124,7 +124,7 @@ namespace HN.Pipes
                 downloadProgress.BytesReceived += (ulong)bytesRead;
                 context.RaiseDownloadProgressChanged(downloadProgress);
             }
-
+            
             return (bytes.ToArray(), cacheControl);
         }
 

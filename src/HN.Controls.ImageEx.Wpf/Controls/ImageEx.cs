@@ -5,10 +5,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using HN.Http;
+using HN.Models;
 using HN.Pipes;
 using HN.Services;
 using JetBrains.Annotations;
 using Polly;
+using SkiaSharp;
+using SkiaSharp.Views.Desktop;
+using SkiaSharp.Views.WPF;
 
 namespace HN.Controls
 {
@@ -16,7 +20,7 @@ namespace HN.Controls
     /// <summary>
     /// 表示具备缓存功能的显示图像的控件。
     /// </summary>
-    [TemplatePart(Name = ImageTemplateName, Type = typeof(Image))]
+    [TemplatePart(Name = CanvasTemplateName, Type = typeof(SKElement))]
     [TemplatePart(Name = FailedContentHostTemplateName, Type = typeof(ContentPresenter))]
     [TemplatePart(Name = LoadingContentHostTemplateName, Type = typeof(ContentPresenter))]
     [TemplateVisualState(GroupName = ImageStateGroupName, Name = EmptyStateName)]
@@ -90,22 +94,6 @@ namespace HN.Controls
         public static readonly DependencyProperty PlaceholderTemplateSelectorProperty = DependencyProperty.Register(nameof(PlaceholderTemplateSelector), typeof(DataTemplateSelector), typeof(ImageEx), new PropertyMetadata(default(DataTemplateSelector)));
 
         /// <summary>
-        /// 标识 <see cref="RetryCount" /> 依赖属性。
-        /// </summary>
-        /// <returns>
-        /// <see cref="RetryCount" /> 依赖项属性的标识符。
-        /// </returns>
-        public static readonly DependencyProperty RetryCountProperty = DependencyProperty.Register(nameof(RetryCount), typeof(int), typeof(ImageEx), new PropertyMetadata(default(int)));
-
-        /// <summary>
-        /// 标识 <see cref="RetryDelay" /> 依赖属性。
-        /// </summary>
-        /// <returns>
-        /// <see cref="RetryDelay" /> 依赖项属性的标识符。
-        /// </returns>
-        public static readonly DependencyProperty RetryDelayProperty = DependencyProperty.Register(nameof(RetryDelay), typeof(TimeSpan), typeof(ImageEx), new PropertyMetadata(TimeSpan.Zero));
-
-        /// <summary>
         /// 标识 <see cref="Source" /> 依赖属性。
         /// </summary>
         /// <returns>
@@ -113,36 +101,21 @@ namespace HN.Controls
         /// </returns>
         public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(nameof(Source), typeof(object), typeof(ImageEx), new PropertyMetadata(default, OnSourceChanged));
 
-        /// <summary>
-        /// 标识 <see cref="StretchDirection" /> 依赖属性。
-        /// </summary>
-        /// <returns>
-        /// <see cref="StretchDirection" /> 依赖项属性的标识符。
-        /// </returns>
-        public static readonly DependencyProperty StretchDirectionProperty = DependencyProperty.Register(nameof(StretchDirection), typeof(StretchDirection), typeof(ImageEx), new PropertyMetadata(StretchDirection.Both));
-
-        /// <summary>
-        /// 标识 <see cref="Stretch" /> 依赖属性。
-        /// </summary>
-        /// <returns>
-        /// <see cref="Stretch" /> 依赖项属性的标识符。
-        /// </returns>
-        public static readonly DependencyProperty StretchProperty = DependencyProperty.Register(nameof(Stretch), typeof(Stretch), typeof(ImageEx), new PropertyMetadata(Stretch.Uniform));
-
+        private const string CanvasTemplateName = "PART_Canvas";
         private const string EmptyStateName = "Empty";
         private const string FailedContentHostTemplateName = "PART_FailedContentHost";
         private const string FailedStateName = "Failed";
         private const string ImageStateGroupName = "ImageStates";
-        private const string ImageTemplateName = "PART_Image";
         private const string LoadingContentHostTemplateName = "PART_LoadingContentHost";
         private const string LoadingStateName = "Loading";
         private const string OpenedStateName = "Opened";
         private static readonly DependencyPropertyKey DownloadProgressPropertyKey = DependencyProperty.RegisterReadOnly(nameof(DownloadProgress), typeof(HttpDownloadProgress), typeof(ImageEx), new PropertyMetadata(default(HttpDownloadProgress), OnDownloadProgressChanged));
         private static readonly DependencyPropertyKey IsLoadingPropertyKey = DependencyProperty.RegisterReadOnly(nameof(IsLoading), typeof(bool), typeof(ImageEx), new PropertyMetadata(default(bool)));
-
-        private readonly SynchronizationContext _uiContext = SynchronizationContext.Current;
-        private Image? _image;
+        private readonly SynchronizationContext? _uiContext = SynchronizationContext.Current;
+        private SKElement? _canvas;
+        private IImageExDisplaySource? _displaySource;
         private CancellationTokenSource? _lastLoadCts;
+        private ContentPresenter? _loadingContentHost;
 
         static ImageEx()
         {
@@ -158,6 +131,14 @@ namespace HN.Controls
         /// </summary>
         public ImageEx()
         {
+            if (_isInDesignMode)
+            {
+                Resources.MergedDictionaries.Add(new ResourceDictionary
+                {
+                    Source = new Uri("pack://application:,,,/HN.Controls.ImageEx.Wpf;component/Controls/ImageEx.Design.xaml")
+                });
+            }
+
             LayoutUpdated += ImageEx_LayoutUpdated;
         }
 
@@ -188,7 +169,6 @@ namespace HN.Controls
             private set => SetValue(DownloadProgressPropertyKey, value);
         }
 
-
         /// <summary>
         /// 获取或设置用于显示加载失败时的内容的数据模板。
         /// </summary>
@@ -212,11 +192,6 @@ namespace HN.Controls
             get => (DataTemplateSelector)GetValue(FailedTemplateSelectorProperty);
             set => SetValue(FailedTemplateSelectorProperty, value);
         }
-
-        /// <summary>
-        /// 获取图像真实显示的源。
-        /// </summary>
-        public ImageSource? HostSource => _image?.Source;
 
         /// <summary>
         /// 获取是否正在加载图像的源。
@@ -279,30 +254,6 @@ namespace HN.Controls
         }
 
         /// <summary>
-        /// 获取或设置加载失败时的重试次数。
-        /// </summary>
-        /// <returns>
-        /// 加载失败时的重试次数。
-        /// </returns>
-        public int RetryCount
-        {
-            get => (int)GetValue(RetryCountProperty);
-            set => SetValue(RetryCountProperty, value);
-        }
-
-        /// <summary>
-        /// 获取或设置加载失败时的重试间隔。
-        /// </summary>
-        /// <returns>
-        /// 加载失败时的重试间隔。
-        /// </returns>
-        public TimeSpan RetryDelay
-        {
-            get => (TimeSpan)GetValue(RetryDelayProperty);
-            set => SetValue(RetryDelayProperty, value);
-        }
-
-        /// <summary>
         /// 获取或设置图像的源。
         /// </summary>
         /// <returns>
@@ -315,38 +266,28 @@ namespace HN.Controls
             set => SetValue(SourceProperty, value);
         }
 
-        /// <summary>
-        /// 获取或设置一个值，该值描述应如何拉伸 <see cref="ImageEx" /> 以填充目标矩形。
-        /// </summary>
-        /// <returns>
-        /// <see cref="System.Windows.Media.Stretch" /> 值之一。
-        /// 默认值为 <see cref="System.Windows.Media.Stretch.Uniform" />。
-        /// </returns>
-        public Stretch Stretch
-        {
-            get => (Stretch)GetValue(StretchProperty);
-            set => SetValue(StretchProperty, value);
-        }
-
-        /// <summary>
-        /// 获取或设置一个值，指示如何将图像进行缩放。
-        /// </summary>
-        /// <returns>
-        /// <see cref="System.Windows.Controls.StretchDirection" /> 值之一。
-        /// 默认值为 <see cref="System.Windows.Controls.StretchDirection.Both" />。
-        /// </returns>
-        public StretchDirection StretchDirection
-        {
-            get => (StretchDirection)GetValue(StretchDirectionProperty);
-            set => SetValue(StretchDirectionProperty, value);
-        }
-
         /// <inheritdoc />
         public override async void OnApplyTemplate()
         {
             base.OnApplyTemplate();
 
+            _root = (Border)GetTemplateChild(RootTemplateName);
+
+            _shadowExpandBorder = (Border)GetTemplateChild(ShadowExpandBorderTemplateName);
+            UpdateShadowExpandBorder();
+
+            _canvas = (SKElement)GetTemplateChild(CanvasTemplateName);
+            if (_canvas != null)
+            {
+                _canvas.PaintSurface += Canvas_PaintSurface;
+            }
+
             _image = (Image)GetTemplateChild(ImageTemplateName);
+
+            _loadingContentHost = (ContentPresenter)GetTemplateChild(LoadingContentHostTemplateName);
+
+            InvalidateMeasure();
+
             if (Source == null || !LazyLoadingEnabled || _isInViewport)
             {
                 _lazyLoadingSource = null;
@@ -356,6 +297,11 @@ namespace HN.Controls
             {
                 _lazyLoadingSource = Source;
             }
+        }
+
+        internal void InvalidateCanvas()
+        {
+            _canvas?.InvalidateVisual();
         }
 
         private static void OnDownloadProgressChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -381,23 +327,119 @@ namespace HN.Controls
             }
         }
 
-        private void AttachSource(ImageSource? source)
+        private void AttachSource(ImageExSource? source)
         {
-            if (_image != null)
+            var displaySource = BuildDisplaySource(source);
+            if (displaySource != null)
             {
-                _image.BeginAnimation(Image.SourceProperty, null);
-                _image.Source = source;
+                if (displaySource is IMultiplyFrameImageExDisplaySource multiplyFrameDisplaySource)
+                {
+                    multiplyFrameDisplaySource.CurrentChanged += DisplaySource_CurrentChanged;
+                    if (AutoStart)
+                    {
+                        multiplyFrameDisplaySource.Play();
+                    }
+                }
+            }
+
+            _displaySource = displaySource;
+
+            InvalidateMeasure();
+            InvalidateCanvas();
+        }
+
+        private IImageExDisplaySource? BuildDisplaySource(ImageExSource? source)
+        {
+            if (source == null)
+            {
+                return null;
+            }
+
+            if (source.Frames.Length == 1)
+            {
+                return new SingleFrameImageExDisplaySource(source.Frames[0].Bitmap, source.Width, source.Height);
+            }
+            else
+            {
+                return new MultiplyFrameImageExDisplaySource(source, RepeatBehavior);
             }
         }
 
-        private void ImageEx_LayoutUpdated(object sender, EventArgs e)
+        private void Canvas_PaintSurface(object? sender, SKPaintSurfaceEventArgs e)
+        {
+            var info = e.Info;
+            var surface = e.Surface;
+            var canvas = surface.Canvas;
+
+            canvas.Clear();
+
+            var bitmap = _displaySource?.Current;
+            if (bitmap == null)
+            {
+                return;
+            }
+
+            using var paint = new SKPaint
+            {
+                IsAntialias = true
+            };
+
+            var dpi = GetDpi();
+
+            float x = (float)(_shadowXExpand * dpi);
+            float y = (float)(_shadowYExpand * dpi);
+            float width = info.Width - 2 * x;
+            float height = info.Height - 2 * y;
+
+            using var contentBitmap = new SKBitmap(info.Width, info.Height);
+            using (var contentCanvas = new SKCanvas(contentBitmap))
+            {
+                var cornerRadius = CornerRadius;
+                if (cornerRadius != default)
+                {
+                    using var cornerRadiusPath = BuildCornerRadiusPath(
+                        x,
+                        y,
+                        width,
+                        height,
+                        (float)(cornerRadius.TopLeft * dpi),
+                        (float)(cornerRadius.TopRight * dpi),
+                        (float)(cornerRadius.BottomRight * dpi),
+                        (float)(cornerRadius.BottomLeft * dpi));
+                    contentCanvas.ClipPath(cornerRadiusPath, antialias: paint.IsAntialias);
+                }
+
+                var dest = new SKRect(x, y, x + width, y + height);
+                DrawBitmapWithStretch(contentCanvas, bitmap, dest, (float)dpi, paint);
+
+                contentCanvas.Flush();
+            }
+
+            SetPaintShadow(paint);
+
+            canvas.DrawBitmap(contentBitmap, info.Rect, paint);
+        }
+
+        private void DisplaySource_CurrentChanged(object? sender, SKBitmap e)
+        {
+            InvalidateCanvas();
+        }
+
+        private double GetDpi()
+        {
+            var dpiScale = VisualTreeHelper.GetDpi(this);
+            var dpi = dpiScale.DpiScaleX;// DpiY always equals DpiX, use DpiX as Dpi https://docs.microsoft.com/en-us/dotnet/api/system.windows.dpiscale.dpiscaley?view=netcore-3.1#remarks
+            return dpi;
+        }
+
+        private void ImageEx_LayoutUpdated(object? sender, EventArgs e)
         {
             InvalidateLazyLoading();
         }
 
-        private async Task SetSourceAsync(object? source)
+        private async Task SetRuntimeSourceAsync(object? source)
         {
-            if (_image == null)
+            if (_canvas == null)
             {
                 return;
             }
@@ -421,16 +463,23 @@ namespace HN.Controls
                 // 开始 Loading，重置 DownloadProgress
                 DownloadProgress = default;
 
-                var context = new LoadingContext<ImageSource>(_uiContext, source, AttachSource, ActualWidth, ActualHeight);
+                var context = new LoadingContext<ImageExSource>(_uiContext, source, AttachSource, ActualWidth, ActualHeight);
                 context.DownloadProgressChanged += (sender, progress) =>
                 {
-                    _uiContext.Post(state =>
+                    if (_uiContext != null)
+                    {
+                        _uiContext.Post(state =>
+                        {
+                            DownloadProgress = progress;
+                        }, null);
+                    }
+                    else
                     {
                         DownloadProgress = progress;
-                    }, null);
+                    }
                 };
 
-                var pipeDelegate = ImageExService.GetHandler<ImageSource>();
+                var pipeDelegate = ImageExService.GetHandler<ImageExSource>();
                 var retryCount = RetryCount;
                 var retryDelay = RetryDelay;
                 var policy = Policy.Handle<Exception>()
@@ -443,12 +492,18 @@ namespace HN.Controls
                 if (!loadCts.IsCancellationRequested)
                 {
                     VisualStateManager.GoToState(this, OpenedStateName, true);
-                    _uiContext.Post(state =>
+                    PlayFadeInAnimation();
+                    if (_uiContext != null)
+                    {
+                        _uiContext.Post(state =>
+                        {
+                            ImageOpened?.Invoke(this, EventArgs.Empty);
+                        }, null);
+                    }
+                    else
                     {
                         ImageOpened?.Invoke(this, EventArgs.Empty);
-                    }, null);
-
-                    AnimateSource();
+                    }
                 }
             }
             catch (Exception ex)
@@ -457,10 +512,17 @@ namespace HN.Controls
                 {
                     AttachSource(null);
                     VisualStateManager.GoToState(this, FailedStateName, true);
-                    _uiContext.Post(state =>
+                    if (_uiContext != null)
+                    {
+                        _uiContext.Post(state =>
+                        {
+                            ImageFailed?.Invoke(this, new ImageExFailedEventArgs(source, ex));
+                        }, null);
+                    }
+                    else
                     {
                         ImageFailed?.Invoke(this, new ImageExFailedEventArgs(source, ex));
-                    }, null);
+                    }
                 }
             }
             finally
@@ -469,6 +531,18 @@ namespace HN.Controls
                 {
                     IsLoading = false;
                 }
+            }
+        }
+
+        private Task SetSourceAsync(object? source)
+        {
+            if (_isInDesignMode)
+            {
+                return SetDesignSourceAsync(source);
+            }
+            else
+            {
+                return SetRuntimeSourceAsync(source);
             }
         }
     }

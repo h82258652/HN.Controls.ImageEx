@@ -2,14 +2,14 @@
 using System.Threading;
 using System.Threading.Tasks;
 using HN.Http;
+using HN.Models;
 using HN.Pipes;
 using HN.Services;
 using Polly;
-using Windows.Media.Casting;
-using Windows.UI.Composition;
+using SkiaSharp;
+using SkiaSharp.Views.UWP;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 
 namespace HN.Controls
 {
@@ -17,7 +17,7 @@ namespace HN.Controls
     /// <summary>
     /// 表示具备缓存功能的显示图像的控件。
     /// </summary>
-    [TemplatePart(Name = ImageTemplateName, Type = typeof(Image))]
+    [TemplatePart(Name = CanvasTemplateName, Type = typeof(SKXamlCanvas))]
     [TemplatePart(Name = FailedContentHostTemplateName, Type = typeof(ContentPresenter))]
     [TemplatePart(Name = LoadingContentHostTemplateName, Type = typeof(ContentPresenter))]
     [TemplateVisualState(GroupName = ImageStateGroupName, Name = EmptyStateName)]
@@ -75,14 +75,6 @@ namespace HN.Controls
         public static readonly DependencyProperty LoadingTemplateSelectorProperty = DependencyProperty.Register(nameof(LoadingTemplateSelector), typeof(DataTemplateSelector), typeof(ImageEx), new PropertyMetadata(default(DataTemplateSelector)));
 
         /// <summary>
-        /// 标识 <see cref="NineGrid" /> 依赖属性。
-        /// </summary>
-        /// <returns>
-        /// <see cref="NineGrid" /> 依赖项属性的标识符。
-        /// </returns>
-        public static readonly DependencyProperty NineGridProperty = DependencyProperty.Register(nameof(NineGrid), typeof(Thickness), typeof(ImageEx), new PropertyMetadata(default(Thickness)));
-
-        /// <summary>
         /// 标识 <see cref="PlaceholderTemplate" /> 依赖属性。
         /// </summary>
         /// <returns>
@@ -99,22 +91,6 @@ namespace HN.Controls
         public static readonly DependencyProperty PlaceholderTemplateSelectorProperty = DependencyProperty.Register(nameof(PlaceholderTemplateSelector), typeof(DataTemplateSelector), typeof(ImageEx), new PropertyMetadata(default(DataTemplateSelector)));
 
         /// <summary>
-        /// 标识 <see cref="RetryCount" /> 依赖属性。
-        /// </summary>
-        /// <returns>
-        /// <see cref="RetryCount" /> 依赖项属性的标识符。
-        /// </returns>
-        public static readonly DependencyProperty RetryCountProperty = DependencyProperty.Register(nameof(RetryCount), typeof(int), typeof(ImageEx), new PropertyMetadata(default(int)));
-
-        /// <summary>
-        /// 标识 <see cref="RetryDelay" /> 依赖属性。
-        /// </summary>
-        /// <returns>
-        /// <see cref="RetryDelay" /> 依赖项属性的标识符。
-        /// </returns>
-        public static readonly DependencyProperty RetryDelayProperty = DependencyProperty.Register(nameof(RetryDelay), typeof(TimeSpan), typeof(ImageEx), new PropertyMetadata(TimeSpan.Zero));
-
-        /// <summary>
         /// 标识 <see cref="Source" /> 依赖属性。
         /// </summary>
         /// <returns>
@@ -122,26 +98,19 @@ namespace HN.Controls
         /// </returns>
         public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(nameof(Source), typeof(object), typeof(ImageEx), new PropertyMetadata(default, OnSourceChanged));
 
-        /// <summary>
-        /// 标识 <see cref="Stretch" /> 依赖属性。
-        /// </summary>
-        /// <returns>
-        /// <see cref="Stretch" /> 依赖项属性的标识符。
-        /// </returns>
-        public static readonly DependencyProperty StretchProperty = DependencyProperty.Register(nameof(Stretch), typeof(Stretch), typeof(ImageEx), new PropertyMetadata(Stretch.Uniform));
-
+        private const string CanvasTemplateName = "PART_Canvas";
         private const string EmptyStateName = "Empty";
         private const string FailedContentHostTemplateName = "PART_FailedContentHost";
         private const string FailedStateName = "Failed";
         private const string ImageStateGroupName = "ImageStates";
-        private const string ImageTemplateName = "PART_Image";
         private const string LoadingContentHostTemplateName = "PART_LoadingContentHost";
         private const string LoadingStateName = "Loading";
         private const string OpenedStateName = "Opened";
-
         private readonly SynchronizationContext _uiContext = SynchronizationContext.Current;
-        private Image? _image;
+        private SKXamlCanvas? _canvas;
+        private IImageExDisplaySource? _displaySource;
         private CancellationTokenSource? _lastLoadCts;
+        private ContentPresenter? _loadingContentHost;
 
         /// <inheritdoc />
         /// <summary>
@@ -149,25 +118,32 @@ namespace HN.Controls
         /// </summary>
         public ImageEx()
         {
+            if (_isInDesignMode)
+            {
+                DefaultStyleResourceUri = new Uri("ms-appx:///HN.Controls.ImageEx.Uwp/Controls/ImageEx.Design.xaml");
+            }
+
             DefaultStyleKey = typeof(ImageEx);
 
+            Loaded += ImageEx_Loaded;
+            Unloaded += ImageEx_Unloaded;
             LayoutUpdated += ImageEx_LayoutUpdated;
         }
 
         /// <summary>
         /// 在下载进度发生变化时发生。
         /// </summary>
-        public event EventHandler<HttpDownloadProgress> DownloadProgressChanged;
+        public event EventHandler<HttpDownloadProgress>? DownloadProgressChanged;
 
         /// <summary>
         /// 在无法加载图像源时发生。
         /// </summary>
-        public event ImageExFailedEventHandler ImageFailed;
+        public event ImageExFailedEventHandler? ImageFailed;
 
         /// <summary>
         /// 在成功显示图像后发生。
         /// </summary>
-        public event EventHandler ImageOpened;
+        public event EventHandler? ImageOpened;
 
         /// <summary>
         /// 获取当前图像的下载进度。
@@ -206,11 +182,6 @@ namespace HN.Controls
         }
 
         /// <summary>
-        /// 获取图像真实显示的源。
-        /// </summary>
-        public ImageSource? HostSource => _image?.Source;
-
-        /// <summary>
         /// 获取是否正在加载图像的源。
         /// </summary>
         /// <returns>
@@ -247,18 +218,6 @@ namespace HN.Controls
         }
 
         /// <summary>
-        /// 获取或设置控制图像小大调整方式的九格形式的值。九网格形式使你可以将图像的边缘和角拉伸成与其中心不同的形状。
-        /// </summary>
-        /// <returns>
-        /// 为九网格大小调整比喻设置 **Left**、**Top**、**Right**、**Bottom** 量化指标的 Thickness 值。
-        /// </returns>
-        public Thickness NineGrid
-        {
-            get => (Thickness)GetValue(NineGridProperty);
-            set => SetValue(NineGridProperty, value);
-        }
-
-        /// <summary>
         /// 获取或设置用于显示占位的内容的数据模板。
         /// </summary>
         /// <returns>
@@ -283,30 +242,6 @@ namespace HN.Controls
         }
 
         /// <summary>
-        /// 获取或设置加载失败时的重试次数。
-        /// </summary>
-        /// <returns>
-        /// 加载失败时的重试次数。
-        /// </returns>
-        public int RetryCount
-        {
-            get => (int)GetValue(RetryCountProperty);
-            set => SetValue(RetryCountProperty, value);
-        }
-
-        /// <summary>
-        /// 获取或设置加载失败时的重试间隔。
-        /// </summary>
-        /// <returns>
-        /// 加载失败时的重试间隔。
-        /// </returns>
-        public TimeSpan RetryDelay
-        {
-            get => (TimeSpan)GetValue(RetryDelayProperty);
-            set => SetValue(RetryDelayProperty, value);
-        }
-
-        /// <summary>
         /// 获取或设置图像的源。
         /// </summary>
         /// <returns>
@@ -318,41 +253,9 @@ namespace HN.Controls
             set => SetValue(SourceProperty, value);
         }
 
-        /// <summary>
-        /// 获取或设置一个值，该值描述应如何拉伸 <see cref="ImageEx" /> 以填充目标矩形。
-        /// </summary>
-        /// <returns>
-        /// <see cref="Windows.UI.Xaml.Media.Stretch" /> 值之一。
-        /// 默认值为 <see cref="Windows.UI.Xaml.Media.Stretch.Uniform" />。
-        /// </returns>
-        public Stretch Stretch
+        internal void InvalidateCanvas()
         {
-            get => (Stretch)GetValue(StretchProperty);
-            set => SetValue(StretchProperty, value);
-        }
-
-        /// <summary>
-        /// 返回将图像的 alpha 通道表示为 <see cref="CompositionBrush" /> 的掩码。
-        /// </summary>
-        /// <returns>
-        /// 表示图像的 alpha 通道的掩码。
-        /// </returns>
-        public CompositionBrush? GetAlphaMask()
-        {
-            ApplyTemplate();
-            return _image?.GetAlphaMask();
-        }
-
-        /// <summary>
-        /// 返回图像作为 <see cref="CastingSource" />。
-        /// </summary>
-        /// <returns>
-        /// 图像作为 <see cref="CastingSource" />。
-        /// </returns>
-        public CastingSource? GetAsCastingSource()
-        {
-            ApplyTemplate();
-            return _image?.GetAsCastingSource();
+            _canvas?.Invalidate();
         }
 
         /// <inheritdoc />
@@ -360,7 +263,23 @@ namespace HN.Controls
         {
             base.OnApplyTemplate();
 
+            _root = (UIElement)GetTemplateChild(RootTemplateName);
+
+            _shadowExpandBorder = (Border)GetTemplateChild(ShadowExpandBorderTemplateName);
+            UpdateShadowExpandBorder();
+
+            _canvas = (SKXamlCanvas)GetTemplateChild(CanvasTemplateName);
+            if (_canvas != null)
+            {
+                _canvas.PaintSurface += Canvas_PaintSurface;
+            }
+
             _image = (Image)GetTemplateChild(ImageTemplateName);
+
+            _loadingContentHost = (ContentPresenter)GetTemplateChild(LoadingContentHostTemplateName);
+
+            InvalidateMeasure();
+
             if (Source == null || !LazyLoadingEnabled || _isInViewport)
             {
                 _lazyLoadingSource = null;
@@ -395,12 +314,107 @@ namespace HN.Controls
             }
         }
 
-        private void AttachSource(ImageSource? source)
+        private void AttachSource(ImageExSource? source)
         {
-            if (_image != null)
+            var displaySource = BuildDisplaySource(source);
+            if (displaySource != null)
             {
-                _image.Source = source;
+                if (displaySource is IMultiplyFrameImageExDisplaySource multiplyFrameDisplaySource)
+                {
+                    multiplyFrameDisplaySource.CurrentChanged += DisplaySource_CurrentChanged;
+                    if (AutoStart)
+                    {
+                        multiplyFrameDisplaySource.Play();
+                    }
+                }
             }
+
+            _displaySource = displaySource;
+
+            InvalidateMeasure();
+            InvalidateCanvas();
+        }
+
+        private IImageExDisplaySource? BuildDisplaySource(ImageExSource? source)
+        {
+            if (source == null)
+            {
+                return null;
+            }
+
+            if (source.Frames.Length == 1)
+            {
+                return new SingleFrameImageExDisplaySource(source.Frames[0].Bitmap, source.Width, source.Height);
+            }
+            else
+            {
+                return new MultiplyFrameImageExDisplaySource(source, RepeatBehavior, SpeedRatio);
+            }
+        }
+
+        private void Canvas_PaintSurface(object sender, SKPaintSurfaceEventArgs e)
+        {
+            var info = e.Info;
+            var surface = e.Surface;
+            var canvas = surface.Canvas;
+
+            canvas.Clear();
+
+            var bitmap = _displaySource?.Current;
+            if (bitmap == null)
+            {
+                return;
+            }
+
+            using var paint = new SKPaint
+            {
+                IsAntialias = true
+            };
+
+            var dpi = GetDpi();
+
+            float x = (float)(_shadowXExpand * dpi);
+            float y = (float)(_shadowYExpand * dpi);
+            float width = info.Width - 2 * x;
+            float height = info.Height - 2 * y;
+
+            using var contentBitmap = new SKBitmap(info.Width, info.Height);
+            using (var contentCanvas = new SKCanvas(contentBitmap))
+            {
+                var cornerRadius = CornerRadius;
+                if (cornerRadius != default)
+                {
+                    using var cornerRadiusPath = BuildCornerRadiusPath(
+                        x,
+                        y,
+                        width,
+                        height,
+                        (float)(cornerRadius.TopLeft * dpi),
+                        (float)(cornerRadius.TopRight * dpi),
+                        (float)(cornerRadius.BottomRight * dpi),
+                        (float)(cornerRadius.BottomLeft * dpi));
+                    contentCanvas.ClipPath(cornerRadiusPath, antialias: paint.IsAntialias);
+                }
+
+                var dest = new SKRect(x, y, x + width, y + height);
+                DrawBitmapWithStretch(contentCanvas, bitmap, dest, (float)dpi, paint);
+
+                contentCanvas.Flush();
+            }
+
+            SetPaintShadow(paint);
+
+            canvas.DrawBitmap(contentBitmap, info.Rect, paint);
+        }
+
+        private void DisplaySource_CurrentChanged(object sender, SKBitmap e)
+        {
+            InvalidateCanvas();
+        }
+
+        private double GetDpi()
+        {
+            return _canvas!.Dpi;
         }
 
         private void ImageEx_LayoutUpdated(object sender, object e)
@@ -408,9 +422,19 @@ namespace HN.Controls
             InvalidateLazyLoading();
         }
 
-        private async Task SetSourceAsync(object? source)
+        private void ImageEx_Loaded(object sender, RoutedEventArgs e)
         {
-            if (_image == null)
+            RegisterCornerRadiusChanged();
+        }
+
+        private void ImageEx_Unloaded(object sender, RoutedEventArgs e)
+        {
+            UnregisterCornerRadiusChanged();
+        }
+
+        private async Task SetRuntimeSourceAsync(object? source)
+        {
+            if (_canvas == null)
             {
                 return;
             }
@@ -434,7 +458,7 @@ namespace HN.Controls
                 // 开始 Loading，重置 DownloadProgress
                 DownloadProgress = default;
 
-                var context = new LoadingContext<ImageSource>(_uiContext, source, AttachSource, ActualWidth, ActualHeight);
+                var context = new LoadingContext<ImageExSource>(_uiContext, source, AttachSource, ActualWidth, ActualHeight);
                 context.DownloadProgressChanged += (sender, progress) =>
                 {
                     _uiContext.Post(state =>
@@ -443,7 +467,7 @@ namespace HN.Controls
                     }, null);
                 };
 
-                var pipeDelegate = ImageExService.GetHandler<ImageSource>();
+                var pipeDelegate = ImageExService.GetHandler<ImageExSource>();
                 var retryCount = RetryCount;
                 var retryDelay = RetryDelay;
                 var policy = Policy.Handle<Exception>()
@@ -456,7 +480,11 @@ namespace HN.Controls
                 if (!loadCts.IsCancellationRequested)
                 {
                     VisualStateManager.GoToState(this, OpenedStateName, true);
-                    ImageOpened?.Invoke(this, EventArgs.Empty);
+                    PlayFadeInAnimation();
+                    _uiContext.Post(state =>
+                    {
+                        ImageOpened?.Invoke(this, EventArgs.Empty);
+                    }, null);
                 }
             }
             catch (Exception ex)
@@ -465,7 +493,10 @@ namespace HN.Controls
                 {
                     AttachSource(null);
                     VisualStateManager.GoToState(this, FailedStateName, true);
-                    ImageFailed?.Invoke(this, new ImageExFailedEventArgs(source, ex));
+                    _uiContext.Post(state =>
+                    {
+                        ImageFailed?.Invoke(this, new ImageExFailedEventArgs(source, ex));
+                    }, null);
                 }
             }
             finally
@@ -474,6 +505,18 @@ namespace HN.Controls
                 {
                     IsLoading = false;
                 }
+            }
+        }
+
+        private Task SetSourceAsync(object? source)
+        {
+            if (_isInDesignMode)
+            {
+                return SetDesignSourceAsync(source);
+            }
+            else
+            {
+                return SetRuntimeSourceAsync(source);
             }
         }
     }

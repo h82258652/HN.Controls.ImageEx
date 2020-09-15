@@ -34,7 +34,7 @@ namespace HN.Pipes
 
                 context.AttachSource(imageSurface);
 
-                TypedEventHandler<LoadedImageSurface, LoadedImageSourceLoadCompletedEventArgs> handler = null;
+                TypedEventHandler<LoadedImageSurface, LoadedImageSourceLoadCompletedEventArgs> handler = null!;
                 handler = (sender, args) =>
                 {
                     imageSurface.LoadCompleted -= handler;

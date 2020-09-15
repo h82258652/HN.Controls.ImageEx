@@ -15,7 +15,7 @@ namespace HN.Media
     /// <summary>
     /// 使用图像绘制区域。
     /// </summary>
-    public class ImageBrushEx : XamlCompositionBrushBase
+    public partial class ImageBrushEx : XamlCompositionBrushBase
     {
         /// <summary>
         /// 标识 <see cref="AlignmentX" /> 依赖属性。
@@ -42,22 +42,6 @@ namespace HN.Media
         public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.Register(nameof(ImageSource), typeof(object), typeof(ImageBrushEx), new PropertyMetadata(default, OnImageSourceChanged));
 
         /// <summary>
-        /// 标识 <see cref="RetryCount" /> 依赖属性。
-        /// </summary>
-        /// <returns>
-        /// <see cref="RetryCount" /> 依赖项属性的标识符。
-        /// </returns>
-        public static readonly DependencyProperty RetryCountProperty = DependencyProperty.Register(nameof(RetryCount), typeof(int), typeof(ImageBrushEx), new PropertyMetadata(default(int)));
-
-        /// <summary>
-        /// 标识 <see cref="RetryDelay" /> 依赖属性。
-        /// </summary>
-        /// <returns>
-        /// <see cref="RetryDelay" /> 依赖项属性的标识符。
-        /// </returns>
-        public static readonly DependencyProperty RetryDelayProperty = DependencyProperty.Register(nameof(RetryDelay), typeof(TimeSpan), typeof(ImageBrushEx), new PropertyMetadata(TimeSpan.Zero));
-
-        /// <summary>
         /// 标识 <see cref="Stretch" /> 依赖属性。
         /// </summary>
         /// <returns>
@@ -72,12 +56,12 @@ namespace HN.Media
         /// <summary>
         /// 在无法加载图像源时发生。
         /// </summary>
-        public event ImageBrushExFailedEventHandler ImageFailed;
+        public event ImageBrushExFailedEventHandler? ImageFailed;
 
         /// <summary>
         /// 在成功显示图像后发生。
         /// </summary>
-        public event EventHandler ImageOpened;
+        public event EventHandler? ImageOpened;
 
         /// <summary>
         /// 获取或设置 <see cref="TileBrush" /> 基本磁贴中内容的水平对齐方式。
@@ -122,31 +106,7 @@ namespace HN.Media
             get => GetValue(ImageSourceProperty);
             set => SetValue(ImageSourceProperty, value);
         }
-
-        /// <summary>
-        /// 获取或设置加载失败时的重试次数。
-        /// </summary>
-        /// <returns>
-        /// 加载失败时的重试次数。
-        /// </returns>
-        public int RetryCount
-        {
-            get => (int)GetValue(RetryCountProperty);
-            set => SetValue(RetryCountProperty, value);
-        }
-
-        /// <summary>
-        /// 获取或设置加载失败时的重试间隔。
-        /// </summary>
-        /// <returns>
-        /// 加载失败时的重试间隔。
-        /// </returns>
-        public TimeSpan RetryDelay
-        {
-            get => (TimeSpan)GetValue(RetryDelayProperty);
-            set => SetValue(RetryDelayProperty, value);
-        }
-
+        
         /// <summary>
         /// 获取或设置一个值，它指定此 <see cref="TileBrush" /> 的内容如何拉伸才适合其磁贴。
         /// </summary>

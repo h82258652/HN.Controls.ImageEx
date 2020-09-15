@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Media;
+using HN.Models;
 using HN.Pipes;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,6 +28,13 @@ namespace HN.Services
             });
 
             ConfigureImageSource(options =>
+            {
+                options.WithDefaultServices();
+
+                options.WithDefaultPipes();
+            });
+
+            ConfigureImageExSource(options =>
             {
                 options.WithDefaultServices();
 
@@ -68,12 +76,21 @@ namespace HN.Services
         {
             Configure(configure);
         }
-
+        
         /// <summary>
         /// 进行输出值类型为 <see cref="ImageSource" /> 的配置。
         /// </summary>
         /// <param name="configure">执行配置的委托。</param>
         public static void ConfigureImageSource(Action<IImageExOptions<ImageSource>> configure)
+        {
+            Configure(configure);
+        }
+
+        /// <summary>
+        /// 进行输出值类型为 <see cref="ImageExSource" /> 的配置。
+        /// </summary>
+        /// <param name="configure">执行配置的委托。</param>
+        public static void ConfigureImageExSource(Action<IImageExOptions<ImageExSource>> configure)
         {
             Configure(configure);
         }

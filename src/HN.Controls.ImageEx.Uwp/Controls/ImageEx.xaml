@@ -1,13 +1,15 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="using:HN.Controls">
+                    xmlns:controls="using:HN.Controls"
+                    xmlns:skia="using:SkiaSharp.Views.UWP">
     <Style TargetType="controls:ImageEx">
         <Setter Property="LazyLoadingThreshold"
                 Value="300" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:ImageEx">
-                    <Grid Background="{TemplateBinding Background}"
+                    <Grid x:Name="PART_Root"
+                          Background="{TemplateBinding Background}"
                           BorderBrush="{TemplateBinding BorderBrush}"
                           BorderThickness="{TemplateBinding BorderThickness}">
                         <VisualStateManager.VisualStateGroups>
@@ -29,9 +31,9 @@
                                     <VisualState.Setters>
                                         <Setter Target="PART_LoadingContentHost.Visibility"
                                                 Value="Visible" />
-                                        <Setter Target="PART_Image.Opacity"
+                                        <Setter Target="PART_Canvas.Opacity"
                                                 Value="0" />
-                                        <Setter Target="PART_Image.IsHitTestVisible"
+                                        <Setter Target="PART_Canvas.IsHitTestVisible"
                                                 Value="False" />
                                     </VisualState.Setters>
                                 </VisualState>
@@ -41,9 +43,9 @@
                                           ContentTemplate="{TemplateBinding PlaceholderTemplate}"
                                           ContentTemplateSelector="{TemplateBinding PlaceholderTemplateSelector}"
                                           Visibility="Collapsed" />
-                        <Image x:Name="PART_Image"
-                               NineGrid="{TemplateBinding NineGrid}"
-                               Stretch="{TemplateBinding Stretch}" />
+                        <Border x:Name="PART_ShadowExpandBorder">
+                            <skia:SKXamlCanvas x:Name="PART_Canvas" />
+                        </Border>
                         <ContentPresenter x:Name="PART_FailedContentHost"
                                           ContentTemplate="{TemplateBinding FailedTemplate}"
                                           ContentTemplateSelector="{TemplateBinding FailedTemplateSelector}"

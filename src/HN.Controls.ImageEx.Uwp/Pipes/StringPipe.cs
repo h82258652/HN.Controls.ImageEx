@@ -18,7 +18,7 @@ namespace HN.Pipes
         /// <inheritdoc />
         protected override Uri ToUriSource(string source)
         {
-            Uri uriSource;
+            Uri? uriSource;
             if (Uri.TryCreate(source, UriKind.RelativeOrAbsolute, out uriSource))
             {
                 if (!uriSource.IsAbsoluteUri)

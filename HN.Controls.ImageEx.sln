@@ -14,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		build.ps1 = build.ps1
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HN.Controls.ImageEx.Uwp", "src\HN.Controls.ImageEx.Uwp\HN.Controls.ImageEx.Uwp.csproj", "{CD6AAE23-3C9A-45AC-BCC1-32FCE5563C9E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HN.Controls.ImageEx.Uwp", "src\HN.Controls.ImageEx.Uwp\HN.Controls.ImageEx.Uwp.csproj", "{CD6AAE23-3C9A-45AC-BCC1-32FCE5563C9E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8462F829-D1FE-4623-A6A0-8267D8A63697}"
 EndProject
