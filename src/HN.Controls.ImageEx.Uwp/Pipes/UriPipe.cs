@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
 using HN.Services;
@@ -37,8 +36,7 @@ namespace HN.Pipes
                 if (candidate != null && candidate.IsMatch)
                 {
                     var file = await candidate.GetValueAsFileAsync();
-                    var buffer = (await FileIO.ReadBufferAsync(file)).ToArray();
-                    context.Current = buffer;
+                    context.Current = file.OpenStreamForReadAsync();
                     await next(context, cancellationToken);
                 }
             }
