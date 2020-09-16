@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
@@ -24,8 +25,7 @@ namespace HN.Pipes
                 string.Equals(uri.Scheme, "ms-appdata", StringComparison.OrdinalIgnoreCase))
             {
                 var file = await StorageFile.GetFileFromApplicationUriAsync(uri);
-                var buffer = (await FileIO.ReadBufferAsync(file)).ToArray();
-                context.Current = buffer;
+                context.Current = await file.OpenStreamForReadAsync();
                 await next(context, cancellationToken);
             }
             else if (string.Equals(uri.Scheme, "ms-resource", StringComparison.OrdinalIgnoreCase))
