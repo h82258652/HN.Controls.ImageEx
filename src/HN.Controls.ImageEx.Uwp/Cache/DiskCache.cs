@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Windows.Storage;
+using Windows.Storage.Search;
 
 namespace HN.Cache
 {
@@ -35,7 +36,14 @@ namespace HN.Cache
                 return 0L;
             }
 
-            var cacheFiles = await cacheFolder.GetFilesAsync();
+            var queryOptions = new QueryOptions
+            {
+                FolderDepth = FolderDepth.Shallow,
+                IndexerOption = IndexerOption.UseIndexerWhenAvailable
+            };
+
+            var queryResult = cacheFolder.CreateFileQueryWithOptions(queryOptions);
+            var cacheFiles = await queryResult.GetFilesAsync();
 
             var context = new CalculateContext();
             var tasks = cacheFiles.Select(async temp =>
