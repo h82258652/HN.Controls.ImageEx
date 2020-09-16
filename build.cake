@@ -77,8 +77,24 @@ Task("Build")
     }
 });
 
-Task("Package")
+Task("Test")
     .IsDependentOn("Build")
+    .Does(() =>
+{
+    var settings = new DotNetCoreTestSettings
+    {
+        Configuration = "Release"
+    };
+
+    var testProjects = GetFiles("./test/**/*.csproj");
+    foreach(var testProject in testProjects)
+    {
+        DotNetCoreTest(testProject.FullPath, settings);
+    }
+});
+
+Task("Package")
+    .IsDependentOn("Test")
     .Does(() =>
 {
     var nugetPackSettings = new NuGetPackSettings
