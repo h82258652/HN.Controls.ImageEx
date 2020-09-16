@@ -21,14 +21,15 @@ namespace HN.Pipes
         /// <inheritdoc />
         protected override async Task InvokeOtherUriSchemeAsync(ILoadingContext<TSource> context, LoadingPipeDelegate<TSource> next, Uri uri, CancellationToken cancellationToken = default)
         {
-            if (string.Equals(uri.Scheme, "ms-appx", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(uri.Scheme, "ms-appdata", StringComparison.OrdinalIgnoreCase))
+            var scheme = uri.Scheme;
+            if (string.Equals(scheme, "ms-appx", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(scheme, "ms-appdata", StringComparison.OrdinalIgnoreCase))
             {
                 var file = await StorageFile.GetFileFromApplicationUriAsync(uri);
                 context.Current = await file.OpenStreamForReadAsync();
                 await next(context, cancellationToken);
             }
-            else if (string.Equals(uri.Scheme, "ms-resource", StringComparison.OrdinalIgnoreCase))
+            else if (string.Equals(scheme, "ms-resource", StringComparison.OrdinalIgnoreCase))
             {
                 var resourceManager = ResourceManager.Current;
                 var resourceContext = ResourceContext.GetForCurrentView();
