@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using HN.Services;
 
 namespace HN.Pipes
@@ -19,7 +20,7 @@ namespace HN.Pipes
         protected override async Task InvokeOtherUriSchemeAsync(ILoadingContext<TSource> context, LoadingPipeDelegate<TSource> next, Uri uri, CancellationToken cancellationToken = default)
         {
             // pack://application:,,,/
-            var streamResourceInfo = System.Windows.Application.GetResourceStream(uri);
+            var streamResourceInfo = Application.GetResourceStream(uri);
             if (streamResourceInfo != null)
             {
                 context.Current = streamResourceInfo.Stream;
