@@ -64,12 +64,7 @@ namespace HN.Pipes
             }
             else if (uri.IsFile)
             {
-                using (var fileStream = File.OpenRead(uri.AbsoluteUri.Substring("file:///".Length)))
-                {
-                    var buffer = new byte[fileStream.Length];
-                    await fileStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
-                    context.Current = buffer;
-                }
+                context.Current = File.OpenRead(uri.LocalPath);
                 await next(context, cancellationToken);
             }
             else if (string.Equals(uri.Scheme, "data", StringComparison.OrdinalIgnoreCase))
