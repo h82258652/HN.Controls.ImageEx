@@ -62,7 +62,7 @@ namespace HN.Pipes
                     UriPipeInternal.DownloadTasks.Remove(uri);
                 }
             }
-            else if (string.Equals(uri.Scheme, Uri.UriSchemeFile, StringComparison.OrdinalIgnoreCase))
+            else if (uri.IsFile)
             {
                 using (var fileStream = File.OpenRead(uri.AbsoluteUri.Substring("file:///".Length)))
                 {
