@@ -23,7 +23,7 @@ namespace HN.Pipes
             {
                 if (!uriSource.IsAbsoluteUri)
                 {
-                    Uri.TryCreate("ms-appx:///" + (source.StartsWith("/") ? source.Substring(1) : source), UriKind.Absolute, out uriSource);
+                    Uri.TryCreate((source.StartsWith('/') ? "ms-appx://" : "ms-appx:///") + source, UriKind.Absolute, out uriSource);
                 }
             }
 
