@@ -48,7 +48,7 @@ namespace HN.Pipes
             var cacheKey = uri.AbsoluteUri;
             if (await _diskCache.IsExistAsync(cacheKey))
             {
-                context.Current = await _diskCache.GetAsync(cacheKey, cancellationToken);
+                context.Current = await _diskCache.GetStreamAsync(cacheKey, cancellationToken);
                 try
                 {
                     await next(context, cancellationToken);

@@ -106,6 +106,20 @@ namespace HN.Cache
         }
 
         /// <inheritdoc />
+        public async Task<Stream> GetStreamAsync(string key, CancellationToken cancellationToken = default)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            var cacheFolder = await GetCacheFolderAsync();
+            var cacheFileName = GetCacheFileName(key);
+            var cacheFile = await cacheFolder.GetFileAsync(cacheFileName);
+            return await cacheFile.OpenStreamForReadAsync();
+        }
+
+        /// <inheritdoc />
         public async Task<bool> IsExistAsync(string key)
         {
             if (key == null)

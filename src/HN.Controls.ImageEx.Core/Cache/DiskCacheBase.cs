@@ -95,6 +95,18 @@ namespace HN.Cache
         }
 
         /// <inheritdoc />
+        public Task<Stream> GetStreamAsync(string key, CancellationToken cancellationToken = default)
+        {
+            if (key == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(key));
+            }
+
+            var cacheFilePath = GetCacheFilePath(key);
+            return Task.FromResult<Stream>(File.OpenRead(cacheFilePath));
+        }
+
+        /// <inheritdoc />
         public Task<bool> IsExistAsync(string key)
         {
             if (key == null)

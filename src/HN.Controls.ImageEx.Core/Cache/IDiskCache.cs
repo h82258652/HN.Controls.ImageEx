@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 
@@ -48,6 +49,14 @@ namespace HN.Cache
         /// <param name="cancellationToken">要监视取消请求的标记。</param>
         /// <returns>缓存的值。</returns>
         Task<byte[]> GetAsync([NotNull] string key, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// 获取缓存。
+        /// </summary>
+        /// <param name="key">缓存的键。</param>
+        /// <param name="cancellationToken">要监视取消请求的标记。</param>
+        /// <returns>缓存的值。</returns>
+        Task<Stream> GetStreamAsync([NotNull] string key, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// 获取某个缓存是否存在。
