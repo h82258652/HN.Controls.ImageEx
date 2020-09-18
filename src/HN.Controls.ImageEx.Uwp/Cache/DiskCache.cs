@@ -1,13 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Windows.Storage;
-using Windows.Storage.Search;
 
 namespace HN.Cache
 {
@@ -36,25 +34,35 @@ namespace HN.Cache
                 return 0L;
             }
 
-            var queryOptions = new QueryOptions
+            var folderPath = cacheFolder.Path;
+            var hFile = UwpIONative.FindFirstFileExFromApp(
+                folderPath + "\\*.*",
+                FINDEX_INFO_LEVELS.FindExInfoBasic,
+                out var findData,
+                FINDEX_SEARCH_OPS.FindExSearchNameMatch,
+                IntPtr.Zero,
+                0);
+
+            var totalSize = 0L;
+            if (hFile.ToInt32() != -1)
             {
-                FolderDepth = FolderDepth.Shallow,
-                IndexerOption = IndexerOption.UseIndexerWhenAvailable
-            };
+                do
+                {
+                    var itemName = findData.itemName;
+                    if (itemName == "." ||
+                        itemName == "..")
+                    {
+                        continue;
+                    }
 
-            var queryResult = cacheFolder.CreateFileQueryWithOptions(queryOptions);
-            var cacheFiles = await queryResult.GetFilesAsync();
+                    var fileSize = findData.fileSizeHigh * (0xffffffffL + 1L) + findData.fileSizeLow;
+                    totalSize += fileSize;
+                } while (UwpIONative.FindNextFile(hFile, out findData));
 
-            var context = new CalculateContext();
-            var tasks = cacheFiles.Select(async temp =>
-            {
-                var basicProperties = await temp.GetBasicPropertiesAsync();
-                context._totalSize += basicProperties.Size;
-            }).ToList();
+                UwpIONative.FindClose(hFile);
+            }
 
-            await Task.WhenAll(tasks);
-
-            return (long)context._totalSize;
+            return totalSize;
         }
 
         /// <inheritdoc />
@@ -186,11 +194,6 @@ namespace HN.Cache
             }
 
             return cacheFolder;
-        }
-
-        internal class CalculateContext
-        {
-            internal ulong _totalSize;
         }
     }
 }
