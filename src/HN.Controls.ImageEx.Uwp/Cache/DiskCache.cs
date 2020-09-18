@@ -55,7 +55,7 @@ namespace HN.Cache
                         continue;
                     }
 
-                    var fileSize = findData.fileSizeHigh * (0xffffffffL + 1L) + findData.fileSizeLow;
+                    var fileSize = ((long)findData.fileSizeHigh) << 32 | findData.fileSizeLow & 0xFFFFFFFFL;
                     totalSize += fileSize;
                 } while (UwpIONative.FindNextFile(hFile, out findData));
 
