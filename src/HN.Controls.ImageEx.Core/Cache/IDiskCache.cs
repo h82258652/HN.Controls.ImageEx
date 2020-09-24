@@ -20,14 +20,14 @@ namespace HN.Cache
         /// 计算所有缓存的大小。单位：字节。
         /// </summary>
         /// <returns>所有缓存的大小。单位：字节。</returns>
-        Task<long> CalculateAllSizeAsync();
+        ValueTask<long> CalculateAllSizeAsync();
 
         /// <summary>
         /// 计算某个缓存的大小。单位：字节。
         /// </summary>
         /// <param name="key">缓存的键。</param>
         /// <returns>某个缓存的大小。单位：字节。</returns>
-        Task<long> CalculateSizeAsync([NotNull] string key);
+        ValueTask<long> CalculateSizeAsync([NotNull] string key);
 
         /// <summary>
         /// 删除所有缓存。

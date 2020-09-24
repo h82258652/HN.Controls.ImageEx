@@ -29,21 +29,21 @@ namespace HN.Cache
         public string CacheFolderPath { get; }
 
         /// <inheritdoc />
-        public Task<long> CalculateAllSizeAsync()
+        public ValueTask<long> CalculateAllSizeAsync()
         {
             if (Directory.Exists(CacheFolderPath))
             {
-                return Task.FromResult(
+                return new ValueTask<long>(
                     Directory.EnumerateFiles(CacheFolderPath, "*", SearchOption.AllDirectories)
                         .Select(temp => new FileInfo(temp).Length)
                         .Sum());
             }
 
-            return Task.FromResult(0L);
+            return new ValueTask<long>(0L);
         }
 
         /// <inheritdoc />
-        public Task<long> CalculateSizeAsync(string key)
+        public ValueTask<long> CalculateSizeAsync(string key)
         {
             if (key == null)
             {
@@ -51,7 +51,7 @@ namespace HN.Cache
             }
 
             var cacheFileName = GetCacheFilePath(key);
-            return Task.FromResult(new FileInfo(cacheFileName).Length);
+            return new ValueTask<long>(new FileInfo(cacheFileName).Length);
         }
 
         /// <inheritdoc />

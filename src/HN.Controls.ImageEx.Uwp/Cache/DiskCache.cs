@@ -26,7 +26,7 @@ namespace HN.Cache
         }
 
         /// <inheritdoc />
-        public async Task<long> CalculateAllSizeAsync()
+        public async ValueTask<long> CalculateAllSizeAsync()
         {
             var cacheFolder = await GetCacheFolderAsync();
             if (cacheFolder == null)
@@ -66,7 +66,7 @@ namespace HN.Cache
         }
 
         /// <inheritdoc />
-        public async Task<long> CalculateSizeAsync(string key)
+        public async ValueTask<long> CalculateSizeAsync(string key)
         {
             if (key == null)
             {
