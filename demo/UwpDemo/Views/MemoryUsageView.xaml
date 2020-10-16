@@ -6,27 +6,16 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
       Loaded="MemoryUsageView_Loaded"
-      Unloaded="MemoryUsageView_Unloaded"
       mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <TextBlock x:Name="MemoryUsageTextBlock"
-                       Grid.Column="0"
-                       HorizontalAlignment="Center"
-                       Text="" />
-            <TextBlock x:Name="LoadTimeTextBlock"
-                       Grid.Column="1"
-                       HorizontalAlignment="Center"
-                       Text="" />
-        </Grid>
+        <TextBlock x:Name="LoadTimeTextBlock"
+                   Grid.Row="0"
+                   HorizontalAlignment="Right"
+                   Text="" />
         <GridView x:Name="GridView"
                   Grid.Row="1">
             <GridView.ItemTemplate>
