@@ -12,6 +12,9 @@ WPF version for .net framework 4.6.2 and .net core 3.1
 UWP version for 17763  
 The usage please see the demo project.  
 
+## Notice!  
+<span style="color:red;">Due to there are some performance problems in SkiaSharp, the 2.x.x version will stop developing. You can use the 1.x.x version if you meet the performance problems. 3.x.x version is on the plan.</span>
+
 ### WPF Support
 |                   | ImageEx            | ImageBrushEx       |
 | -                 | -                  | -                  |
